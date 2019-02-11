@@ -87,8 +87,13 @@ import VuetifyLogo from '~/components/VuetifyLogo.vue'
 
 export default {
   components: {
-    Logo,
+    Logo,pa
     VuetifyLogo
+  },
+  methods: {
+    hello123 () {
+      return 'wassop'
+    }
   }
 }
 </script>
