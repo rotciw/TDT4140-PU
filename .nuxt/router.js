@@ -4,6 +4,7 @@ import { interopDefault } from './utils'
 
 const _52d18776 = () => interopDefault(import('..\\pages\\booking.vue' /* webpackChunkName: "pages_booking" */))
 const _60106d12 = () => interopDefault(import('..\\pages\\inspire.vue' /* webpackChunkName: "pages_inspire" */))
+const _218ffc10 = () => interopDefault(import('..\\pages\\jesper.vue' /* webpackChunkName: "pages_jesper" */))
 const _311940af = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages_index" */))
 
 Vue.use(Router)
@@ -74,6 +75,10 @@ export function createRouter() {
       path: "/inspire",
       component: _60106d12,
       name: "inspire"
+    }, {
+      path: "/jesper",
+      component: _218ffc10,
+      name: "jesper"
     }, {
       path: "/",
       component: _311940af,

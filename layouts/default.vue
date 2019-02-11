@@ -41,6 +41,16 @@
             <v-list-tile-title v-text="'Bookingsystem'" />
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile
+          to="/jesper"
+        >
+          <v-list-tile-action>
+            <v-icon>local_dining</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="'Jesper'" />
+          </v-list-tile-content>
+        </v-list-tile>
         <v-list-tile>
           <v-list-tile-action>
             <v-icon>local_dining</v-icon>
