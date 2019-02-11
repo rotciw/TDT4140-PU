@@ -89,7 +89,7 @@ export default {
   data () {
     return {
       clipped: false,
-      drawer: false,
+      drawer: null,
       fixed: false,
       miniVariant: false,
       right: true,

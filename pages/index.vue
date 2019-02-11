@@ -9,8 +9,6 @@
       sm8
       md6
     >
-      <div class="text-xs-center">
-      </div>
       <v-card>
         <v-card-title class="headline">
           Velkommen til Trippin Tacos
