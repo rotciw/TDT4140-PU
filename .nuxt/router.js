@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import { interopDefault } from './utils'
 
+const _52d18776 = () => interopDefault(import('..\\pages\\booking.vue' /* webpackChunkName: "pages_booking" */))
 const _60106d12 = () => interopDefault(import('..\\pages\\inspire.vue' /* webpackChunkName: "pages_inspire" */))
 const _311940af = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages_index" */))
 
@@ -66,6 +67,10 @@ export function createRouter() {
     scrollBehavior,
 
     routes: [{
+      path: "/booking",
+      component: _52d18776,
+      name: "booking"
+    }, {
       path: "/inspire",
       component: _60106d12,
       name: "inspire"

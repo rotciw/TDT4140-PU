@@ -13,10 +13,10 @@
       </div>
       <v-card>
         <v-card-title class="headline">
-          Velkommen til Trippin Tacos
+          Her kommer bookingsystemet for ansatte
         </v-card-title>
         <v-card-text>
-          <p>Her skal man kunne se oversikt over hva som skjer</p>
+          <p>Her skal man kunne gjøre mye rart</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -27,7 +27,6 @@
 </template>
 
 <script>
-
 export default {
   methods: {
     hello123 () {
