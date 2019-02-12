@@ -4,5 +4,14 @@
  * Writing and updating is done here, so we get consistent data structures.
  */
 
-import { firestore, environment } from './configuration'
-import Moment                     from 'moment'
+// import { firestore, environment } from './configuration'
+
+const users = {
+  createUser () {
+    return null
+  }
+}
+
+export default {
+  users
+}
