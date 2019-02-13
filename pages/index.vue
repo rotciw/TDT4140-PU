@@ -1,32 +1,54 @@
 <template>
-  <v-layout
-    column
-    justify-center
-    align-center
-  >
-    <v-flex
-      xs12
-      sm8
-      md6
-    >
-      <v-card>
-        <v-card-title class="headline">
+  <div>
+    <v-layout
+      row
+      fill-height
+      >
+      <v-flex xs12>
+        <v-carousel
+        height="400px"
+        class="carousel"
+        >
+        <v-carousel-item
+          v-for="(item,i) in items"
+          :key="i"
+          :src="item.src"
+          hide-controls
+          hide-delimiters
+        >
+        </v-carousel-item>
+        </v-carousel>
+      </v-flex>
+    </v-layout>
+    <v-container>
+      <v-flex xs12>
+        <h1
+          primary
+          style="text-align: center"
+        >
           Velkommen til Trippin Tacos
-        </v-card-title>
-        <v-card-text>
-          <p>Her skal man kunne se oversikt over hva som skjer</p>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-        </v-card-actions>
-      </v-card>
-    </v-flex>
-  </v-layout>
+        </h1>
+      </v-flex>
+    </v-container>
+  </div>
 </template>
 
 <script>
 
 export default {
+  layout: 'frontpage',
+  data () {
+    return {
+      items: [
+        {
+          src: 'buffet-food-lunch-5944.jpg'
+        },
+        {
+          src: 'burrito-chicken-close-up-461198.jpg'
+        }
+      ]
+    }
+  },
   methods: {
     hello123 () {
       return 'wassop'
@@ -34,3 +56,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .carousel{
+    margin: 0;
+  }
+</style>

@@ -40,15 +40,33 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '@/plugins/vuetify'
+    '@/plugins/vuetify',
+    '@/plugins/vue-inject',
+    '@/plugins/fireinit'
+    // '@/plugins/Configuration'
   ],
 
   /*
   ** Nuxt.js modules
   */
-  modules: [
-  ],
-
+  // Used for authentication
+  /* modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/auth'
+  ], */
+  router: {
+    middleware: 'router-check'
+  },
+  /* Envinroment not used at the moment */
+  env: {
+    FIREBASE_CLIENT_API_KEY: process.env.FIREBASE_CLIENT_API_KEY,
+    FIREBASE_CLIENT_AUTH_DOMAIN: process.env.FIREBASE_CLIENT_AUTH_DOMAIN,
+    FIREBASE_CLIENT_DATABASE_URL: process.env.FIREBASE_CLIENT_DATABASE_URL,
+    FIREBASE_CLIENT_MESSAGING_SENDER_ID:
+    process.env.FIREBASE_CLIENT_MESSAGING_SENDER_ID,
+    FIREBASE_CLIENT_PROJECT_ID: process.env.FIREBASE_CLIENT_PROJECT_ID,
+    FIREBASE_CLIENT_STORAGE_BUCKET: process.env.FIREBASE_CLIENT_STORAGE_BUCKET
+  },
   /*
   ** Build configuration
   */
