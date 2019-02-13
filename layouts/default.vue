@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <v-navigation-drawer
+      v-if="signedIn"
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
@@ -78,6 +79,7 @@
           <v-flex
             xs12
             sm12
+            style="text-align: center"
           >
             &copy; PU-Gruppe 30 2019
           </v-flex>
@@ -99,6 +101,11 @@ export default {
       rightDrawer: false,
       test: false,
       title: 'Trippin Tacos'
+    }
+  },
+  computed: {
+    signedIn () {
+      return this.$store.state.getters
     }
   }
 }

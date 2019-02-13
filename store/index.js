@@ -32,8 +32,10 @@ export const actions = {
     firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
       .then(user => {
         commit('setLoading', false)
-        user = user.data()
-        commit('setUser', user)
+        const newUser = {
+          id: user.uid
+        }
+        commit('setUser', newUser)
       })
       .catch(error => {
         commit('setLoading', false)

@@ -1,36 +1,24 @@
 <template>
   <v-container>
     <!-- Throws error if the login is incomplete -->
-    <v-layout
-      v-if="error"
-      row
-      flex
-    >
-      <v-flex>
-        <app-alert
-          :text="error.message"
-          @dismissed="onDismissed"
-        >
-        </app-alert>
-      </v-flex>
-    </v-layout>
     <v-layout row>
       <v-flex
         xs12
         sm6
         offset-sm3
       >
-        <v-card>
+        <!-- V-card form checking the logn -->
+        <v-card xs6>
           <v-card-text>
             <v-container>
-              <form @submit.prevent='onSignin'>
+              <form @submit.prevent="onSignin">
                 <v-layout row>
                   <v-flex xs12>
                     <v-text-field
-                      name="email"
-                      label="Mail"
                       id="email"
                       v-model="email"
+                      name="email"
+                      label="Mail"
                       type="email"
                       required
                     />
@@ -39,10 +27,10 @@
                 <v-layout row>
                   <v-flex xs12>
                     <v-text-field
-                      name="password"
-                      label="Password"
                       id="password"
+                      name="password"
                       v-model="password"
+                      label="Password"
                       type="password"
                       required
                     />
@@ -73,6 +61,20 @@
         </v-card>
       </v-flex>
     </v-layout>
+    <!-- Throws error if the login is incomplete -->
+    <v-snackbar
+      v-model="snackbar"
+      top
+    >
+      {{ error }}
+      <v-btn
+        color="pink"
+        flat
+        @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -81,6 +83,10 @@ export default {
   name: 'login',
   data () {
     return {
+      email: '',
+      password: '',
+      loading: false,
+      snackbar: false
     }
   },
   computed: {
@@ -96,6 +102,9 @@ export default {
       if (val !== null && val !== undefined) {
         this.$router.push('/dashboard')
       }
+    },
+    error () {
+      this.snackbar = true
     }
   },
   mounted () {
