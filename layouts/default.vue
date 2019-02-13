@@ -1,7 +1,6 @@
 <template>
   <v-app>
     <v-navigation-drawer
-      v-if="store.state.user"
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"

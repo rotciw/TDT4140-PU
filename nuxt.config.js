@@ -43,6 +43,7 @@ module.exports = {
     '@/plugins/vuetify',
     '@/plugins/vue-inject',
     '@/plugins/fireinit'
+    // '@/plugins/Configuration'
   ],
 
   /*
