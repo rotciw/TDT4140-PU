@@ -1,7 +1,6 @@
 <template>
   <v-app>
     <v-navigation-drawer
-      v-if="signedIn"
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
@@ -26,7 +25,7 @@
       </v-toolbar>
       <v-list>
         <v-list-tile
-          to="/"
+          to="/dashboard"
         >
           <v-list-tile-action>
             <v-icon>dashboard</v-icon>
@@ -60,6 +59,15 @@
         <v-icon>{{ `chevron_${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn
+          flat
+          @click="signOut"
+        >
+          Logg ut
+        </v-btn>
+      </v-toolbar-items>
     </v-toolbar>
     <v-content>
       <v-container>
@@ -103,9 +111,12 @@ export default {
       title: 'Trippin Tacos'
     }
   },
-  computed: {
-    signedIn () {
-      return this.$store.state.getters
+  methods: {
+    signOut () {
+      this.$router.push('/')
+      // TODO: Make sure it signs out
+      // this.$store.dispatch('clearState')
+      console.log(this.$store.state)
     }
   }
 }

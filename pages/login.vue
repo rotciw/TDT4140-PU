@@ -28,8 +28,8 @@
                   <v-flex xs12>
                     <v-text-field
                       id="password"
-                      name="password"
                       v-model="password"
+                      name="password"
                       label="Password"
                       type="password"
                       required
@@ -80,6 +80,7 @@
 
 <script>
 export default {
+  layout: 'frontpage',
   name: 'login',
   data () {
     return {

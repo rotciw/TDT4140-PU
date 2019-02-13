@@ -6,6 +6,7 @@ export const state = () => ({
   error: null
 })
 
+// Mutations are functions that the store uses to set its atrributes
 export const mutations = {
   setLoading (state, payload) {
     state.loading = payload
@@ -18,11 +19,20 @@ export const mutations = {
   },
   clearError (state, payload) {
     state.error = null
+  },
+  clearState (state) {
+    state.user = null
+    state.loading = false
+    state.error = null
   }
 }
+// Actions are actions ran by the store. They are callable with this.$store.dispatch('actionnavn')
 export const actions = {
   clearError ({ commit }) {
     commit('clearError')
+  },
+  clearState ({ commit }) {
+    commit('clearState')
   },
   signUserUp ({ commit }, payload) {
   },
@@ -31,9 +41,10 @@ export const actions = {
     commit('clearError')
     firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
       .then(user => {
+        console.log(user)
         commit('setLoading', false)
         const newUser = {
-          id: user.uid
+          uid: user.user.uid
         }
         commit('setUser', newUser)
       })
@@ -44,6 +55,7 @@ export const actions = {
       })
   }
 }
+// Getters are like the one used in Java to access the stores attributes.
 export const getters = {
   error (state) {
     return state.error

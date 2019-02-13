@@ -49,8 +49,15 @@ module.exports = {
   /*
   ** Nuxt.js modules
   */
-  modules: [
-  ],
+  // Used for authentication
+  /* modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/auth'
+  ], */
+  router: {
+    middleware: 'router-check'
+  },
+  /* Envinroment not used at the moment */
   env: {
     FIREBASE_CLIENT_API_KEY: process.env.FIREBASE_CLIENT_API_KEY,
     FIREBASE_CLIENT_AUTH_DOMAIN: process.env.FIREBASE_CLIENT_AUTH_DOMAIN,

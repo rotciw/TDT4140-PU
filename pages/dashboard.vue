@@ -6,7 +6,10 @@
 
 <script>
 export default {
-  name: 'dashboard'
+  name: 'dashboard',
+  mounted () {
+    console.log(this.$store.state)
+  }
 }
 </script>
 
