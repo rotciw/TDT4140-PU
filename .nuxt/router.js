@@ -3,7 +3,9 @@ import Router from 'vue-router'
 import { interopDefault } from './utils'
 
 const _52d18776 = () => interopDefault(import('..\\pages\\booking.vue' /* webpackChunkName: "pages_booking" */))
+const _5c1ba6f1 = () => interopDefault(import('..\\pages\\dashboard.vue' /* webpackChunkName: "pages_dashboard" */))
 const _60106d12 = () => interopDefault(import('..\\pages\\inspire.vue' /* webpackChunkName: "pages_inspire" */))
+const _0a7e3874 = () => interopDefault(import('..\\pages\\login.vue' /* webpackChunkName: "pages_login" */))
 const _311940af = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages_index" */))
 
 Vue.use(Router)
@@ -71,9 +73,17 @@ export function createRouter() {
       component: _52d18776,
       name: "booking"
     }, {
+      path: "/dashboard",
+      component: _5c1ba6f1,
+      name: "dashboard"
+    }, {
       path: "/inspire",
       component: _60106d12,
       name: "inspire"
+    }, {
+      path: "/login",
+      component: _0a7e3874,
+      name: "login"
     }, {
       path: "/",
       component: _311940af,
