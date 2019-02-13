@@ -18,7 +18,7 @@
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>Sjef Sjefesen</v-list-tile-title>
+              <v-list-tile-title>{{ firstName }} {{ lastName }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -42,6 +42,16 @@
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title v-text="'Bookingsystem'" />
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile
+          to="/settings"
+        >
+          <v-list-tile-action>
+            <v-icon>settings</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="'Instilliner'" />
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -109,6 +119,14 @@ export default {
       rightDrawer: false,
       test: false,
       title: 'Trippin Tacos'
+    }
+  },
+  computed: {
+    firstName () {
+      return this.$store.state.user.firstName
+    },
+    lastName () {
+      return this.$store.state.user.lastName
     }
   },
   methods: {

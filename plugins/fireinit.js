@@ -1,7 +1,8 @@
 import firebase from 'firebase'
-/* import 'firebase/auth'
+import Vue from 'vue'
+import 'firebase/auth'
 import 'firebase/firestore'
-import 'firebase/database' */
+import 'firebase/database'
 
 let config = {
   apiKey: 'AIzaSyA6qBEDMWc2cJ5Y7xDKKNWiK3XDC9FbaJg',
@@ -16,9 +17,9 @@ if (!firebase.apps.length) {
   firebase.initializeApp(config)
 }
 
-// export const GoogleProvider = new firebase.auth.GoogleAuthProvider()
+export const GoogleProvider = new firebase.auth.GoogleAuthProvider()
 export const auth = firebase.auth()
 export const DB = firebase.database()
 export const StoreDB = firebase.firestore()
 
-export default firebase
+Vue.prototype.$fs = StoreDB

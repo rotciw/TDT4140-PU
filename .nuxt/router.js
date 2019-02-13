@@ -6,6 +6,7 @@ const _52d18776 = () => interopDefault(import('..\\pages\\booking.vue' /* webpac
 const _5c1ba6f1 = () => interopDefault(import('..\\pages\\dashboard.vue' /* webpackChunkName: "pages_dashboard" */))
 const _60106d12 = () => interopDefault(import('..\\pages\\inspire.vue' /* webpackChunkName: "pages_inspire" */))
 const _0a7e3874 = () => interopDefault(import('..\\pages\\login.vue' /* webpackChunkName: "pages_login" */))
+const _8e81b654 = () => interopDefault(import('..\\pages\\settings.vue' /* webpackChunkName: "pages_settings" */))
 const _311940af = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages_index" */))
 
 Vue.use(Router)
@@ -84,6 +85,10 @@ export function createRouter() {
       path: "/login",
       component: _0a7e3874,
       name: "login"
+    }, {
+      path: "/settings",
+      component: _8e81b654,
+      name: "settings"
     }, {
       path: "/",
       component: _311940af,

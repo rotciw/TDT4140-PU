@@ -43,10 +43,12 @@ export const actions = {
       .then(user => {
         console.log(user)
         commit('setLoading', false)
-        const newUser = {
-          uid: user.user.uid
-        }
-        commit('setUser', newUser)
+        firebase.firestore().collection('users').doc(user.user.uid).get()
+          .then(user => {
+            user = user.data()
+            commit('setUser', user)
+            console.log(user)
+          })
       })
       .catch(error => {
         commit('setLoading', false)
