@@ -53,7 +53,44 @@
 
 <script>
 export default {
+  layout: 'frontpage',
+  name: 'login',
+  data () {
+    return {
+      email: '',
+      password: '',
+      loading: false,
+      snackbar: false
+    }
+  },
+  computed: {
+    user () {
+      return this.$store.getters.user
+    },
+    error () {
+      return this.$store.getters.error
+    }
+  },
+  watch: {
+    user (val) {
+      if (val !== null && val !== undefined) {
+        this.$router.push('/dashboard')
+      }
+    },
+    error () {
+      this.snackbar = true
+    }
+  },
+  mounted () {
+    console.log(this.$store.state)
+  },
   methods: {
+    onDismissed () {
+      this.$store.dispatch('clearError')
+    },
+    onSignin () {
+      this.$store.dispatch('signUserIn', { email: this.email, password: this.password })
+    }
   }
 }
 </script>
