@@ -1,81 +1,54 @@
 <template>
-  <v-container>
-    <!-- Throws error if the login is incomplete -->
-    <v-layout row>
-      <v-flex
-        xs12
-        sm6
-        offset-sm3
-      >
-        <!-- V-card form checking the logn -->
-        <v-card xs6>
-          <v-card-text>
-            <v-container>
-              <form @submit.prevent="onSignin">
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-text-field
-                      id="email"
-                      v-model="email"
-                      name="email"
-                      label="Mail"
-                      type="email"
-                      required
-                    />
-                  </v-flex>
-                </v-layout>
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-text-field
-                      id="password"
-                      v-model="password"
-                      name="password"
-                      label="Password"
-                      type="password"
-                      required
-                    />
-                  </v-flex>
-                </v-layout>
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-btn
-                      type="submit"
-                      :disabled="loading"
-                      :loading="loading"
-                    >
-                      Sign in
-                      <span
-                        slot="loader"
-                        class="custom-loader"
-                      >
-                        <v-icon light>
-                          cached
-                        </v-icon>
-                      </span>
-                    </v-btn>
-                  </v-flex>
-                </v-layout>
-              </form>
-            </v-container>
-          </v-card-text>
-        </v-card>
-      </v-flex>
-    </v-layout>
-    <!-- Throws error if the login is incomplete -->
-    <v-snackbar
-      v-model="snackbar"
-      top
+  <v-layout
+    column
+    justify-center
+    align-center
+  >
+    <img
+      src="logo-long.png"
+      height="200px"
+      contain
+      style="margin-bottom:50px"
     >
-      {{ error }}
-      <v-btn
-        color="pink"
-        flat
-        @click="snackbar = false"
-      >
-        Close
-      </v-btn>
-    </v-snackbar>
-  </v-container>
+    <v-flex
+      xs12
+      sm5
+      md5
+    >
+      <!-- Kommentar -->
+      <div class="loginbox">
+        <v-card-text>
+          <v-form>
+            <v-text-field
+              id="username"
+              class="roundedCorners"
+              prepend-inner-icon="person"
+              name="login"
+              label="Brukernavn"
+              type="text"
+            />
+            <v-text-field
+              id="password"
+              class="roundedCorners"
+              prepend-inner-icon="lock"
+              name="password"
+              label="Passord"
+              type="password"
+            />
+          </v-form>
+        </v-card-text>
+        <div class="text-xs-center">
+          <v-btn
+            large
+            color="#6BE096"
+            class="roundedCorners"
+          >
+            Logg inn
+          </v-btn>
+        </div>
+      </div>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
@@ -123,5 +96,15 @@ export default {
 </script>
 
 <style scoped>
-
+  .loginbox{
+    height:300px;
+    width: 450px;
+    padding:30px;
+    background-color: #f5f5f5;
+    border-radius: 0px 36px 0px 36px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+  .roundedCorners {
+    border-radius: 0px 18px 0px 18px;
+  }
 </style>
