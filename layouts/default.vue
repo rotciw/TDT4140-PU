@@ -14,7 +14,7 @@
               <img src="https://randomuser.me/api/portraits/men/85.jpg">
             </v-list-tile-avatar>
 
-            <v-list-tile-content>
+            <v-list-tile-content >
               <v-list-tile-title>Sjef Sjefesen</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
@@ -55,9 +55,9 @@
       >
         <v-icon>{{ `chevron_${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
-      <v-toolbar-title v-text="title" />
+      <v-toolbar-title v-text="title"/>
     </v-toolbar>
-    <v-content>
+    <v-content class="bgColor">
       <v-container>
         <nuxt />
       </v-container>
@@ -100,3 +100,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .bgColor{
+    background-color: #D1DFD2;
+  }
+</style>
