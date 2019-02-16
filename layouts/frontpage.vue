@@ -4,7 +4,7 @@
       <v-flex xs4>
         <nuxt-link
           to="/"
-          >
+        >
           <v-img
             src="logo-long.png"
             height="50px"
@@ -13,7 +13,7 @@
           />
         </nuxt-link>
       </v-flex>
-      <v-spacer></v-spacer>
+      <v-spacer />
 
       <v-toolbar-items>
         <v-btn
