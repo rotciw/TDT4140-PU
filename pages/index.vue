@@ -3,27 +3,25 @@
     <v-layout
       row
       fill-height
-      >
+    >
       <v-flex xs12>
         <v-carousel
-        height="400px"
-        class="carousel"
+          height="400px"
+          class="carousel"
         >
-        <v-carousel-item
-          v-for="(item,i) in items"
-          :key="i"
-          :src="item.src"
-          hide-controls
-          hide-delimiters
-        >
-        </v-carousel-item>
+          <v-carousel-item
+            v-for="(item,i) in items"
+            :key="i"
+            :src="item.src"
+            hide-controls
+            hide-delimiters
+          />
         </v-carousel>
       </v-flex>
     </v-layout>
     <v-container>
       <v-flex xs12>
         <h1
-          primary
           style="text-align: center"
         >
           Velkommen til Trippin Tacos
