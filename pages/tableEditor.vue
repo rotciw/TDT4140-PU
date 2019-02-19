@@ -31,9 +31,10 @@
       class="my-4"
     >
       <v-flex
-        xs2
-        v-for="i in 19"
+        v-for="i in 7"
         :key="{i}"
+        xs4
+        md2
       >
         <v-card
           width="100"
@@ -59,7 +60,7 @@
         xs12
       >
         <v-btn
-          right
+          @click="addTable(table)"
           round
           color="light-blue"
         >
@@ -67,7 +68,6 @@
         </v-btn>
         <v-btn
           round
-          right
           color="red"
         >
           <v-icon>remove</v-icon>
@@ -79,7 +79,16 @@
 
 <script>
 export default {
-  name: 'TableEditor'
+  data () {
+    return {
+      tables: []
+    }
+  },
+  methods: {
+    addTable (table) {
+      this.tables.append(table)
+    }
+  }
 }
 </script>
 
