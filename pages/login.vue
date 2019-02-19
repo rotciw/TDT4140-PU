@@ -54,7 +54,6 @@
 <script>
 export default {
   layout: 'frontpage',
-  name: 'login',
   data () {
     return {
       email: '',

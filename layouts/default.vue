@@ -69,7 +69,7 @@
         <v-icon>{{ `chevron_${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
-      <v-spacer></v-spacer>
+      <v-spacer />
       <v-toolbar-items>
         <v-btn
           flat
