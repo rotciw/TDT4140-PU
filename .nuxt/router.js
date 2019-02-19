@@ -2,12 +2,12 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import { interopDefault } from './utils'
 
-const _52d18776 = () => interopDefault(import('..\\pages\\booking.vue' /* webpackChunkName: "pages_booking" */))
-const _5c1ba6f1 = () => interopDefault(import('..\\pages\\dashboard.vue' /* webpackChunkName: "pages_dashboard" */))
-const _60106d12 = () => interopDefault(import('..\\pages\\inspire.vue' /* webpackChunkName: "pages_inspire" */))
-const _0a7e3874 = () => interopDefault(import('..\\pages\\login.vue' /* webpackChunkName: "pages_login" */))
-const _8e81b654 = () => interopDefault(import('..\\pages\\settings.vue' /* webpackChunkName: "pages_settings" */))
-const _311940af = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages_index" */))
+const _82547420 = () => interopDefault(import('..\\pages\\booking.vue' /* webpackChunkName: "pages_booking" */))
+const _4feba22a = () => interopDefault(import('..\\pages\\dashboard.vue' /* webpackChunkName: "pages_dashboard" */))
+const _3bfc07f1 = () => interopDefault(import('..\\pages\\inspire.vue' /* webpackChunkName: "pages_inspire" */))
+const _54530e80 = () => interopDefault(import('..\\pages\\login.vue' /* webpackChunkName: "pages_login" */))
+const _657a94c8 = () => interopDefault(import('..\\pages\\settings.vue' /* webpackChunkName: "pages_settings" */))
+const _0c2ed5a9 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages_index" */))
 
 Vue.use(Router)
 
@@ -71,27 +71,27 @@ export function createRouter() {
 
     routes: [{
       path: "/booking",
-      component: _52d18776,
+      component: _82547420,
       name: "booking"
     }, {
       path: "/dashboard",
-      component: _5c1ba6f1,
+      component: _4feba22a,
       name: "dashboard"
     }, {
       path: "/inspire",
-      component: _60106d12,
+      component: _3bfc07f1,
       name: "inspire"
     }, {
       path: "/login",
-      component: _0a7e3874,
+      component: _54530e80,
       name: "login"
     }, {
       path: "/settings",
-      component: _8e81b654,
+      component: _657a94c8,
       name: "settings"
     }, {
       path: "/",
-      component: _311940af,
+      component: _0c2ed5a9,
       name: "index"
     }],
 
