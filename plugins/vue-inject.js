@@ -1,8 +1,9 @@
 import controller from '../components/FirebaseController'
 import Vue from 'vue'
-import firestore from 'firebase/firestore'
+// import firebase from 'firebase'
 
-Vue.prototype.$fs = firestore
+// Sets global variables
+// Vue.prototype.$fs = firebase.firestore()
 /* Vue.prototype.$signIn = uid => {
   $store.dispatch('signIn')
 }

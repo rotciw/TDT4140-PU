@@ -69,7 +69,7 @@
         <v-icon>{{ `chevron_${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
-      <v-spacer></v-spacer>
+      <v-spacer />
       <v-toolbar-items>
         <v-btn
           flat
@@ -79,7 +79,7 @@
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
-    <v-content>
+    <v-content class="bgColor">
       <v-container>
         <nuxt />
       </v-container>
@@ -139,3 +139,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .bgColor{
+    background-color: #D1DFD2;
+  }
+</style>
