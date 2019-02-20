@@ -10,11 +10,10 @@
           <v-layout row>
             <v-flex xs12>
               <v-img
-                src='logo-long.png'
-                height='225'
+                src="logo-long.png"
+                height="225"
                 contain
-              >
-              </v-img>
+              />
             </v-flex>
           </v-layout>
           <v-layout
@@ -24,7 +23,9 @@
             <v-flex xs5>
               <div style="text-align: center">
                 <v-btn
-                  dark large color="#444645"
+                  dark
+                  large
+                  color="#444645"
                   block
                   class="roundedCorners"
                 >
@@ -41,7 +42,6 @@
 
 <script>
 export default {
-  name: 'dashboard',
   data () {
     return {
     }

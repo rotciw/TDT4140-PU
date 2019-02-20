@@ -12,8 +12,8 @@ import { createStore } from './store.js'
 /* Plugins */
 
 import nuxt_plugin_vuetify_e5914fcc from 'nuxt_plugin_vuetify_e5914fcc' // Source: ..\\plugins\\vuetify (mode: 'all')
-import nuxt_plugin_vueinject_5ff306a8 from 'nuxt_plugin_vueinject_5ff306a8' // Source: ..\\plugins\\vue-inject (mode: 'all')
 import nuxt_plugin_fireinit_3631d23a from 'nuxt_plugin_fireinit_3631d23a' // Source: ..\\plugins\\fireinit (mode: 'all')
+import nuxt_plugin_vueinject_5ff306a8 from 'nuxt_plugin_vueinject_5ff306a8' // Source: ..\\plugins\\vue-inject (mode: 'all')
 import nuxt_plugin_logincheck_09320433 from 'nuxt_plugin_logincheck_09320433' // Source: ..\\plugins\\logincheck (mode: 'all')
 
 // Component: <NoSsr>
@@ -154,8 +154,8 @@ async function createApp(ssrContext) {
   // Plugin execution
 
   if (typeof nuxt_plugin_vuetify_e5914fcc === 'function') await nuxt_plugin_vuetify_e5914fcc(app.context, inject)
-  if (typeof nuxt_plugin_vueinject_5ff306a8 === 'function') await nuxt_plugin_vueinject_5ff306a8(app.context, inject)
   if (typeof nuxt_plugin_fireinit_3631d23a === 'function') await nuxt_plugin_fireinit_3631d23a(app.context, inject)
+  if (typeof nuxt_plugin_vueinject_5ff306a8 === 'function') await nuxt_plugin_vueinject_5ff306a8(app.context, inject)
   if (typeof nuxt_plugin_logincheck_09320433 === 'function') await nuxt_plugin_logincheck_09320433(app.context, inject)
 
   // If server-side, wait for async component to be resolved first
