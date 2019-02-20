@@ -7,7 +7,10 @@
       fixed
       app
     >
-      <v-toolbar flat class="transparent">
+      <v-toolbar
+        flat
+        class="transparent"
+      >
         <v-list class="pa-0">
           <v-list-tile avatar>
             <v-list-tile-avatar>
