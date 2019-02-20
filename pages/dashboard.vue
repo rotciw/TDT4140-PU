@@ -42,6 +42,7 @@
 
 <script>
 export default {
+  middleware: 'router-check',
   data () {
     return {
     }

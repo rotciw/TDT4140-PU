@@ -26,6 +26,7 @@
 
 <script>
 export default {
+  middleware: 'router-check',
   methods: {
     hello123 () {
       return 'wassop'
