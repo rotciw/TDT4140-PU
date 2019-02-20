@@ -22,7 +22,6 @@
     <v-container>
       <v-flex xs12>
         <h1
-          primary
           style="text-align: center"
         >
           Velkommen til Trippin Tacos

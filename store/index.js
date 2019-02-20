@@ -29,6 +29,17 @@ export const mutations = {
 }
 // Actions are actions ran by the store. They are callable with this.$store.dispatch('actionnavn')
 export const actions = {
+  // Autosigns in the user if the session is still valid
+  autoSignIn ({ commit }, payload) {
+    firebase.firestore().collection('users').doc(payload.uid).get()
+      .then(user => {
+        user = user.data()
+        commit('setUser', user)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  },
   clearError ({ commit }) {
     commit('clearError')
   },
@@ -37,18 +48,17 @@ export const actions = {
   },
   signUserUp ({ commit }, payload) {
   },
+  // Signs in the user and gets his info from the database
   signUserIn ({ commit }, payload) {
     commit('setLoading', true)
     commit('clearError')
     firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
       .then(user => {
-        console.log(user)
         commit('setLoading', false)
         firebase.firestore().collection('users').doc(user.user.uid).get()
           .then(user => {
             user = user.data()
             commit('setUser', user)
-            console.log(user)
           })
       })
       .catch(error => {

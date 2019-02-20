@@ -4,6 +4,7 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/database'
 
+// Sets up firestore
 let config = {
   apiKey: 'AIzaSyA6qBEDMWc2cJ5Y7xDKKNWiK3XDC9FbaJg',
   authDomain: 'pu30-5b0f9.firebaseapp.com',
