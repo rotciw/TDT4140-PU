@@ -15,7 +15,7 @@
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>Sjef Sjefesen</v-list-tile-title>
+              <v-list-tile-title>{{ firstName }} {{ lastName }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -96,6 +96,16 @@ export default {
       rightDrawer: false,
       test: false,
       title: 'Trippin Tacos'
+    }
+  },
+  computed: {
+    firstName () {
+      if (this.$store.getters.user) return this.$store.getters.user.firstName
+      else return 'Test'
+    },
+    lastName () {
+      if (this.$store.getters.user) return this.$store.getters.user.lastName
+      else return 'Testesen'
     }
   }
 }
