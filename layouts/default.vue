@@ -123,10 +123,12 @@ export default {
   },
   computed: {
     firstName () {
-      return this.$store.state.user.firstName
+      if (this.$store.state.user) return this.$store.state.user.firstName
+      else return 'test'
     },
     lastName () {
-      return this.$store.state.user.lastName
+      if (this.$store.state.user) return this.$store.state.user.lastName
+      else return 'test'
     }
   },
   methods: {

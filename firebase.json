@@ -1,3 +1,4 @@
+/*
 {
   "functions": {
     "predeploy": [
@@ -5,3 +6,24 @@
     ]
   }
 }
+*/
+{
+  "hosting": {
+    "public": "dist",
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "app"
+      }
+    ],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
+  "functions": {
+    "source": "functions"
+  }
+}
+
