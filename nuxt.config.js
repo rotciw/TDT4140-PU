@@ -42,8 +42,8 @@ module.exports = {
   plugins: [
     '@/plugins/vuetify',
     '@/plugins/fireinit',
-    '@/plugins/vue-inject',
-    '@/plugins/logincheck'
+    '@/plugins/vue-inject'
+    // '@/plugins/logincheck'
     // '@/plugins/Configuration'
   ],
 
@@ -55,11 +55,11 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/auth'
   ], */
-  router: {
+  /* router: {
     middleware: 'router-check'
-  },
+  }, */
   /* Envinroment not used at the moment */
-  env: {
+  /* env: {
     FIREBASE_CLIENT_API_KEY: process.env.FIREBASE_CLIENT_API_KEY,
     FIREBASE_CLIENT_AUTH_DOMAIN: process.env.FIREBASE_CLIENT_AUTH_DOMAIN,
     FIREBASE_CLIENT_DATABASE_URL: process.env.FIREBASE_CLIENT_DATABASE_URL,
@@ -67,7 +67,7 @@ module.exports = {
     process.env.FIREBASE_CLIENT_MESSAGING_SENDER_ID,
     FIREBASE_CLIENT_PROJECT_ID: process.env.FIREBASE_CLIENT_PROJECT_ID,
     FIREBASE_CLIENT_STORAGE_BUCKET: process.env.FIREBASE_CLIENT_STORAGE_BUCKET
-  },
+  }, */
   /*
   ** Build configuration
   */
