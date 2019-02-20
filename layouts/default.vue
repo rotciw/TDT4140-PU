@@ -35,6 +35,16 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
+          to="/tableEditor"
+        >
+          <v-list-tile-action>
+            <v-icon>dashboard</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="'bordoversikt'" />
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile
           to="/booking"
         >
           <v-list-tile-action>
