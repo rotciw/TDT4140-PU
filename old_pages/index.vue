@@ -11,10 +11,10 @@
     >
       <v-card>
         <v-card-title class="headline">
-          Her kommer bookingsystemet for ansatte
+          Velkommen til Trippin Tacos
         </v-card-title>
         <v-card-text>
-          <p>Her skal man kunne gjøre mye rart</p>
+          <p>Her skal man kunne se oversikt over hva som skjer</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -25,11 +25,10 @@
 </template>
 
 <script>
+
 export default {
-  methods: {
-    hello123 () {
-      return 'wassop'
-    }
+  mounted () {
+    console.log(this.$store.getters.user)
   }
 }
 </script>
