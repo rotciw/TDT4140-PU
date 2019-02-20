@@ -49,11 +49,14 @@ module.exports = {
   */
   modules: [
   ],
-
+  /* router: {
+    middleware: 'router-check'
+  }, */
   /*
   ** Build configuration
   */
   build: {
+    publicDir: '/public/',
     transpile: ['vuetify/lib'],
     plugins: [new VuetifyLoaderPlugin()],
     loaders: {

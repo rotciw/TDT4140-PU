@@ -9,12 +9,14 @@
       sm8
       md6
     >
+      <div class="text-xs-center">
+      </div>
       <v-card>
         <v-card-title class="headline">
-          Velkommen til Trippin Tacos
+          Her kommer bookingsystemet for ansatte
         </v-card-title>
         <v-card-text>
-          <p>Her skal man kunne se oversikt over hva som skjer</p>
+          <p>Her skal man kunne gjøre mye rart</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -25,10 +27,11 @@
 </template>
 
 <script>
-
 export default {
-  mounted () {
-    console.log(this.$store.getters.user)
+  methods: {
+    hello123 () {
+      return 'wassop'
+    }
   }
 }
 </script>
