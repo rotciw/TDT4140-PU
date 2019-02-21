@@ -67,14 +67,44 @@
           @click="addTable(index)"
         >
           <div class="table-text">
-            <h4 class="text-xs-center">
-              Ledig bordnummer (# {{ index + 1 }})
-            </h4>
+            <div class="text-xs-center">
+              <h3>
+                # {{ index + 1 }}
+              </h3>
+              <h3>
+                <v-icon color="black">
+                  add
+                </v-icon>
+              </h3>
+            </div>
+          </div>
+        </v-btn>
+      </v-flex>
+      <v-flex
+        xs2
+        md2
+      >
+        <v-btn
+          my-2
+          color="green"
+          style="opacity: 0.7"
+          block
+          class="table"
+          @click="addTable(tables.length)"
+        >
+          <div class="table-text">
+            <div class="text-xs-center">
+              <h3>
+                <v-icon color="black">
+                  add
+                </v-icon>
+              </h3>
+            </div>
           </div>
         </v-btn>
       </v-flex>
     </v-layout>
-    <v-layout
+    <!--<v-layout
       column
       justify-center
       align-center
@@ -98,7 +128,7 @@
           </v-btn>
         </div>
       </v-flex>
-    </v-layout>
+    </v-layout>-->
     <add-table
       :key="key"
       :dialog-visible="dialogVisible"
@@ -114,6 +144,7 @@ import AddTable from '../Components/AddTable'
 
 export default {
   components: { AddTable },
+  middleware: 'admin',
   data () {
     return {
       key: 0,
@@ -133,16 +164,19 @@ export default {
   },
   methods: {
     addTable (index) {
-      this.selectedTable.tableID = index + 1
+      this.selectedTable = {
+        tableID: index + 1,
+        capacity: '',
+        currently: 0,
+        occupied: false
+      }
       this.dialogVisible = true
       this.key++
-      console.log(this.tables)
     },
     editTable (table) {
       this.selectedTable = table
       this.dialogVisible = true
       this.key++
-      console.log(this.tables)
     }
   }
 }

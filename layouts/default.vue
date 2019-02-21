@@ -15,7 +15,7 @@
         <v-list class="pa-0">
           <v-list-tile avatar>
             <v-list-tile-avatar>
-              <img src="https://randomuser.me/api/portraits/men/85.jpg">
+              <img src="https://api.adorable.io/avatars/85/trippinT.png">
             </v-list-tile-avatar>
 
             <v-list-tile-content>
@@ -43,7 +43,7 @@
           to="/tableEditor"
         >
           <v-list-tile-action>
-            <v-icon>dashboard</v-icon>
+            <v-icon>add_to_queue</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title v-text="'Legge til/Fjerne bord'" />
@@ -75,8 +75,18 @@
       >
         <v-icon>{{ `chevron_${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
-      <v-toolbar-title v-text="title" />
-      <v-spacer />
+      <v-flex xs2>
+        <nuxt-link
+          to="/dashboard"
+        >
+          <v-img
+            src="logo-long.png"
+            height="50px"
+            position="left left"
+            contain
+          />
+        </nuxt-link>
+      </v-flex>      <v-spacer />
       <v-toolbar-items>
         <v-btn
           flat

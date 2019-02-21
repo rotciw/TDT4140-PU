@@ -11,7 +11,7 @@
       <v-card>
         <v-card-title>
           <span
-            v-if="!table"
+            v-if="!table.capacity"
             class="headline"
           >
             Legg til bord
@@ -64,15 +64,32 @@
             </p>
             <v-spacer />
             <v-btn
-              color="blue darken-1"
+              v-if="tables.includes(table)"
+              color="red"
+              round
+              dark
               flat
-              @click="dialog = false"
+              @click="remove"
             >
-              Lukk
+              <v-icon dark>
+                delete
+              </v-icon>
+              Slett
+            </v-btn>
+            <v-btn
+              color="blue darken-1"
+              dark
+              round
+              flat
+              @click="cancel"
+            >
+              Avbryt
             </v-btn>
             <v-btn
               color="blue darken-1"
               flat
+              round
+              dark
               @click="validate"
             >
               Lagre
@@ -87,12 +104,30 @@
 <script>
 export default {
   name: 'AddTable',
-  props: ['dialogVisible', 'table', 'tableNumber'],
+  props: {
+    dialogVisible: Boolean,
+    table: {
+      type: Object,
+      default: function () {
+        return {
+          tableID: '',
+          capacity: '',
+          currently: 0,
+          occupied: false
+        }
+      }
+    },
+    tableNumber: {
+      type: Number,
+      default: 1
+    }
+  },
   data () {
     return {
       capacityRules: [
         v => !!v || 'Trenger kapasiteten'
       ],
+      confirmDelete: 0,
       dialog: this.dialogVisible,
       error: '',
       newTable: {
@@ -116,23 +151,37 @@ export default {
     if (this.table) {
       this.newTable = this.table
     }
-    console.log(this.newTable)
   },
   methods: {
     cancel () {
       this.dialog = false
       this.$emit('dialogClosed')
     },
+    remove () {
+      this.confirmDelete++
+      if (this.confirmDelete === 1) {
+        this.error = 'Trykk en gang til for å bekrefte at du vil slette bordet'
+      }
+      else if (this.confirmDelete === 2) {
+        if (this.tables.includes(this.table)) {
+          this.$store.dispatch('removeTable', this.table)
+          this.dialog = false
+          this.$emit('dialogClosed')
+        }
+        else this.error = 'Klarte ikke å finne bordet du ville slette'
+        this.confirmDelete = 0
+      }
+    },
     validate () {
-      console.log(this.tables)
-      if (this.$refs.form.validate() && !this.tables[this.newTable.tableID - 1]) {
+      if (this.$refs.form.validate()) {
         // this.$store.dispatch('addTable', this.newTable)
         this.error = ''
         this.dialog = false
+        this.$store.dispatch('updateTable', this.table)
         this.$emit('dialogClosed')
       }
-      else if (this.tables[this.newTable.tableID - 1]) {
-        this.error = 'Det finnes allerede et bord med dette nummeret'
+      else if (this.tables[this.newTable.tableID - 1].occupied) {
+        this.error = 'Bord # ' + this.newTable.tableID + ' er i bruk'
       }
     }
   }

@@ -1,43 +1,10 @@
-/* import firebase from 'firebase/app'
-import 'firebase/firestore'
-import 'firebase/auth'
-
-export const state = () => ({
-  user: null
-})
-
-export const mutations = {
-  setUser (state, payload) {
-    state.user = payload
-  }
-}
-export const actions = {
-  signUserIn ({ commit }, payload) {
-    firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
-      .then(
-        user => {
-          const newUser = {
-            id: user.uid
-          }
-          commit('setUser', newUser)
-        }
-      )
-      .catch(
-        error => {
-          console.log(error)
-        }
-      )
-  }
-}
-export const getters = {
-  user (state) {
-    return state.user
-  }
-} */
 import firebase from 'firebase/app'
 import 'firebase/firestore'
+import Vue from 'vue'
 
 export const state = () => ({
+  admin: false,
+  employee: false,
   error: null,
   loading: false,
   tables: [],
@@ -46,25 +13,39 @@ export const state = () => ({
 
 // Mutations are functions that the store uses to set its atrributes
 export const mutations = {
-  setTables (state, payload) {
-    state.tables = payload
-  },
-  setLoading (state, payload) {
-    state.loading = payload
-  },
-  setUser (state, payload) {
-    state.user = payload
-  },
-  setError (state, payload) {
-    state.error = payload
-  },
   clearError (state, payload) {
     state.error = null
   },
+  // Setter storen til en ren state
   clearState (state) {
-    state.user = null
-    state.loading = false
+    state.admin = false
+    state.employee = false
     state.error = null
+    state.loading = false
+    state.user = null
+    state.tables = []
+  },
+  // Fjerner bordet fra staten
+  removeTable (state, payload) {
+    Vue.set(state.tables, payload.tableID - 1, null)
+  },
+  // Legger til bordet til staten
+  setTable (state, payload) {
+    Vue.set(state.tables, payload.tableID - 1, payload)
+    console.log(state.tables)
+  },
+  // Setter loading som brukes ved innlogging
+  setLoading (state, payload) {
+    state.loading = payload
+  },
+  // Setter brukeren og om han er admin og/eller employee
+  setUser (state, payload) {
+    state.user = payload
+    state.admin = payload.admin
+    state.employee = payload.employee
+  },
+  setError (state, payload) {
+    state.error = payload
   }
 }
 // Actions are actions ran by the store. They are callable with this.$store.dispatch('actionnavn')
@@ -86,20 +67,45 @@ export const actions = {
   clearState ({ commit }) {
     commit('clearState')
   },
+  // Laster inn alle bordene fra databasen
   mountTables ({ commit }) {
-    let newTables = []
     firebase.firestore().collection('tables').get()
       .then(tables => {
         tables.forEach(table => {
           table = table.data()
-          newTables[table.tableID - 1] = table
+          commit('setTable', table)
         })
       })
       .catch(error => {
         console.log('Klarte ikke å mounte bordene')
         console.log(error)
       })
-    commit('setTables', newTables)
+  },
+  // Oppdaterer og legger til bordet
+  updateTable ({ commit }, payload) {
+    commit('setTable', payload)
+    firebase.firestore().collection('tables').doc(payload.tableID + '').set({
+      tableID: payload.tableID,
+      capacity: payload.capacity,
+      currently: payload.currently,
+      occupied: payload.occupied
+    })
+      .catch(error => {
+        console.log('Klarte ikke å oppdatere bord med id ' + payload.tableID)
+        console.log(error)
+      })
+  },
+  // Removes the table from the state and firestore
+  removeTable ({ commit }, payload) {
+    commit('removeTable', payload)
+    firebase.firestore().collection('tables').doc(payload.tableID + '').delete()
+      .then(
+        console.log('Fjernet bord nr ' + payload.tableID)
+      )
+      .catch(error => {
+        console.log('Klarte ikke å slette bordet')
+        console.log(error)
+      })
   },
   signUserUp ({ commit }, payload) {
   },
@@ -137,6 +143,12 @@ export const actions = {
   } }
 // Getters are like the one used in Java to access the stores attributes.
 export const getters = {
+  admin (state) {
+    return state.admin
+  },
+  employee (state) {
+    return state.employee
+  },
   error (state) {
     return state.error
   },

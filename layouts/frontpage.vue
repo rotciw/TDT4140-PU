@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-toolbar>
-      <v-flex 2>
+      <v-flex xs2>
         <nuxt-link
           to="/"
         >
