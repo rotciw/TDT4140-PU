@@ -32,7 +32,6 @@ export const mutations = {
   // Legger til bordet til staten
   setTable (state, payload) {
     Vue.set(state.tables, payload.tableID - 1, payload)
-    console.log(state.tables)
   },
   // Setter loading som brukes ved innlogging
   setLoading (state, payload) {
@@ -133,6 +132,7 @@ export const actions = {
     firebase.auth().signOut()
       .then(user => {
         commit('clearState')
+        commit('setLoading', false)
       })
       // Sign-out successful.
       .catch(error => {
