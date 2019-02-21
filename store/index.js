@@ -38,13 +38,17 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 
 export const state = () => ({
-  user: null,
+  error: null,
   loading: false,
-  error: null
+  tables: [],
+  user: null
 })
 
 // Mutations are functions that the store uses to set its atrributes
 export const mutations = {
+  setTables (state, payload) {
+    state.tables = payload
+  },
   setLoading (state, payload) {
     state.loading = payload
   },
@@ -82,6 +86,21 @@ export const actions = {
   clearState ({ commit }) {
     commit('clearState')
   },
+  mountTables ({ commit }) {
+    let newTables = []
+    firebase.firestore().collection('tables').get()
+      .then(tables => {
+        tables.forEach(table => {
+          table = table.data()
+          newTables[table.tableID - 1] = table
+        })
+      })
+      .catch(error => {
+        console.log('Klarte ikke å mounte bordene')
+        console.log(error)
+      })
+    commit('setTables', newTables)
+  },
   signUserUp ({ commit }, payload) {
   },
   // Signs in the user and gets his info from the database
@@ -111,5 +130,8 @@ export const getters = {
   },
   user (state) {
     return state.user
+  },
+  tables (state) {
+    return state.tables
   }
 }

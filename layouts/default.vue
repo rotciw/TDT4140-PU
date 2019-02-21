@@ -68,7 +68,18 @@
       >
         <v-icon>{{ `chevron_${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
-      <v-toolbar-title v-text="title" />
+      <v-flex xs2>
+        <nuxt-link
+          to="/dashboard"
+        >
+          <v-img
+            src="logo-long.png"
+            height="50px"
+            position="left left"
+            contain
+          />
+        </nuxt-link>
+      </v-flex>
     </v-toolbar>
     <v-content>
       <v-container>
