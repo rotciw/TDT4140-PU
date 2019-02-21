@@ -76,6 +76,15 @@
         <v-icon>{{ `chevron_${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
+      <v-spacer />
+      <v-toolbar-items>
+        <v-btn
+          flat
+          @click="signOut"
+        >
+          Logg ut
+        </v-btn>
+      </v-toolbar-items>
     </v-toolbar>
     <v-content class="bgColor">
       <v-container>
@@ -128,6 +137,15 @@ export default {
     lastName () {
       if (this.$store.getters.user) return this.$store.getters.user.lastName
       else return 'Testesen'
+    }
+  },
+  methods: {
+    signOut () {
+      this.$store.dispatch('signUserOut')
+      this.$router.push('/login')
+      // TODO: Make sure it signs out
+      // this.$store.dispatch('clearState')
+      console.log(this.$store.state)
     }
   }
 }
