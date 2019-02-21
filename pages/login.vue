@@ -43,6 +43,7 @@
             </v-card-text>
             <div class="text-xs-center">
               <v-btn
+                id="loginBtn"
                 type="submit"
                 :disabled="loading"
                 :loading="loading"

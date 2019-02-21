@@ -12,10 +12,11 @@ cache:
   paths:
     - node_modules/
 
-job 1:
+generate:
   stage: build
   script:
     - npm run generate
+
 
 deploy_production:
   stage: deploy
