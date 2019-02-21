@@ -8,6 +8,8 @@ Alle store endringer på prosjektet vil bli dokumentert her,
 * Firebase
 * Mulighet for å logge inn
 * Mulighet for å logge ut
+* Mulighet for å legge til bord
+* Mulighet for å fjerne bord
 
 # v1.0.8
 Brukere med admin tilgang kan nå slette og legge til bord.
