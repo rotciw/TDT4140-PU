@@ -17,10 +17,6 @@ generate:
   script:
     - npm run generate
 
-test:
-  stage: test
-  script:
-    - test
 
 deploy_production:
   stage: deploy
