@@ -2,6 +2,7 @@
   <v-app>
     <v-navigation-drawer
       v-model="drawer"
+      dark
       :mini-variant="miniVariant"
       :clipped="clipped"
       fixed
@@ -25,7 +26,9 @@
       </v-toolbar>
       <v-list>
         <v-list-tile
-          to="/"
+          class="tile"
+          active-class="grey--text"
+          to="/dashboard"
         >
           <v-list-tile-action>
             <v-icon>dashboard</v-icon>
@@ -35,16 +38,20 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
+          class="tile"
+          active-class="grey--text"
           to="/tableEditor"
         >
           <v-list-tile-action>
             <v-icon>dashboard</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title v-text="'bordoversikt'" />
+            <v-list-tile-title v-text="'Legge til/Fjerne bord'" />
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
+          class="tile"
+          active-class="grey--text"
           to="/booking"
         >
           <v-list-tile-action>
@@ -68,20 +75,18 @@
       >
         <v-icon>{{ `chevron_${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
-      <v-flex xs2>
-        <nuxt-link
-          to="/dashboard"
+      <v-toolbar-title v-text="title" />
+      <v-spacer />
+      <v-toolbar-items>
+        <v-btn
+          flat
+          @click="signOut"
         >
-          <v-img
-            src="logo-long.png"
-            height="50px"
-            position="left left"
-            contain
-          />
-        </nuxt-link>
-      </v-flex>
+          Logg ut
+        </v-btn>
+      </v-toolbar-items>
     </v-toolbar>
-    <v-content>
+    <v-content class="bgColor">
       <v-container>
         <nuxt />
       </v-container>
@@ -89,21 +94,23 @@
     <v-footer
       :fixed="fixed"
       app
+      height="auto"
+      color="#f5f5f5"
+      inset
     >
-      <span>
-        <v-layout
-          row
-          flex
-          justify-center
+      <v-layout
+        row
+        flex
+        justify-center
+      >
+        <v-flex
+          py-3
+          text-xs-center
+          xs12
         >
-          <v-flex
-            xs12
-            sm12
-          >
-            &copy; PU-Gruppe 30 2019
-          </v-flex>
-        </v-layout>
-      </span>
+          &copy; 2019 <strong>PU-Gruppe 30</strong>
+        </v-flex>
+      </v-layout>
     </v-footer>
   </v-app>
 </template>
@@ -131,6 +138,31 @@ export default {
       if (this.$store.getters.user) return this.$store.getters.user.lastName
       else return 'Testesen'
     }
+  },
+  methods: {
+    signOut () {
+      this.$store.dispatch('signUserOut')
+      this.$router.push('/login')
+      // TODO: Make sure it signs out
+      // this.$store.dispatch('clearState')
+      console.log(this.$store.state)
+    }
   }
 }
 </script>
+
+<style>
+  .bgColor {
+    background-color: #D1DFD2;
+  }
+  .tile {
+    margin: 5px;
+    border-radius: 4px;
+  }
+  .tile:hover {
+    background: #444645;
+  }
+  .tile:active {
+    color: yellow;
+  }
+</style>

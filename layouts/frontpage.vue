@@ -24,7 +24,7 @@
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
-    <v-content>
+    <v-content class="bgColor">
       <v-container>
         <nuxt />
       </v-container>
@@ -38,5 +38,7 @@ export default {
 </script>
 
 <style scoped>
-
+  .bgColor {
+    background-color: #D1DFD2;
+  }
 </style>

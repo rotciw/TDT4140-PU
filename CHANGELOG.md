@@ -7,3 +7,13 @@ Alle store endringer på prosjektet vil bli dokumentert her,
 * Ny forside
 * Firebase
 * Mulighet for å logge inn
+* Mulighet for å logge ut
+
+# v1.0.7 21.02.2019
+* Mulighet for å logge ut
+
+# v1.0.6 21.02.2019
+Nuxt generate og ci/cd fungerer
+### Lagt til
+* Ryddet i mappestrukturen
+* Bygget prosjektet fra bunnen av på nytt
