@@ -9,6 +9,10 @@ Alle store endringer på prosjektet vil bli dokumentert her,
 * Mulighet for å logge inn
 * Mulighet for å logge ut
 
+# v1.0.8
+Brukere med admin tilgang kan nå slette og legge til bord.
+Bordene lastes og slettes via storen.
+
 # v1.0.7 21.02.2019
 * Mulighet for å logge ut
 

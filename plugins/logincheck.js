@@ -6,6 +6,7 @@ export default ({ app: { store, router } }) => {
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
       store.dispatch('autoSignIn', user)
+      store.dispatch('mountTables')
     }
   })
 }

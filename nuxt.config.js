@@ -53,7 +53,7 @@ module.exports = {
   ** Build configuration
   */
   build: {
-    buildDir: '/public/',
+    publicPath: '/public/',
     transpile: ['vuetify/lib'],
     plugins: [new VuetifyLoaderPlugin()],
     loaders: {

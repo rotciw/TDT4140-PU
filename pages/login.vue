@@ -103,9 +103,6 @@ export default {
       this.snackbar = true
     }
   },
-  mounted () {
-    console.log(this.$store.state)
-  },
   methods: {
     onDismissed () {
       this.$store.dispatch('clearError')
@@ -113,6 +110,7 @@ export default {
     },
     onSignin () {
       this.$store.dispatch('signUserIn', { email: this.email, password: this.password })
+      this.$store.dispatch('mountTables')
     }
   }
 }
