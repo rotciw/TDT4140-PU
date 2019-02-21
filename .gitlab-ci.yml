@@ -20,7 +20,7 @@ generate:
 test:
   stage: test
   script:
-    - jest
+    - test
 
 deploy_production:
   stage: deploy
