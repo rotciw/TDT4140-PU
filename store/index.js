@@ -65,8 +65,20 @@ export const actions = {
         commit('setError', error)
         console.log(error)
       })
-  }
-}
+  },
+  signUserOut ({ commit }) {
+    commit('setLoading', true)
+    firebase.auth().signOut()
+      .then(user => {
+        commit('clearState')
+      })
+      // Sign-out successful.
+      .catch(error => {
+        commit('setLoading', false)
+        commit('setError', error)
+        console.log(error)
+      })
+  } }
 // Getters are like the one used in Java to access the stores attributes.
 export const getters = {
   error (state) {

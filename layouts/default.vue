@@ -131,7 +131,8 @@ export default {
   },
   methods: {
     signOut () {
-      this.$router.push('/')
+      this.$store.dispatch('signUserOut')
+      this.$router.push('/login')
       // TODO: Make sure it signs out
       // this.$store.dispatch('clearState')
       console.log(this.$store.state)
