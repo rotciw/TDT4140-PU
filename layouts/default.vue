@@ -2,6 +2,7 @@
   <v-app>
     <v-navigation-drawer
       v-model="drawer"
+      dark
       :mini-variant="miniVariant"
       :clipped="clipped"
       fixed
@@ -25,7 +26,9 @@
       </v-toolbar>
       <v-list>
         <v-list-tile
-          to="/"
+          class="tile"
+          active-class="grey--text"
+          to="/dashboard"
         >
           <v-list-tile-action>
             <v-icon>dashboard</v-icon>
@@ -35,16 +38,20 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
+          class="tile"
+          active-class="grey--text"
           to="/tableEditor"
         >
           <v-list-tile-action>
             <v-icon>dashboard</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title v-text="'bordoversikt'" />
+            <v-list-tile-title v-text="'Legge til/Fjerne bord'" />
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
+          class="tile"
+          active-class="grey--text"
           to="/booking"
         >
           <v-list-tile-action>
@@ -70,7 +77,7 @@
       </v-btn>
       <v-toolbar-title v-text="title" />
     </v-toolbar>
-    <v-content>
+    <v-content class="bgColor">
       <v-container>
         <nuxt />
       </v-container>
@@ -78,21 +85,23 @@
     <v-footer
       :fixed="fixed"
       app
+      height="auto"
+      color="#f5f5f5"
+      inset
     >
-      <span>
-        <v-layout
-          row
-          flex
-          justify-center
+      <v-layout
+        row
+        flex
+        justify-center
+      >
+        <v-flex
+          py-3
+          text-xs-center
+          xs12
         >
-          <v-flex
-            xs12
-            sm12
-          >
-            &copy; PU-Gruppe 30 2019
-          </v-flex>
-        </v-layout>
-      </span>
+          &copy; 2019 <strong>PU-Gruppe 30</strong>
+        </v-flex>
+      </v-layout>
     </v-footer>
   </v-app>
 </template>
@@ -123,3 +132,19 @@ export default {
   }
 }
 </script>
+
+<style>
+  .bgColor {
+    background-color: #D1DFD2;
+  }
+  .tile {
+    margin: 5px;
+    border-radius: 4px;
+  }
+  .tile:hover {
+    background: #444645;
+  }
+  .tile:active {
+    color: yellow;
+  }
+</style>

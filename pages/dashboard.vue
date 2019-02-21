@@ -7,15 +7,6 @@
           sm6
           offset-sm3
         >
-          <v-layout row>
-            <v-flex xs12>
-              <v-img
-                src="logo-long.png"
-                height="225"
-                contain
-              />
-            </v-flex>
-          </v-layout>
           <v-layout
             row
             justify-center
@@ -23,11 +14,12 @@
             <v-flex xs5>
               <div style="text-align: center">
                 <v-btn
-                  dark
                   large
+                  dark
                   color="#444645"
                   block
                   class="roundedCorners"
+                  @click="$router.push('/tableEditor')"
                 >
                   Legge til/fjerne bord
                 </v-btn>
@@ -55,8 +47,8 @@ export default {
 
 <style scoped>
   .roundedCorners {
-    height:150px;
-    width:250px;
+    height:70px;
+    width: 250px;
     border-radius: 0px 18px 0px 18px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }

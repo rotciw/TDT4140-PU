@@ -59,4 +59,7 @@ export default {
   .carousel{
     margin: 0;
   }
+  .bgColor {
+    background-color: #D1DFD2;
+  }
 </style>

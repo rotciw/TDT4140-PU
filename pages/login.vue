@@ -7,7 +7,7 @@
     >
       <img
         src="logo-long.png"
-        height="200px"
+        height="150px"
         contain
         style="margin-bottom:50px"
       >
