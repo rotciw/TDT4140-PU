@@ -9,6 +9,8 @@
       sm8
       md6
     >
+      <div class="text-xs-center">
+      </div>
       <v-card>
         <v-card-title class="headline">
           Her kommer bookingsystemet for ansatte
@@ -26,7 +28,6 @@
 
 <script>
 export default {
-  middleware: 'router-check',
   methods: {
     hello123 () {
       return 'wassop'

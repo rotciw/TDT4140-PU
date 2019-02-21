@@ -35,6 +35,16 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
+          to="/tableEditor"
+        >
+          <v-list-tile-action>
+            <v-icon>dashboard</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="'bordoversikt'" />
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile
           to="/booking"
         >
           <v-list-tile-action>
@@ -42,16 +52,6 @@
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title v-text="'Bookingsystem'" />
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile
-          to="/settings"
-        >
-          <v-list-tile-action>
-            <v-icon>settings</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title v-text="'Instilliner'" />
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -79,7 +79,7 @@
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
-    <v-content class="bgColor">
+    <v-content>
       <v-container>
         <nuxt />
       </v-container>
@@ -123,10 +123,12 @@ export default {
   },
   computed: {
     firstName () {
-      return this.$store.state.user.firstName
+      if (this.$store.getters.user) return this.$store.getters.user.firstName
+      else return 'Test'
     },
     lastName () {
-      return this.$store.state.user.lastName
+      if (this.$store.getters.user) return this.$store.getters.user.lastName
+      else return 'Testesen'
     }
   },
   methods: {

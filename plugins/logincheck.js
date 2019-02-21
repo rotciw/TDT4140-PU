@@ -1,4 +1,5 @@
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
 // Checks if the user already logged in and the token is still active
 export default ({ app: { store, router } }) => {

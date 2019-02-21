@@ -16,6 +16,7 @@
 
 <script>
 export default {
+  middleware: 'router-check'
 }
 </script>
 
