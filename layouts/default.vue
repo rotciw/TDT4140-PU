@@ -25,7 +25,7 @@
       </v-toolbar>
       <v-list>
         <v-list-tile
-          to="/"
+          to="/dashboard"
         >
           <v-list-tile-action>
             <v-icon>dashboard</v-icon>
@@ -69,6 +69,15 @@
         <v-icon>{{ `chevron_${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
+      <v-spacer />
+      <v-toolbar-items>
+        <v-btn
+          flat
+          @click="signOut"
+        >
+          Logg ut
+        </v-btn>
+      </v-toolbar-items>
     </v-toolbar>
     <v-content>
       <v-container>
@@ -88,6 +97,7 @@
           <v-flex
             xs12
             sm12
+            style="text-align: center"
           >
             &copy; PU-Gruppe 30 2019
           </v-flex>
@@ -120,6 +130,21 @@ export default {
       if (this.$store.getters.user) return this.$store.getters.user.lastName
       else return 'Testesen'
     }
+  },
+  methods: {
+    signOut () {
+      this.$store.dispatch('signUserOut')
+      this.$router.push('/login')
+      // TODO: Make sure it signs out
+      // this.$store.dispatch('clearState')
+      console.log(this.$store.state)
+    }
   }
 }
 </script>
+
+<style>
+  .bgColor{
+    background-color: #D1DFD2;
+  }
+</style>
