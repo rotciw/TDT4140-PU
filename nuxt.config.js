@@ -48,16 +48,12 @@ module.exports = {
   /*
   ** Nuxt.js modules
   */
-  modules: [
-  ],
-  /* router: {
-    middleware: 'router-check'
-  }, */
+  // Used for authentication
   /*
   ** Build configuration
   */
   build: {
-    publicDir: '/public/',
+    buildDir: '/public/',
     transpile: ['vuetify/lib'],
     plugins: [new VuetifyLoaderPlugin()],
     loaders: {
