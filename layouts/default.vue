@@ -25,7 +25,7 @@
       </v-toolbar>
       <v-list>
         <v-list-tile
-          to="/dashboard"
+          to="/"
         >
           <v-list-tile-action>
             <v-icon>dashboard</v-icon>
@@ -54,16 +54,6 @@
             <v-list-tile-title v-text="'Bookingsystem'" />
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile
-          to="/settings"
-        >
-          <v-list-tile-action>
-            <v-icon>settings</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title v-text="'Instilliner'" />
-          </v-list-tile-content>
-        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
@@ -79,17 +69,8 @@
         <v-icon>{{ `chevron_${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
-      <v-spacer />
-      <v-toolbar-items>
-        <v-btn
-          flat
-          @click="signOut"
-        >
-          Logg ut
-        </v-btn>
-      </v-toolbar-items>
     </v-toolbar>
-    <v-content class="bgColor">
+    <v-content>
       <v-container>
         <nuxt />
       </v-container>
@@ -107,7 +88,6 @@
           <v-flex
             xs12
             sm12
-            style="text-align: center"
           >
             &copy; PU-Gruppe 30 2019
           </v-flex>
@@ -133,25 +113,13 @@ export default {
   },
   computed: {
     firstName () {
-      return this.$store.state.user.firstName
+      if (this.$store.getters.user) return this.$store.getters.user.firstName
+      else return 'Test'
     },
     lastName () {
-      return this.$store.state.user.lastName
-    }
-  },
-  methods: {
-    signOut () {
-      this.$router.push('/')
-      // TODO: Make sure it signs out
-      // this.$store.dispatch('clearState')
-      console.log(this.$store.state)
+      if (this.$store.getters.user) return this.$store.getters.user.lastName
+      else return 'Testesen'
     }
   }
 }
 </script>
-
-<style>
-  .bgColor{
-    background-color: #D1DFD2;
-  }
-</style>
