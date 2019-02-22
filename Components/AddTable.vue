@@ -180,6 +180,7 @@ export default {
       if (this.$refs.form.validate()) {
         this.error = ''
         this.dialog = false
+        this.$store.dispatch('removeTable', this.table)
         this.$store.dispatch('updateTable', this.newTable)
         this.$emit('dialogClosed')
       }
