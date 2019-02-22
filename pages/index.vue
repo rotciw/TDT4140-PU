@@ -1,94 +1,65 @@
 <template>
-  <v-layout
-    column
-    justify-center
-    align-center
-  >
-    <v-flex
-      xs12
-      sm8
-      md6
+  <div>
+    <v-layout
+      row
+      fill-height
     >
-      <div class="text-xs-center">
-        <logo />
-        <vuetify-logo />
-      </div>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-          Gruppe 30
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-          >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            flat
-            nuxt
-            to="/inspire"
-          >
-            Continue
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-flex>
-  </v-layout>
+      <v-flex xs12>
+        <v-carousel
+          height="400px"
+          class="carousel"
+        >
+          <v-carousel-item
+            v-for="(item,i) in items"
+            :key="i"
+            :src="item.src"
+            hide-controls
+            hide-delimiters
+          />
+        </v-carousel>
+      </v-flex>
+    </v-layout>
+    <v-container>
+      <v-flex xs12>
+        <h1
+          style="text-align: center"
+        >
+          Velkommen til Trippin Tacos
+        </h1>
+      </v-flex>
+    </v-container>
+  </div>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-import VuetifyLogo from '~/components/VuetifyLogo.vue'
 
 export default {
-  components: {
-    Logo,
-    VuetifyLogo
+  layout: 'frontpage',
+  data () {
+    return {
+      items: [
+        {
+          src: 'buffet-food-lunch-5944.jpg'
+        },
+        {
+          src: 'burrito-chicken-close-up-461198.jpg'
+        }
+      ]
+    }
+  },
+  methods: {
+    hello123 () {
+      return 'wassop'
+    }
   }
 }
 </script>
+
+<style scoped>
+  .carousel{
+    margin: 0;
+  }
+  .bgColor {
+    background-color: #D1DFD2;
+  }
+</style>

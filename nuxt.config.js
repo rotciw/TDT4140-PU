@@ -8,7 +8,7 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: pkg.name,
+    title: 'Trippin Tacos',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -40,19 +40,20 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '@/plugins/vuetify'
+    '@/plugins/vuetify',
+    '@/plugins/fireinit',
+    '@/plugins/logincheck'
   ],
 
   /*
   ** Nuxt.js modules
   */
-  modules: [
-  ],
-
+  // Used for authentication
   /*
   ** Build configuration
   */
   build: {
+    publicPath: '/public/',
     transpile: ['vuetify/lib'],
     plugins: [new VuetifyLoaderPlugin()],
     loaders: {

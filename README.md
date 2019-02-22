@@ -1,22 +1,16 @@
-# gruppe-30
+# Restaurantsystem for Trippin Tacos
+### Dette er en beskrivelse av systemet til trippin tacos
+Laget av Jesper Paulsen, Maria Brenna, Mathilde Tillman Hegdal, Olav Falck-Pedersen, Una Førde Schjetne og Wictor Zhao
 
-> Gruppeprosjekt i programvareutvikling.
 
-## Build Setup
+## Kommandoer
+* For å installere avhengigheter kjør: "npm install"
+* For å utvikle med hot reload: "npm run dev"
+* For å generere statisk prosjekt: "npm generate"
+* For å deploye hosting og functions til nettsiden: "firebase deploy"
+  * Kun hosting: firebase deploy --only hosting
+  * Kun cloud functions: firebase deploy --only functions
+  * Teste cloud functions med f.eks Postman: firebase serve --only functions
 
-``` bash
-# install dependencies
-$ npm install
-
-# serve with hot reload at localhost:3000
-$ npm run dev
-
-# build for production and launch server
-$ npm run build
-$ npm start
-
-# generate static project
-$ npm run generate
-```
-
-For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).
+## Versjoner:
+Les mer om versjonene [her](CHANGELOG.md)
