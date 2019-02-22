@@ -11,6 +11,11 @@ Alle store endringer på prosjektet vil bli dokumentert her,
 * Mulighet for å legge til bord
 * Mulighet for å fjerne bord
 
+### Hotfixes
+* La til kommentarer
+* Fikset problem hvor login knappen forsvant pga v-if="!user"
+* Fikset problem hvor bord ble mutert i stedet for å bli kopiert i AddTable. Dette løste at man ikke lenger fikk feilmelding når man endret bordet, og at det ikke er mulig å opprette bord uten å oppgi bordnummer eller kapasitet.
+
 # v1.0.9
 Storen blir nå testet
 
