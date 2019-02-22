@@ -32,7 +32,6 @@ export const mutations = {
   // Legger til bordet til staten
   setTable (state, payload) {
     Vue.set(state.tables, payload.tableID - 1, payload)
-    console.log(state.tables)
   },
   // Setter loading som brukes ved innlogging
   setLoading (state, payload) {
@@ -51,11 +50,12 @@ export const mutations = {
 // Actions are actions ran by the store. They are callable with this.$store.dispatch('actionnavn')
 export const actions = {
   // Autosigns in the user if the session is still valid
-  autoSignIn ({ commit }, payload) {
+  autoSignIn ({ commit, dispatch }, payload) {
     firebase.firestore().collection('users').doc(payload.uid).get()
       .then(user => {
         user = user.data()
         commit('setUser', user)
+        dispatch('mountTables')
       })
       .catch(error => {
         console.log(error)
@@ -110,7 +110,7 @@ export const actions = {
   signUserUp ({ commit }, payload) {
   },
   // Signs in the user and gets his info from the database
-  signUserIn ({ commit }, payload) {
+  signUserIn ({ commit, dispatch }, payload) {
     commit('setLoading', true)
     commit('clearError')
     firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
@@ -120,6 +120,7 @@ export const actions = {
           .then(user => {
             user = user.data()
             commit('setUser', user)
+            dispatch('mountTables')
           })
       })
       .catch(error => {
@@ -133,6 +134,7 @@ export const actions = {
     firebase.auth().signOut()
       .then(user => {
         commit('clearState')
+        commit('setLoading', false)
       })
       // Sign-out successful.
       .catch(error => {
@@ -151,6 +153,9 @@ export const getters = {
   },
   error (state) {
     return state.error
+  },
+  loading (state) {
+    return state.loading
   },
   user (state) {
     return state.user

@@ -11,6 +11,9 @@ Alle store endringer på prosjektet vil bli dokumentert her,
 * Mulighet for å legge til bord
 * Mulighet for å fjerne bord
 
+# v1.0.9
+Storen blir nå testet
+
 # v1.0.8
 Brukere med admin tilgang kan nå slette og legge til bord.
 Bordene lastes og slettes via storen.
