@@ -17,6 +17,12 @@ generate:
   script:
     - npm run generate
 
+test:
+  stage: test
+  script:
+    - npm install -g jest
+    - npm install -g vue-jest
+    - npm test -- 'tests'
 
 deploy_production:
   stage: deploy
