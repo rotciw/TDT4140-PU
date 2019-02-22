@@ -83,13 +83,13 @@ export const actions = {
   },
   // Oppdaterer og legger til bordet
   updateTable ({ commit }, payload) {
-    commit('setTable', payload)
     firebase.firestore().collection('tables').doc(payload.tableID + '').set({
       tableID: payload.tableID,
       capacity: payload.capacity,
       currently: payload.currently,
       occupied: payload.occupied
     })
+      .then(commit('setTable', payload))
       .catch(error => {
         console.log('Klarte ikke å oppdatere bord med id ' + payload.tableID)
         console.log(error)
