@@ -8,9 +8,8 @@ export const state = () => ({
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
   tables: [], // Holder alle bordene til restauranten
-  user: null // Holder brukeren
+  user: null, // Holder brukeren
   reservations: [] // Holder alle reservasjonene
-  store/index.js
 })
 
 // Mutations are functions that the store uses to set its atrributes
