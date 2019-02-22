@@ -8,7 +8,8 @@ export const state = () => ({
   error: null,
   loading: false,
   tables: [],
-  user: null
+  user: null,
+  reservations: []
 })
 
 // Mutations are functions that the store uses to set its atrributes
@@ -24,6 +25,7 @@ export const mutations = {
     state.loading = false
     state.user = null
     state.tables = []
+    state.reservations = []
   },
   // Fjerner bordet fra staten
   removeTable (state, payload) {
@@ -45,6 +47,9 @@ export const mutations = {
   },
   setError (state, payload) {
     state.error = payload
+  },
+  setReservation (state, payload) {
+    Vue.set(state.reservations, payload.reservationID - 1, payload)
   }
 }
 // Actions are actions ran by the store. They are callable with this.$store.dispatch('actionnavn')
@@ -66,6 +71,35 @@ export const actions = {
   },
   clearState ({ commit }) {
     commit('clearState')
+  },
+  // Laster inn alle reservasjoner fra databasen
+  mountReservations ({ commit }) {
+    firebase.firestore().collection('reservations').get()
+      .then(reservations => {
+        reservations.forEach(reservation => {
+          reservation = reservation.data()
+          if (reservation.userID.length > 0) {
+            firebase.firestore().collection('users')
+              .doc(reservation.userID + '').get()
+              .then(user => {
+                reservation.user = user.data()
+                commit('setReservation', reservation)
+              })
+          }
+          else if (reservation.guestID.length > 0) {
+            firebase.firestore().collection('guestUsers')
+              .doc(reservation.guestID + '').get()
+              .then(user => {
+                reservation.user = user.data()
+                commit('setReservation', reservation)
+              })
+          }
+        })
+      })
+      .catch(error => {
+        console.log('Klarte ikke å mounte reservasjoner')
+        console.log(error)
+      })
   },
   // Laster inn alle bordene fra databasen
   mountTables ({ commit }) {
@@ -121,6 +155,7 @@ export const actions = {
             user = user.data()
             commit('setUser', user)
             dispatch('mountTables')
+            dispatch('mountReservations')
           })
       })
       .catch(error => {
@@ -162,5 +197,8 @@ export const getters = {
   },
   tables (state) {
     return state.tables
+  },
+  reservations (state) {
+    return state.reservations
   }
 }

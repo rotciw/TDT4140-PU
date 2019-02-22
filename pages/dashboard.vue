@@ -26,6 +26,25 @@
               </div>
             </v-flex>
           </v-layout>
+          <v-layout
+            row
+            justify-center
+          >
+            <v-flex xs5>
+              <div style="text-align: center">
+                <v-btn
+                  large
+                  dark
+                  color="#444645"
+                  block
+                  class="roundedCorners"
+                  @click="$router.push('/allreservations')"
+                >
+                  Oversikt over reservasjoner
+                </v-btn>
+              </div>
+            </v-flex>
+          </v-layout>
         </v-flex>
       </v-layout>
     </v-container>
