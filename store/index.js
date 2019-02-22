@@ -1,6 +1,7 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 import Vue from 'vue'
+import moment from 'moment'
 
 export const state = () => ({
   admin: false, // Sier om brukeren er admin eller ikke
@@ -8,6 +9,7 @@ export const state = () => ({
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
   tables: [], // Holder alle bordene til restauranten
+  todaysTables: [], // Holder alle bordene samt alle reservasjonene disse bordene har i dag
   user: null, // Holder brukeren
   reservations: [] // Holder alle reservasjonene
 })
@@ -24,9 +26,10 @@ export const mutations = {
     state.employee = false
     state.error = null
     state.loading = false
-    state.user = null
-    state.tables = []
     state.reservations = []
+    state.tables = []
+    state.todaysTables = []
+    state.user = null
   },
   // Fjerner bordet fra staten
   removeTable (state, payload) {
@@ -35,6 +38,10 @@ export const mutations = {
   // Legger til bordet til staten
   setTable (state, payload) {
     Vue.set(state.tables, payload.tableID - 1, payload)
+  },
+  // Legger til bord med dagens reservasjoner
+  setTodaysTable (state, payload) {
+    Vue.set(state.todaysTables, payload.tableID - 1, payload)
   },
   // Setter loading som brukes ved innlogging
   setLoading (state, payload) {
@@ -120,6 +127,36 @@ export const actions = {
         console.log(error)
       })
   },
+  mountTodaysTablesWithReservations ({ commit, state }) {
+    let tomorrow = moment().endOf('day').unix()
+    // let yesterday = moment().startOf('day').unix
+    state.tables.forEach(table => {
+      let newTable = table
+      firebase.firestore().collection('reservations')
+        .where('tableID', '==', newTable.tableID)
+        .orderBy('startTime')
+        .get()
+        .then(reservations => {
+          reservations.forEach(reservation => {
+            let now = moment().unix()
+            reservation = reservation.data()
+            newTable.reservations = []
+            if (reservation.endTime < tomorrow && reservation.startTime > now) newTable.reservations.push(reservation)
+            if (reservation.endTime >= now && reservation.startTime <= now) {
+              newTable.reservations.push(reservation)
+              newTable.occupied = true
+              newTable.currently = reservation.numberOfPeople
+            }
+            else {
+              newTable.occupied = false
+              newTable.currently = 0
+            }
+            console.log(newTable)
+          })
+        })
+      commit('setTable', newTable)
+    })
+  },
   // Oppdaterer og legger til bordet
   updateTable ({ commit }, payload) {
     firebase.firestore().collection('tables').doc(payload.tableID + '').set({
@@ -202,6 +239,9 @@ export const getters = {
   },
   tables (state) {
     return state.tables
+  },
+  todaysTables (state) {
+    return state.todaysTables
   },
   reservations (state) {
     return state.reservations
