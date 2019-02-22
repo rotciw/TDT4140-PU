@@ -27,7 +27,7 @@
       <v-list>
         <v-list-tile
           class="tile"
-          active-class="grey--text"
+          active-class="background-color: green"
           to="/dashboard"
         >
           <v-list-tile-action>
@@ -38,8 +38,9 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
+          v-if="admin"
           class="tile"
-          active-class="grey--text"
+          active-class="background-color: green"
           to="/tableEditor"
         >
           <v-list-tile-action>
@@ -51,7 +52,7 @@
         </v-list-tile>
         <v-list-tile
           class="tile"
-          active-class="grey--text"
+          active-class="background-color: green"
           to="/booking"
         >
           <v-list-tile-action>
@@ -147,6 +148,9 @@ export default {
     lastName () {
       if (this.$store.getters.user) return this.$store.getters.user.lastName
       else return 'Testesen'
+    },
+    admin () {
+      return this.$store.getters.admin
     }
   },
   methods: {
@@ -170,9 +174,10 @@ export default {
     border-radius: 4px;
   }
   .tile:hover {
-    background: #444645;
+    background-color: green;
   }
   .tile:active {
-    color: yellow;
+    background-color: green;
+    color: green;
   }
 </style>
