@@ -26,7 +26,7 @@
                 class="roundedCorners"
                 prepend-inner-icon="person"
                 name="login"
-                label="email"
+                label="Email"
                 type="email"
                 required
               />
