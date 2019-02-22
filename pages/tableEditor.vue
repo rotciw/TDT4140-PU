@@ -60,7 +60,7 @@
         <v-btn
           v-else
           my-2
-          color="green"
+          color="grey"
           style="opacity: 0.7"
           block
           class="table"
@@ -86,7 +86,7 @@
       >
         <v-btn
           my-2
-          color="green"
+          color="grey"
           style="opacity: 0.7"
           block
           class="table"
