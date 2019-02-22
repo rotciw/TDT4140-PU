@@ -26,7 +26,6 @@
         <v-form
           ref="form"
           v-model="valid"
-          lazy-validation
         >
           <v-card-text>
             <v-container grid-list-md>
@@ -124,64 +123,66 @@ export default {
   },
   data () {
     return {
+      // Regler som definerer kapasiteten
       capacityRules: [
         v => !!v || 'Trenger kapasiteten'
       ],
-      confirmDelete: 0,
-      dialog: this.dialogVisible,
-      error: '',
-      newTable: {
+      confirmDelete: 0, // Brukes for å bekrefte at en ønsker å slette et bord
+      dialog: this.dialogVisible, // Brukes for å si om dialogen skal være synlig
+      error: '', // Setter feilmelding
+      newTable: { // Definerer et nytt bord
         tableID: '',
         capacity: '',
         currently: 0,
         occupied: false
       },
-      numberRules: [
+      numberRules: [ // Regel for nordnummer
         v => !!v || 'Trenger bord id'
       ],
-      valid: false
+      valid: false // Om det brukeren har skrevet er valid eller ei
     }
   },
-  computed: {
+  computed: { // Returnerer bordene fra storen
     tables () {
       return this.$store.getters.tables
     }
   },
+  // Lager en kopi av bordet vi får inn for å unngå at vi redigerer bordet vi får inn direkte
   mounted () {
     if (this.table) {
-      this.newTable = this.table
+      this.newTable.tableID = this.table.tableID
+      this.newTable.capacity = this.table.capacity
+      this.newTable.currently = this.table.currently
+      this.newTable.occupoed = this.table.occupied
     }
   },
   methods: {
+    // Lukker dialogen hvis vi avbryter
     cancel () {
       this.dialog = false
       this.$emit('dialogClosed')
     },
+    // FJerner bordet etter å ha fått bekreftet fra brukeren at det er dette hen ønsker
     remove () {
       this.confirmDelete++
       if (this.confirmDelete === 1) {
         this.error = 'Trykk en gang til for å bekrefte at du vil slette bordet'
       }
       else if (this.confirmDelete === 2) {
-        if (this.tables.includes(this.table)) {
-          this.$store.dispatch('removeTable', this.table)
-          this.dialog = false
-          this.$emit('dialogClosed')
-        }
-        else this.error = 'Klarte ikke å finne bordet du ville slette'
+        this.$store.dispatch('removeTable', this.newTable)
+        this.dialog = false
+        this.$emit('dialogClosed')
         this.confirmDelete = 0
       }
     },
+    // Oppdaterer bordet hvis det er gyldig input
     validate () {
       if (this.$refs.form.validate()) {
-        // this.$store.dispatch('addTable', this.newTable)
         this.error = ''
         this.dialog = false
-        this.$store.dispatch('updateTable', this.table)
+        this.$store.dispatch('removeTable', this.table)
+        this.$store.dispatch('updateTable', this.newTable)
         this.$emit('dialogClosed')
-      }
-      else if (this.tables[this.newTable.tableID - 1].occupied) {
-        this.error = 'Bord # ' + this.newTable.tableID + ' er i bruk'
       }
     }
   }

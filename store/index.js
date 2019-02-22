@@ -3,16 +3,17 @@ import 'firebase/firestore'
 import Vue from 'vue'
 
 export const state = () => ({
-  admin: false,
-  employee: false,
-  error: null,
-  loading: false,
-  tables: [],
-  user: null
+  admin: false, // Sier om brukeren er admin eller ikke
+  employee: false, // SIer om brukeren er ansatt eller ikke
+  error: null, // Holder feilmeldingen vår
+  loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
+  tables: [], // Holder alle bordene til restauranten
+  user: null // Holder brukeren
 })
 
 // Mutations are functions that the store uses to set its atrributes
 export const mutations = {
+  // Fjerner error melding
   clearError (state, payload) {
     state.error = null
   },
@@ -43,16 +44,18 @@ export const mutations = {
     state.admin = payload.admin
     state.employee = payload.employee
   },
+  // Setter feilmelding
   setError (state, payload) {
     state.error = payload
   }
 }
 // Actions are actions ran by the store. They are callable with this.$store.dispatch('actionnavn')
 export const actions = {
-  // Autosigns in the user if the session is still valid
+  // Auto logger inn brukeren hvis hen har en aktiv token
   autoSignIn ({ commit, dispatch }, payload) {
     firebase.firestore().collection('users').doc(payload.uid).get()
       .then(user => {
+        // Setter brukeren med data fra databasen, kaller på mountTables
         user = user.data()
         commit('setUser', user)
         dispatch('mountTables')
@@ -61,9 +64,11 @@ export const actions = {
         console.log(error)
       })
   },
+  // FJerner feilmeldingen
   clearError ({ commit }) {
     commit('clearError')
   },
+  // Setter storen til en ren state. Brukes ved utlogging
   clearState ({ commit }) {
     commit('clearState')
   },

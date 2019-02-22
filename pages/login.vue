@@ -43,7 +43,6 @@
             </v-card-text>
             <div class="text-xs-center">
               <v-btn
-                v-if="!user"
                 id="loginBtn"
                 type="submit"
                 :disabled="loading"
@@ -81,11 +80,12 @@ export default {
   layout: 'frontpage',
   data () {
     return {
-      email: '',
-      password: '',
-      snackbar: false
+      email: '', // Email til brukeren
+      password: '', // Passord til brukeren
+      snackbar: false // Om snackbaren skal være synlig eller ei. TODO: FLytte denne over til en global snackbar
     }
   },
+  // Henter vaiabler fra storen
   computed: {
     user () {
       return this.$store.getters.user
@@ -97,6 +97,7 @@ export default {
       return this.$store.getters.loading
     }
   },
+  // Følger med på å om vi skal logge inn eller ikke
   watch: {
     user (val) {
       if (val !== null && val !== undefined) {
@@ -108,10 +109,12 @@ export default {
     }
   },
   methods: {
+    // Hvis brukeren lukker snackbaren
     onDismissed () {
       this.$store.dispatch('clearError')
       this.snackbar = false
     },
+    // Kaller på sotren for å logge oss inn
     onSignin () {
       this.$store.dispatch('signUserIn', { email: this.email, password: this.password })
       // this.$store.dispatch('mountTables')
