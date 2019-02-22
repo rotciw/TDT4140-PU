@@ -1,9 +1,10 @@
-image: node
+image: node:latest
 
 stages:
   - build
   - test
   - deploy
+
 
 before_script:
   - npm install
@@ -11,6 +12,7 @@ before_script:
 cache:
   paths:
     - node_modules/
+    - dist/
 
 generate:
   stage: build
@@ -30,6 +32,7 @@ deploy_production:
   only:
     refs:
       - master
+      - release/v1.1.0
   script:
     - npm install -g firebase-tools
     - firebase use --token $FIREBASE_DEPLOY_KEY production
