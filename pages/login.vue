@@ -43,6 +43,7 @@
             </v-card-text>
             <div class="text-xs-center">
               <v-btn
+                v-if="!user"
                 id="loginBtn"
                 type="submit"
                 :disabled="loading"
@@ -82,7 +83,6 @@ export default {
     return {
       email: '',
       password: '',
-      loading: false,
       snackbar: false
     }
   },
@@ -92,6 +92,9 @@ export default {
     },
     error () {
       return this.$store.getters.error
+    },
+    loading () {
+      return this.$store.getters.loading
     }
   },
   watch: {
@@ -111,7 +114,7 @@ export default {
     },
     onSignin () {
       this.$store.dispatch('signUserIn', { email: this.email, password: this.password })
-      this.$store.dispatch('mountTables')
+      // this.$store.dispatch('mountTables')
     }
   }
 }
