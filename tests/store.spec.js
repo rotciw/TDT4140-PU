@@ -20,6 +20,7 @@ test('Clears state when new state is called', () => {
   expect(store.state.loading).toBe(false)
   expect(store.state.tables).toEqual([])
   expect(store.state.user).toBe(null)
+  expect(store.state.reservations).toEqual([])
 })
 
 test('Updates getters admin and employee when set user is called with set user', () => {
@@ -64,7 +65,8 @@ test('Clear states when user is logged out', () => {
     error: null,
     loading: false,
     tables: [],
-    user: null
+    user: null,
+    reservations: []
   }
   expect(store.state).toEqual(emptyState)
 })
