@@ -130,7 +130,8 @@ export const actions = {
   mountTodaysTablesWithReservations ({ commit, state }) {
     let tomorrow = moment().endOf('day').unix()
     // let yesterday = moment().startOf('day').unix
-    state.tables.forEach(table => {
+    let tables = state.tables
+    tables.forEach(table => {
       let newTable = table
       firebase.firestore().collection('reservations')
         .where('tableID', '==', newTable.tableID)
@@ -143,9 +144,9 @@ export const actions = {
             newTable.reservations = []
             if (reservation.endTime < tomorrow && reservation.startTime > now) newTable.reservations.push(reservation)
             if (reservation.endTime >= now && reservation.startTime <= now) {
-              newTable.reservations.push(reservation)
               newTable.occupied = true
               newTable.currently = reservation.numberOfPeople
+              newTable.currentReservation = reservation
             }
             else {
               newTable.occupied = false
