@@ -109,7 +109,7 @@ export default {
       type: Object,
       default: function () {
         return {
-          tableID: '',
+          tableID: 0,
           capacity: '',
           currently: 0,
           occupied: false
@@ -131,7 +131,7 @@ export default {
       dialog: this.dialogVisible, // Brukes for å si om dialogen skal være synlig
       error: '', // Setter feilmelding
       newTable: { // Definerer et nytt bord
-        tableID: '',
+        tableID: 0,
         capacity: '',
         currently: 0,
         occupied: false

@@ -12,7 +12,7 @@
           Oversikt over restauranten
         </h1>
         <h2 style="text-align: center">
-          Kl: {{ readableTime }}
+          <v-icon>access_time</v-icon> {{ readableTime }}
         </h2>
         <h4 style="text-align: center">
           Endre status på bordene ved å trykke på dem
@@ -42,6 +42,7 @@
             color="red"
             block
             class="table"
+            @click="viewTable(table)"
           >
             <div class="table-text">
               <h3 class="text-xs-center">
@@ -63,6 +64,7 @@
             color="green"
             block
             class="table"
+            @click="viewTable(table)"
           >
             <div class="table-text">
               <h3 class="text-xs-center">
@@ -81,14 +83,22 @@
         </div>
       </v-flex>
     </v-layout>
+    <view-table
+      :key="key"
+      :dialog-visible="dialogVisible"
+      :table="selectedTable"
+      @dialogClosed="dialogVisible = false"
+    />
   </v-container>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import moment from 'moment'
+import ViewTable from '../Components/ViewTable'
 
 export default {
+  components: { ViewTable },
   // TODO: Legge til middleware
   data () {
     return {
@@ -112,18 +122,23 @@ export default {
     })
   },
   mounted () {
-    this.$store.dispatch('mountTodaysTablesWithReservations')
-    console.log(moment().unix())
-    this.updateInterval = setInterval(() => {
-      this.updateReservations()
-    }, 60000)
+    // Oppdaterer reservasjoner. Hver gang det skjer en endring i databasen på reservations, vil dette automatisk oppdateres
+    this.updateReservations()
+    // Oppdaterer klokken hvert sekund
     this.interval = setInterval(() => {
+      this.now = moment().unix()
       this.readableTime = moment().format('HH:mm:ss')
     }, 1000)
   },
   methods: {
+    // Kaller på storen
     updateReservations () {
       this.$store.dispatch('mountTodaysTablesWithReservations')
+    },
+    viewTable (table) {
+      this.selectedTable = table
+      this.dialogVisible = true
+      this.key++
     }
   }
 }

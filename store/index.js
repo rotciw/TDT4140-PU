@@ -2,6 +2,9 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import Vue from 'vue'
 import moment from 'moment'
+// import { cloneDeep } from 'lodash'
+
+export const strict = false
 
 export const state = () => ({
   admin: false, // Sier om brukeren er admin eller ikke
@@ -64,13 +67,12 @@ export const mutations = {
 // Actions are actions ran by the store. They are callable with this.$store.dispatch('actionnavn')
 export const actions = {
   // Auto logger inn brukeren hvis hen har en aktiv token
-  autoSignIn ({ commit, dispatch }, payload) {
+  autoSignIn ({ commit }, payload) {
     firebase.firestore().collection('users').doc(payload.uid).get()
       .then(user => {
         // Setter brukeren med data fra databasen, kaller på mountTables
         user = user.data()
         commit('setUser', user)
-        dispatch('mountTables')
       })
       .catch(error => {
         console.log(error)
@@ -86,8 +88,8 @@ export const actions = {
   },
   // Laster inn alle reservasjoner fra databasen
   mountReservations ({ commit }) {
-    firebase.firestore().collection('reservations').get()
-      .then(reservations => {
+    firebase.firestore().collection('reservations')
+      .onSnapshot(reservations => {
         reservations.forEach(reservation => {
           reservation = reservation.data()
           if (reservation.userID.length > 0) {
@@ -107,11 +109,13 @@ export const actions = {
               })
           }
         })
-      })
-      .catch(error => {
+      },
+      error => {
         console.log('Klarte ikke å mounte reservasjoner')
         console.log(error)
       })
+      /* .catch(error => {
+      }) */
   },
   // Laster inn alle bordene fra databasen
   mountTables ({ commit }) {
@@ -127,36 +131,54 @@ export const actions = {
         console.log(error)
       })
   },
-  mountTodaysTablesWithReservations ({ commit, state }) {
+  mountTodaysTablesWithReservations ({ commit }) {
+    // Finner alle reservasjonene som er i dag
     let tomorrow = moment().endOf('day').unix()
     // let yesterday = moment().startOf('day').unix
-    let tables = state.tables
-    tables.forEach(table => {
-      let newTable = table
-      firebase.firestore().collection('reservations')
-        .where('tableID', '==', newTable.tableID)
-        .orderBy('startTime')
-        .get()
-        .then(reservations => {
-          reservations.forEach(reservation => {
-            let now = moment().unix()
-            reservation = reservation.data()
-            newTable.reservations = []
-            if (reservation.endTime < tomorrow && reservation.startTime > now) newTable.reservations.push(reservation)
-            if (reservation.endTime >= now && reservation.startTime <= now) {
-              newTable.occupied = true
-              newTable.currently = reservation.numberOfPeople
-              newTable.currentReservation = reservation
-            }
-            else {
-              newTable.occupied = false
-              newTable.currently = 0
-            }
-            console.log(newTable)
-          })
+    // Henter bordene fra databasen.
+    firebase.firestore().collection('tables').get()
+      .then(tables => {
+        tables.forEach(table => {
+          table = table.data()
+          /*  Hvis bordet har reservasjoner på seg blir denne kjørt. Pga begrensninger i Firestore
+          er det ikke mulig å sortere ut spørringene på både bordID og samtidig kun reservasjoner som er i framtiden.
+          (Bruk av == og > på forskjellige felter er ikke mulig. En annen løsning her vil være og hente alle reservasjonene
+          i framtiden, og så matche reservasjonene på bordID. Dette kan vi vurdere hvis vi ser at det blir mange unødvendige spørringer).
+          Denne lytter til endringer med onSnapshot.
+           */
+          firebase.firestore().collection('reservations')
+            .where('tableID', '==', table.tableID)
+            .orderBy('startTime')
+            .onSnapshot(reservations => {
+              reservations.forEach(reservation => {
+                let now = moment().unix()
+                reservation = reservation.data()
+                table.reservations = []
+                if (reservation.endTime < tomorrow && reservation.startTime > now) table.reservations.push(reservation)
+                if (reservation.endTime >= now && reservation.startTime <= now) {
+                  table.occupied = true
+                  table.currently = reservation.numberOfPersons
+                  table.currentReservation = reservation
+                }
+                else {
+                  table.occupied = false
+                  table.currently = 0
+                }
+                console.log(table)
+                commit('setTable', table)
+              })
+            },
+            error => {
+              console.log('Klarte ikke å hente reservasjonene til bord nummer ' + table.tableID)
+              console.log(error)
+            })
+          commit('setTable', table)
         })
-      commit('setTable', newTable)
-    })
+      })
+      .catch(error => {
+        console.log('Klarte ikke å hente bord')
+        console.log(error)
+      })
   },
   // Oppdaterer og legger til bordet
   updateTable ({ commit }, payload) {
@@ -187,7 +209,7 @@ export const actions = {
   signUserUp ({ commit }, payload) {
   },
   // Signs in the user and gets his info from the database
-  signUserIn ({ commit, dispatch }, payload) {
+  signUserIn ({ commit }, payload) {
     commit('setLoading', true)
     commit('clearError')
     firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
@@ -197,8 +219,6 @@ export const actions = {
           .then(user => {
             user = user.data()
             commit('setUser', user)
-            dispatch('mountTables')
-            dispatch('mountReservations')
           })
       })
       .catch(error => {

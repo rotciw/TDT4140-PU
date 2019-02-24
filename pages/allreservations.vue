@@ -104,6 +104,9 @@ export default {
       reservations: 'reservations',
       users: 'users'
     })
+  },
+  mounted () {
+    this.$store.dispatch('mountReservations')
   }
 }
 </script>
