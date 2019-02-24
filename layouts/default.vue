@@ -62,6 +62,18 @@
             <v-list-tile-title v-text="'Bookingsystem'" />
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile
+          class="tile"
+          active-class="background-color: green"
+          to="/allreservations"
+        >
+          <v-list-tile-action>
+            <v-icon>view_list</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="'Alle Reservasjoner'" />
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
