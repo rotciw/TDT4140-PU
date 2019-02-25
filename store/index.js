@@ -32,6 +32,9 @@ export const mutations = {
   removeTable (state, payload) {
     Vue.set(state.tables, payload.tableID - 1, null)
   },
+  removeReservation (state, payload) {
+    Vue.set(state.reservations, payload.reservationID - 1, null)
+  },
   // Legger til bordet til staten
   setTable (state, payload) {
     Vue.set(state.tables, payload.tableID - 1, payload)
@@ -83,15 +86,15 @@ export const actions = {
       .then(reservations => {
         reservations.forEach(reservation => {
           reservation = reservation.data()
-          if (reservation.userID.length > 0) {
+          if (reservation.uid.length > 1) {
             firebase.firestore().collection('users')
-              .doc(reservation.userID + '').get()
+              .doc(reservation.uid + '').get()
               .then(user => {
                 reservation.user = user.data()
                 commit('setReservation', reservation)
               })
           }
-          else if (reservation.guestID.length > 0) {
+          else if (reservation.guestID.length > 1) {
             firebase.firestore().collection('guestUsers')
               .doc(reservation.guestID + '').get()
               .then(user => {
@@ -103,6 +106,68 @@ export const actions = {
       })
       .catch(error => {
         console.log('Klarte ikke å mounte reservasjoner')
+        console.log(error)
+      })
+  },
+  updateReservation ({ commit }, payload) {
+    console.log(payload)
+    firebase.firestore().collection('reservations').doc(payload.reservationID + '').set({
+      reservationID: payload.reservationID,
+      tableID: payload.tableID,
+      numberOfPersons: payload.numberOfPersons,
+      uid: payload.uid,
+      guestID: payload.guestID,
+      created: payload.created,
+      duration: payload.duration,
+      comments: payload.comments,
+      startTime: payload.startTime,
+      endTime: payload.endTime
+    })
+      .then(() => {
+        commit('setReservation', payload)
+        if (payload.uid > 0) {
+          firebase.firestore().collection('users').doc(payload.uid + '').set({
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            mobile: payload.mobile,
+            email: payload.email,
+            admin: payload.admin,
+            employee: payload.employee,
+            uid: payload.uid,
+            username: payload.username
+          }).catch(error => {
+            console.log('Klarte ikke å oppdatere bruker med id ' + payload.uid)
+            console.log(error)
+          })
+        }
+        else if (payload.guestID > 0) {
+          firebase.firestore().collection('guestUsers').doc(payload.guestID + '').set({
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            mobile: payload.mobile,
+            email: payload.email,
+            guestID: payload.guestID
+          }).catch(error => {
+            console.log('Klarte ikke å oppdatere gjest med id ' + payload.guestID)
+            console.log(error)
+          })
+        }
+      })
+      .catch(error => {
+        console.log('Klarte ikke å oppdatere reservasjonen med id ' + payload.reservationID)
+        console.log(error)
+      })
+  },
+  // Removes the Reservation from the state and firestore
+  removeReservation ({ commit }, payload) {
+    commit('removeReservation', payload)
+    console.log(payload)
+    firebase.firestore().collection('reservations').doc(payload.reservationID + '').delete()
+      .then(
+        console.log('Fjernet reservasjon nr ' + payload.reservationID)
+      )
+      .catch(error => {
+        console.log('Klarte ikke å slette bordet')
         console.log(error)
       })
   },
