@@ -16,7 +16,7 @@
   "dependencies": {
     "express": "^4.16.4",
     "firebase": "^5.8.3",
-    "firebase-tools": "^6.3.1",
+    "firebase-tools": "^6.4.0",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "nuxt": "^2.3.4",

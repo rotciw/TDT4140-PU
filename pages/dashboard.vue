@@ -14,6 +14,7 @@
             <v-flex xs5>
               <div style="text-align: center">
                 <v-btn
+                  v-if="$store.getters.admin"
                   large
                   dark
                   color="#444645"
@@ -33,6 +34,7 @@
             <v-flex xs5>
               <div style="text-align: center">
                 <v-btn
+                  v-if="$store.getters.admin || $store.getters.employee"
                   large
                   dark
                   color="#444645"
