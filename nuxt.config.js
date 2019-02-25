@@ -42,7 +42,8 @@ module.exports = {
   plugins: [
     '@/plugins/vuetify',
     '@/plugins/fireinit',
-    '@/plugins/logincheck'
+    '@/plugins/logincheck',
+    '@/plugins/vue-inject'
   ],
 
   /*
