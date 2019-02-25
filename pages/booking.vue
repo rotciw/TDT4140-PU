@@ -20,8 +20,19 @@
       </v-flex>
       <v-flex
         xs12
-      />
+      >
+        <v-btn
+          color="green darken-4"
+          dark
+          large
+          class="my-3"
+          @click="viewTable(null)"
+        >
+          Ny reservasjon
+        </v-btn>
+      </v-flex>
     </v-layout>
+    <v-divider />
     <v-layout
       row
       wrap
@@ -136,7 +147,12 @@ export default {
       this.$store.dispatch('mountTodaysTablesWithReservations')
     },
     viewTable (table) {
-      this.selectedTable = table
+      if (table === null) {
+        this.selectedTable = {
+          tableID: 0
+        }
+      }
+      else this.selectedTable = table
       this.dialogVisible = true
       this.key++
     }

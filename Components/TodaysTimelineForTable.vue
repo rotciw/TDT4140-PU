@@ -7,14 +7,14 @@
       :icon="book"
     >
       <v-card
-       :color="colors[index % colors.length]"
-       dark
+        :color="colors[index % colors.length]"
+        dark
       >
         <v-card-title class="title">
           Reservasjon # {{ reservation.reservationID }}
         </v-card-title>
         <v-card-text class="white text--primary">
-          Info om reservasjon og bruker
+          Kl: {{ convertTime(reservation.startTime) }} - {{ convertTime(reservation.endTime) }}
         </v-card-text>
       </v-card>
     </v-timeline-item>
@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'TodaysTimelineForTabel',
   props: {
@@ -35,6 +37,11 @@ export default {
   data () {
     return {
       colors: ['green', 'yellow', 'purple', 'grey', 'orange']
+    }
+  },
+  methods: {
+    convertTime (time) {
+      moment(time).format('HH:mm:ss')
     }
   }
 }

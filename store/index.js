@@ -133,7 +133,8 @@ export const actions = {
   },
   mountTodaysTablesWithReservations ({ commit }) {
     // Finner alle reservasjonene som er i dag
-    let tomorrow = moment().endOf('day').unix()
+    let tomorrow = moment().endOf('day').unix(),
+        today = moment().startOf('day').unix()
     // let yesterday = moment().startOf('day').unix
     // Henter bordene fra databasen.
     firebase.firestore().collection('tables').get()
@@ -148,6 +149,7 @@ export const actions = {
            */
           firebase.firestore().collection('reservations')
             .where('tableID', '==', table.tableID)
+            .where('startTime', '>', today)
             .orderBy('startTime')
             .onSnapshot(reservations => {
               reservations.forEach(reservation => {
