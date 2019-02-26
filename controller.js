@@ -1,10 +1,17 @@
 import * as firebase from 'firebase/app'
 import 'firebase/firestore'
-import moment from 'moment'
+// import moment from 'moment'
 
 let fs = firebase.firestore()
 
+/* Controlleren kan brukes for gjenbruk av databasekall/funksjoner. Spesielt god å bruke ved skrivinger hvor man ikke venter
+* på respons. Ved lesing må man tenke på promises, da denne gjør async api kall til databasen. Controlleren brukes ved
+* å skrive this.$controller. f.eks this.$controller.users.getUser(uid).
+* */
+
+// Users inneholder alle brukerrelaterte databasekall
 export const users = {
+  // getUser henter bruker med valgt uid fra databasen
   getUser (uid) {
     fs.collection('users').doc(uid + '').get()
       .then(user => {
@@ -17,6 +24,7 @@ export const users = {
         console.log(error)
       })
   },
+  // createGuestUser oppretter en gjestebruker. Brukes ved opprettelse av nye reservasjonsobjekter.
   createGuestUser (payload) {
     const userObject = {
       firstName: payload.firstName || '',
@@ -39,8 +47,9 @@ export const users = {
       })
   }
 }
-
+// Reservations inneholder alle reservasjonsrelaterte kall.
 export const reservations = {
+  /* Denne er ikke i bruk
   availableTables (startTime, endTime) {
     let now = moment().unix(),
         availableTables = []
@@ -63,8 +72,8 @@ export const reservations = {
           reservation = reservation.data()
           if ((reservation.startTime > startTime && reservation.startTime < endTime) || (reservation.endTime > startTime && reservation.endTime < endTime)) {
             availableTables[reservation.tableID - 1].available = false
-            /* let index = availableTables.indexOf(reservation.tableID)
-            if (index > -1) availableTables.splice(index) */
+            /!* let index = availableTables.indexOf(reservation.tableID)
+            if (index > -1) availableTables.splice(index) *!/
           }
         })
       }).catch(error => {
@@ -72,7 +81,8 @@ export const reservations = {
         console.log(error)
       })
     return availableTables
-  },
+  }, */
+  // newReservationNumber returnerer det største reservasjonsnummeret i datbasen. Kan brukes ved opprettelse av nye reservasjonsobjekter.
   newReservationNumber () {
     return fs.collection('reservations')
       .orderBy('reservationID', 'desc')

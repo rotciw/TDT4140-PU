@@ -26,7 +26,7 @@
           dark
           large
           class="my-3"
-          @click="viewTable(null)"
+          @click="addReservation"
         >
           Ny reservasjon
         </v-btn>
@@ -48,26 +48,36 @@
       >
         <div v-if="table">
           <v-btn
-            v-if="table.currently > 0"
+            v-if="table.currentReservation"
             my-2
             color="red"
             block
             class="table"
             @click="viewTable(table)"
           >
-            <div class="table-text">
-              <h3 class="text-xs-center">
-                # {{ table.tableID }}
-              </h3>
-              <div class="text-xs-center">
-                <h3>
-                  {{ table.currently }}/{{ table.capacity }}
-                  <v-icon color="black">
-                    person
-                  </v-icon>
+            <v-flex class="mt-2">
+              <div class="table-text">
+                <h3 class="text-xs-center">
+                  # {{ table.tableID }}
                 </h3>
+                <div class="text-xs-center">
+                  <h3>
+                    {{ table.currentReservation.numberOfPersons }}/{{ table.capacity }}
+                    <v-icon color="black">
+                      person
+                    </v-icon>
+                  </h3>
+                  <h3 style="padding-bottom: 0">
+                    {{ convertTime(table.currentReservation.endTime) }}
+                    <v-progress-linear
+                      :value=" ((now - table.currentReservation.startTime) / (table.currentReservation.endTime - table.currentReservation.startTime)) * 100"
+                      style="padding: 0; margin: 0"
+                      color="black"
+                    />
+                  </h3>
+                </div>
               </div>
-            </div>
+            </v-flex>
           </v-btn>
           <v-btn
             v-else
@@ -77,19 +87,24 @@
             class="table"
             @click="viewTable(table)"
           >
-            <div class="table-text">
-              <h3 class="text-xs-center">
-                # {{ table.tableID }}
-              </h3>
-              <div class="text-xs-center">
-                <h3>
-                  {{ table.curently }}/{{ table.capacity }}
-                  <v-icon color="black">
-                    person
-                  </v-icon>
+            <v-flex class="mt-2">
+              <div class="table-text">
+                <h3 class="text-xs-center">
+                  # {{ table.tableID }}
                 </h3>
+                <div class="text-xs-center">
+                  <h3>
+                    {{ table.curently }}/{{ table.capacity }}
+                    <v-icon color="black">
+                      person
+                    </v-icon>
+                  </h3>
+                  <h3 v-if="table.reservations && table.reservations.length > 0">
+                    <v-icon>access_time</v-icon> {{ convertTime(table.reservations[0].startTime) }}
+                  </h3>
+                </div>
               </div>
-            </div>
+            </v-flex>
           </v-btn>
         </div>
       </v-flex>
@@ -100,6 +115,11 @@
       :table="selectedTable"
       @dialogClosed="dialogVisible = false"
     />
+    <add-reservation
+      :key="reservationKey"
+      :dialog-visible="addReservationVisible"
+      @dialogCLosed="addReservationVisibled = false"
+    />
   </v-container>
 </template>
 
@@ -107,12 +127,14 @@
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 import ViewTable from '../Components/ViewTable'
+import AddReservation from '../Components/AddReservation'
 
 export default {
-  components: { ViewTable },
+  components: { AddReservation, ViewTable },
   // TODO: Legge til middleware
   data () {
     return {
+      addReservationVisible: false,
       key: 0,
       dialogVisible: false,
       interval: null,
@@ -124,6 +146,7 @@ export default {
         currently: 0,
         occupied: false
       },
+      reservationKey: 9999,
       updateInterval: null
     }
   },
@@ -142,6 +165,9 @@ export default {
     }, 1000)
   },
   methods: {
+    convertTime (time) {
+      return moment(time).format('HH:mm')
+    },
     // Kaller på storen
     updateReservations () {
       this.$store.dispatch('mountTodaysTablesWithReservations')
@@ -155,6 +181,10 @@ export default {
       else this.selectedTable = table
       this.dialogVisible = true
       this.key++
+    },
+    addReservation () {
+      this.addReservationVisible = true
+      this.reservationKey++
     }
   }
 }

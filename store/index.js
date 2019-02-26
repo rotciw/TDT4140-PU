@@ -8,11 +8,12 @@ export const strict = false
 
 export const state = () => ({
   admin: false, // Sier om brukeren er admin eller ikke
-  availableTables: [],
+  availableTables: [], // Holder alle bordene som er ledige og etterspurt for antall gjester og tidspunkt
   employee: false, // SIer om brukeren er ansatt eller ikke
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
   tables: [], // Holder alle bordene til restauranten
+  tableAvailable: false, // Holder ledigheten for etterspurt bord
   todaysTables: [], // Holder alle bordene samt alle reservasjonene disse bordene har i dag
   user: null, // Holder brukeren
   reservations: [] // Holder alle reservasjonene
@@ -42,6 +43,7 @@ export const mutations = {
   removeTable (state, payload) {
     Vue.set(state.tables, payload.tableID - 1, null)
   },
+  // Fjerner valgt reservasjon fra staten
   removeReservation (state, payload) {
     Vue.set(state.reservations, payload.reservationID - 1, null)
   },
@@ -53,14 +55,20 @@ export const mutations = {
   setTodaysTable (state, payload) {
     Vue.set(state.todaysTables, payload.tableID - 1, payload)
   },
+  // Endrer ledigheten til et bord av actionen MountAvailableTables, hvis bordet har overlappende reservasjon
   setAvailableTable (state, payload) {
     Vue.set(state.availableTables, payload.tableID - 1, payload)
   },
+  // Legger til alle bord som er tilgjengelig for valgt kapasitet i staten, brukes av NewReservation
   setAvailableTables (state, payload) {
     state.tables.forEach(table => {
       if (Number(payload) > Number(table.capacity)) Vue.set(state.availableTables, table.tableID - 1, { available: false, tableID: table.tableID, capacity: table.capacity })
       else Vue.set(state.availableTables, table.tableID - 1, { available: true, tableID: table.tableID, capacity: table.capacity })
     })
+  },
+  // Setter ledigheten til forespurt bord ved gitte tidspunkt til enten ledig eller ei. Brukes av ViewTable når man etterspør spesifikt bord.
+  setTableAvailability (state, payload) {
+    state.tableAvailable = payload
   },
   // Setter loading som brukes ved innlogging
   setLoading (state, payload) {
@@ -76,11 +84,12 @@ export const mutations = {
   setError (state, payload) {
     state.error = payload
   },
+  // Legger til reservasjon når action MountReservations kjører
   setReservation (state, payload) {
     Vue.set(state.reservations, payload.reservationID - 1, payload)
   }
 }
-// Actions are actions ran by the store. They are callable with this.$store.dispatch('actionnavn')
+// Actions er async funksjoner. Kallbare med this.$store.dispatch('actionnavn')
 export const actions = {
   // Auto logger inn brukeren hvis hen har en aktiv token
   autoSignIn ({ commit }, payload) {
@@ -94,6 +103,35 @@ export const actions = {
         console.log(error)
       })
   },
+  /* Brukes av ViewTable for å sjekke om bordet er ledig for valgte tidspunkt. Denne henter alle reservasjoner som er
+  * fram i tid for valgt bord. Hvis reservasjonstidene overlapper vet vi at bordet er opptatt på valgte tidspunkt
+  * og vi kaller så på mutasjonen setTableAvailability med false, fordi bordet ikke er ledig. Hvis det er ledig kalles
+  * den samme mutasjonen, men med ledig. Ved å bruke onSnapshot vil denne kjøre hver gang det skjer en endring i reservations
+  * collectionen. Dette brukes så av ViewTable for å si at bordet ikke er ledig for valgte tidspunkt.
+  * */
+  checkAvailability ({ commit }, payload) {
+    let now = moment().valueOf(),
+        available = true
+    firebase.firestore().collection('reservations')
+      .where('tableID', '==', payload.tableID)
+      .where('endTime', '>', now)
+      .onSnapshot(reservations => {
+        reservations.forEach(reservation => {
+          reservation = reservation.data()
+          if ((reservation.startTime > payload.startTime && reservation.startTime < payload.endTime) ||
+            (reservation.endTime > payload.startTime && reservation.endTime < payload.endTime) ||
+            (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {
+            commit('setTableAvailability', false)
+            available = false
+          }
+          else {
+            available = true
+            commit('setTableAvailability', available)
+          }
+        })
+      })
+    commit('setTableAvailability', available)
+  },
   // FJerner feilmeldingen
   clearError ({ commit }) {
     commit('clearError')
@@ -102,6 +140,10 @@ export const actions = {
   clearState ({ commit }) {
     commit('clearState')
   },
+  /* createReservation oppretter en ny reservasjon i databasen, og legger dem i storen hvis det var en vellykket skriving.
+   Denne brukes av komponenten NewReservation og ViewTable fra bookingsiden
+  * når nye reservasjoner blir opprettet.
+  * */
   createReservation ({ commit, state }, payload) {
     firebase.firestore().collection('reservations').doc(payload.reservationID + '')
       .set(payload)
@@ -113,33 +155,41 @@ export const actions = {
         console.log(error)
       })
   },
+  /* mountAvailableTables brukes av newReservation for å finne ledige bord til valgt tidspunkt og til riktig antall personer.
+  *  Dette skjer i følgende steg:
+  *  1. Slett alle bordene som er tilgjengelig fra forrige søk
+  *  2. Hent alle bordene som ligger i tables som har plass til personer definert på reservasjonen
+  *  3. Hent alle reservasjoner som er fram i tid. Gå så igjennom alle reservasjonene.
+  *     Hvis det er overlapp er dette bordet opptatt for valgt tidspunkt, og vi endrer så statusen på dette bordet til opptatt.
+  *  4. Dette brukes så i NewReservation komponenten, og viser alle ledige bord.
+  * */
   mountAvailableTables ({ commit, state }, payload) {
     commit('clearAvailableTables')
     commit('setAvailableTables', payload.numberOfPersons)
     let now = moment().valueOf()
     firebase.firestore().collection('reservations')
       .where('endTime', '>', now)
-      .get()
-      .then(reservations => {
+      .onSnapshot(reservations => {
         reservations.forEach(reservation => {
           reservation = reservation.data()
-          // TODO: Se på logikken her
-          console.log(reservation)
-          console.log(payload)
           if ((reservation.startTime > payload.startTime && reservation.startTime < payload.endTime) ||
               (reservation.endTime > payload.startTime && reservation.endTime < payload.endTime) ||
               (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {
             commit('setAvailableTable', { tableID: reservation.tableID, available: false, currently: reservation.numberOfPersons })
           }
         })
-      })
-      .catch(error => {
+      },
+      error => {
         console.log('Klarte ikke å hente reservasjoner')
         console.log(error)
       })
     commit('setLoading', false)
   },
-  // Laster inn alle reservasjoner fra databasen
+  /* mountReservations henter først alle reservasjonene fra databasen. Derette sjekker den om det er en bruker eller en
+  *  gjestebruker som er koblet til reservasjonen. Ut i fra om det er bruker eller gjest henter den bruker fra enten
+  *  users eller guestUsers, og kobler dette objektet på reservasjonsobjektet under reservation.user. Dette brukes av siden
+  *  allreservations til å vise info om alle reservasjoner og informasjonen om brukeren tilknyttet reservasjonen
+  * */
   mountReservations ({ commit }) {
     firebase.firestore().collection('reservations')
       .onSnapshot(reservations => {
@@ -170,8 +220,11 @@ export const actions = {
       /* .catch(error => {
       }) */
   },
+  /* updateReservation oppdaterer reservasjon valgt fra allreservations. Dette gjøres ved å sette et objekt som er likt som
+  *  det gamle, med de samme feltene. Deretter oppdateres brukeren utifra om det er gjest eller bruker som er tilknyttet
+  *  reservasjonen i riktig collection.
+  * */
   updateReservation ({ commit }, payload) {
-    console.log(payload)
     firebase.firestore().collection('reservations').doc(payload.reservationID + '').set({
       reservationID: payload.reservationID,
       tableID: payload.tableID,
@@ -219,10 +272,9 @@ export const actions = {
         console.log(error)
       })
   },
-  // Removes the Reservation from the state and firestore
+  // removeReservation sletter reservasjonen. Gjøres fra allreservations.
   removeReservation ({ commit }, payload) {
     commit('removeReservation', payload)
-    console.log(payload)
     firebase.firestore().collection('reservations').doc(payload.reservationID + '').delete()
       .then(
         console.log('Fjernet reservasjon nr ' + payload.reservationID)
@@ -232,7 +284,7 @@ export const actions = {
         console.log(error)
       })
   },
-  // Laster inn alle bordene fra databasen
+  // mountTables laster inn alle bordene som er lagret i databasen.
   mountTables ({ commit }) {
     firebase.firestore().collection('tables').get()
       .then(tables => {
@@ -246,6 +298,16 @@ export const actions = {
         console.log(error)
       })
   },
+  /* mountTodaysTablesWithReservations brukes av bookingsiden til å vise status på alle bordene som er i restauranten.
+  *  Henter alle bordene, og deretter reservasjon for hvert bord hvis bordet har reservasjon. Pga begrensinger i firestore
+  *  kan vi kun bruke en rekkevide sorterer i databasekallet vårt, og vi blir nødt til å hente alle reservasjonene våre selvom de evt.
+  *  overlapper. Denne lytter til endringer med onSnapshot. Deretter skjer følgende:
+  *  1 Etter at den har hentet alle reservasjonene til bord med reservasjoner
+  *  opprettes et reservasjonsarray på bordet. Dette inneholder alle reservasjoner som er registrert på bordet i dag i stigende rekkefølge
+  *  2 Hvis en av reservasjonene har starttid før tidspunktet de blir hentet og slutttid etter, vet vi at det er en pågående reservasjon.
+  *  Da settes det en attributt currentReservation. Denne brukes deretter i booking for å vise info om pågående reservasjon.
+  *  3 Hvis det ikke er noe pågående reservasjon settes bordet som ledig. Bordet blir deretter satt inn i state.tables.
+  * */
   mountTodaysTablesWithReservations ({ commit }) {
     // Finner alle reservasjonene som er i dag
     let tomorrow = moment().endOf('day').valueOf(),
@@ -256,21 +318,15 @@ export const actions = {
       .then(tables => {
         tables.forEach(table => {
           table = table.data()
-          /*  Hvis bordet har reservasjoner på seg blir denne kjørt. Pga begrensninger i Firestore
-          er det ikke mulig å sortere ut spørringene på både bordID og samtidig kun reservasjoner som er i framtiden.
-          (Bruk av == og > på forskjellige felter er ikke mulig. En annen løsning her vil være og hente alle reservasjonene
-          i framtiden, og så matche reservasjonene på bordID. Dette kan vi vurdere hvis vi ser at det blir mange unødvendige spørringer).
-          Denne lytter til endringer med onSnapshot.
-           */
           firebase.firestore().collection('reservations')
             .where('tableID', '==', table.tableID)
             .where('startTime', '>', today)
             .orderBy('startTime')
             .onSnapshot(reservations => {
+              table.reservations = []
               reservations.forEach(reservation => {
                 let now = moment().valueOf()
                 reservation = reservation.data()
-                table.reservations = []
                 if (reservation.endTime < tomorrow && reservation.startTime > now) table.reservations.push(reservation)
                 if (reservation.endTime >= now && reservation.startTime <= now) {
                   table.occupied = true
@@ -281,7 +337,6 @@ export const actions = {
                   table.occupied = false
                   table.currently = 0
                 }
-                console.log(table)
                 commit('setTable', table)
               })
             },
@@ -297,15 +352,22 @@ export const actions = {
         console.log(error)
       })
   },
+  /* updateLiveReservation brukes av ViewTable for å oppdatere slutttidspunktet eller antall gjester på en pågående reservasjon.
+  *   Oppdaterer først databasen. Hvis det var vellykket endrer vi reservasjonen lokalt i storen ved å commite setReservation med
+  *   det nye reservasjonsobjektet.
+  * */
   updateLiveReservation ({ commit }, payload) {
-    firebase.firestore().collection('reservations').doc(payload.reservationID + '').set(payload)
+    firebase.firestore().collection('reservations').doc(payload.reservationID + '').update({
+      numberOfPersons: payload.numberOfPersons,
+      endTime: payload.endTime
+    })
       .then(commit('setReservation', payload))
       .catch(error => {
         console.log('Klarte ikke å oppdatere reservasjon med ID: ' + payload.reservationID)
         console.log(error)
       })
   },
-  // Oppdaterer og legger til bordet
+  /* updateTable brukes av tableEditor for å oppdatere bordet. */
   updateTable ({ commit }, payload) {
     firebase.firestore().collection('tables').doc(payload.tableID + '').set({
       tableID: payload.tableID,
@@ -319,13 +381,13 @@ export const actions = {
         console.log(error)
       })
   },
-  // Removes the table from the state and firestore
+  /* removeTable brukes av tableEditor for å fjerne bord */
   removeTable ({ commit }, payload) {
     commit('removeTable', payload)
     firebase.firestore().collection('tables').doc(payload.tableID + '').delete()
-      .then(
+      .then(() => {
         console.log('Fjernet bord nr ' + payload.tableID)
-      )
+      })
       .catch(error => {
         console.log('Klarte ikke å slette bordet')
         console.log(error)
@@ -333,7 +395,8 @@ export const actions = {
   },
   signUserUp ({ commit }, payload) {
   },
-  // Signs in the user and gets his info from the database
+  /* signUserIn brukes av login for å logge inn brukeren. Først autentiserers den hos google, før vi henter dataene
+  * vi har lagret på brukeren */
   signUserIn ({ commit }, payload) {
     commit('setLoading', true)
     commit('clearError')
@@ -352,6 +415,7 @@ export const actions = {
         console.log(error)
       })
   },
+  /* signUserOut logger ut brukeren og tømmer staten på siden */
   signUserOut ({ commit }) {
     commit('setLoading', true)
     firebase.auth().signOut()
@@ -359,14 +423,13 @@ export const actions = {
         commit('clearState')
         commit('setLoading', false)
       })
-      // Sign-out successful.
       .catch(error => {
         commit('setLoading', false)
         commit('setError', error)
         console.log(error)
       })
   } }
-// Getters are like the one used in Java to access the stores attributes.
+// Getters returnerer de ulike attributtene våre fra staten. Beskrivelsen av attributten står på state objektet.
 export const getters = {
   availableTables (state) {
     return state.availableTables
@@ -385,6 +448,9 @@ export const getters = {
   },
   user (state) {
     return state.user
+  },
+  tableAvailable (state) {
+    return state.tableAvailable
   },
   tables (state) {
     return state.tables

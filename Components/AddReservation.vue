@@ -8,210 +8,7 @@
       persistent
       max-width="800px"
     >
-      <div v-if="table.currentReservation">
-        <v-card>
-          <v-card-text>
-            <v-container grid-list-md>
-              <v-layout
-                row
-                justify-center
-                wrap
-              >
-                <v-flex
-                  xs12
-                >
-                  <div
-                    v-if="now < table.currentReservation.endTime"
-                    class="text-xs-center"
-                  >
-                    <v-progress-circular
-                      :size="100"
-                      :width="15"
-                      :value="value"
-                      color="green"
-                    >
-                      {{ remainingTime }} left
-                    </v-progress-circular>
-                  </div>
-                  <div v-else>
-                    <h2
-                      style="text-align: center; color: red"
-                    >
-                      Denne reservasjonen er ferdig. Lukk denne dialogen eller oppdater tiden.
-                    </h2>
-                  </div>
-                  <h3
-                    style="text-align: center"
-                    class="mt-2"
-                  >
-                    Bord # {{ table.tableID }}
-                  </h3>
-                  <v-divider />
-                  <h5
-                    style="text-align: center"
-                    class="mt-2"
-                  >
-                    Reservasjon # {{ table.currentReservation.reservationID }}
-                  </h5>
-                  <div v-if="user">
-                    <h3 style="text-align: center; color: green">
-                      Kunde:
-                    </h3>
-                    <h4 style="text-align: center">
-                      {{ user.firstName }} {{ user.lastName }}
-                    </h4>
-                    <h5
-                      v-if="user.mobile"
-                      style="text-align: center"
-                    >
-                      Mobil: {{ user.mobile }}
-                    </h5>
-                    <h5
-                      v-if="user.email"
-                      style="text-align: center"
-                    >
-                      E-post: {{ user.email }}
-                    </h5>
-                  </div>
-                </v-flex>
-              </v-layout>
-              <v-layout
-                row
-                justify-center
-                wrap
-              >
-                <v-flex
-                  xs4
-                >
-                  <v-text-field
-                    v-model="currentGuests"
-                    label="Antall gjester"
-                    hint="Hvor mange gjester er det?"
-                    prepend-icon="supervised_user_circle"
-                  />
-                </v-flex>
-              </v-layout>
-              <v-layout
-                row
-                wrap
-                justify-center
-              >
-                <v-flex xs12>
-                  <h4 style="text-align: center">
-                    Sluttid
-                  </h4>
-                </v-flex>
-              </v-layout>
-              <v-layout
-                row
-                wrap
-                justify-center
-              >
-                <v-flex xs4>
-                  <v-menu
-                    ref="leavingMenu"
-                    v-model="menu4"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    :return-value.sync="leavingTime"
-                    lazy
-                    transition="scale-transition"
-                    offset-y
-                    full-width
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <v-text-field
-                      slot="activator"
-                      v-model="leavingTime"
-                      label="Sluttid"
-                      color="green"
-                      prepend-icon="directions_walk"
-                      readonly
-                    />
-                    <v-time-picker
-                      v-if="menu4"
-                      v-model="leavingTime"
-                      color="green"
-                      format="24hr"
-                      full-width
-                      @click:minute="$refs.leavingMenu.save(leavingTime)"
-                    />
-                  </v-menu>
-                </v-flex>
-              </v-layout>
-              <v-layout
-                row
-                wrap
-                justify-center
-              >
-                <v-flex xs12>
-                  <div class="text-xs-center">
-                    <v-btn
-                      color="green"
-                      class="button"
-                      large
-                      @click="updateReservation"
-                    >
-                      Oppdater reservasjonen
-                    </v-btn>
-                  </div>
-                </v-flex>
-                <v-flex xs12>
-                  <div class="text-xs-center">
-                    <v-btn
-                      color="red"
-                      class="button"
-                      @click="customerLeft"
-                    >
-                      Kunden har gått
-                    </v-btn>
-                  </div>
-                  <v-divider
-                    class="my-2"
-                  />
-                </v-flex>
-              </v-layout>
-              <v-layout
-                row
-                wrap
-                justify-center
-              >
-                <v-flex xs12>
-                  <div v-if="table.reservations && table.reservations.length > 0">
-                    <h3 style="text-align: center">
-                      Kommende reservasjoner på dette bordet i dag
-                    </h3>
-                    <v-flex xs12>
-                      <todays-timeline-for-table
-                        :reservations="table.reservations"
-                      />
-                    </v-flex>
-                  </div>
-                  <div v-else>
-                    <h3 style="text-align: center">
-                      Ingen andre registrerte reservasjoner på dette bordet i dag.
-                    </h3>
-                  </div>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              color="blue darken-1"
-              dark
-              round
-              flat
-              @click="cancel"
-            >
-              Lukk
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </div>
-      <div v-else>
+      <div>
         <v-card>
           <v-card-text>
             <v-container grid-list-md>
@@ -221,10 +18,8 @@
                 justify-center
               >
                 <v-flex xs12>
-                  <h2
-                    style="text-align: center"
-                    class="mb-2">
-                    Legg til ny reservasjon for bord # {{ table.tableID }}
+                  <h2 style="text-align: center">
+                    Legg til ny reservasjon
                   </h2>
                 </v-flex>
                 <v-flex xs12>
@@ -365,13 +160,13 @@
                     </v-flex>
                     <v-flex xs12>
                       <div class="text-xs-center">
-                        <!--<v-btn
+                        <v-btn
                           color="green"
                           class="button"
-                          @click="checkTableAvailability()"
+                          @click="mountAvailableTables()"
                         >
-                          Se om bordet er ledig
-                        </v-btn>-->
+                          Søk
+                        </v-btn>
                       </div>
                       <v-divider class="my-2" />
                     </v-flex>
@@ -382,14 +177,77 @@
                     wrap
                     justify-center
                   >
-                    <div v-if="tableAvailable">
+                    <v-flex
+                      xs12
+                    >
+                      <h2 style="text-align: center">
+                        Ledige bord for valgt tidspunkt
+                      </h2>
+                    </v-flex>
+                    <v-layout
+                      row
+                      wrap
+                      justify-start
+                    >
+                      <v-flex
+                        v-for="(availabeTable, index) in mountedAvailableTables"
+                        :key="index"
+                        xs2
+                        md2
+                      >
+                        <div v-if="availabeTable && availabeTable.available">
+                          <v-btn
+                            v-if="index === selectedTable.tableID-1"
+                            my-2
+                            color="green"
+                            block
+                            class="table"
+                            @click="selectTable(availabeTable)"
+                          >
+                            <div class="table-text">
+                              <h3 class="text-xs-center">
+                                # {{ availabeTable.tableID }}
+                              </h3>
+                              <div class="text-xs-center">
+                                <h3>
+                                  {{ availabeTable.capacity }}
+                                  <v-icon color="black">
+                                    person
+                                  </v-icon>
+                                </h3>
+                              </div>
+                            </div>
+                          </v-btn>
+                          <v-btn
+                            v-else
+                            my-2
+                            color="grey"
+                            block
+                            class="table"
+                            @click="selectTable(availabeTable)"
+                          >
+                            <div class="table-text">
+                              <h3 class="text-xs-center">
+                                # {{ availabeTable.tableID }}
+                              </h3>
+                              <div class="text-xs-center">
+                                <h3>
+                                  {{ availabeTable.capacity }}
+                                  <v-icon color="black">
+                                    person
+                                  </v-icon>
+                                </h3>
+                              </div>
+                            </div>
+                          </v-btn>
+                        </div>
+                      </v-flex>
+                    </v-layout>
+                    <div v-if="confirmButton">
                       <v-flex
                         xs12
                         class="my-2"
                       >
-                        <h3 style="text-align: center; color: green">
-                          Bordet er ledig for valgte tidspunkt
-                        </h3>
                         <h5 style="text-align: center">
                           Fyll ut feltene under hvis du ønsker å lagre informasjon om kunden
                         </h5>
@@ -450,38 +308,24 @@
                         </div>
                       </v-flex>
                     </div>
-                    <div v-else>
-                      <h4
-                        style="text-align: center"
-                        color="red"
-                      >
-                        Bordet er opptatt for valgt tid. Prøv en annen tid eller søk på alle bord ved å trykke på "avbryt" og "ny reservasjon".
-                      </h4>
-                    </div>
                   </v-layout>
                   <v-layout
-                    row
-                    wrap
-                    justify-center
+                    v-else-if="loading"
                   >
-                    <v-flex xs12>
-                      <v-divider class="my-3" />
-                      <div v-if="table.reservations && table.reservations.length > 0">
-                        <h3 style="text-align: center">
-                          Kommende reservasjoner på dette bordet i dag
-                        </h3>
-                        <v-flex xs12>
-                          <todays-timeline-for-table
-                            :reservations="table.reservations"
-                          />
-                        </v-flex>
-                      </div>
-                      <div v-else>
-                        <h3 style="text-align: center">
-                          Ingen andre registrerte reservasjoner på dette bordet i dag.
-                        </h3>
-                      </div>
-                    </v-flex>
+                    <v-progress-circular
+                      indeterminate
+                      color="green"
+                    />
+                  </v-layout>
+                  <v-layout
+                    v-else-if="!loading && mountedAvailableTables.length === 0"
+                  >
+                    <h4
+                      style="text-align: center"
+                      color="red"
+                    >
+                      Fant ingen ledige bord for valgt gruppe
+                    </h4>
                   </v-layout>
                 </v-flex>
               </v-layout>
@@ -507,11 +351,9 @@
 
 <script>
 import moment from 'moment'
-import TodaysTimelineForTable from './TodaysTimelineForTable'
 
 export default {
-  name: 'ViewTable',
-  components: { TodaysTimelineForTable },
+  name: 'AddReservation',
   props: {
     dialogVisible: Boolean,
     table: {
@@ -531,7 +373,6 @@ export default {
       availableTables: [],
       confirmButton: false,
       comments: '',
-      currentGuests: 0,
       // TODO: Legge inn gyldige tidsvalg
       date: new Date().toISOString().substr(0, 10),
       dialog: this.dialogVisible,
@@ -558,7 +399,6 @@ export default {
       menu2: false,
       menu3: false,
       menu4: false,
-      newQuerry: true,
       now: 0,
       remainingTime: 0,
       selectedTable: {
@@ -575,8 +415,8 @@ export default {
     tables () {
       return this.$store.getters.tables
     },
-    tableAvailable () {
-      return this.$store.getters.tableAvailable
+    mountedAvailableTables () {
+      return this.$store.getters.availableTables
     },
     loading () {
       return this.$store.getters.loading
@@ -584,36 +424,20 @@ export default {
   },
   watch: {
     startTime () {
-      this.checkTableAvailability()
+      this.mountAvailableTables()
     },
     endTime () {
-      this.checkTableAvailability()
+      this.mountAvailableTables()
     },
     numberOfPersons () {
-      this.checkTableAvailability()
+      this.mountAvailableTables()
     },
     date () {
-      this.checkTableAvailability()
+      this.mountAvailableTables()
     }
   },
   beforeDestroy () {
-    this.checkTableAvailability()
-  },
-  mounted () {
-    // Denne løsningen oppdaterer bare referansen.
-    if (this.table) {
-      this.newTable = this.tables[this.table.tableID - 1]
-      if (this.table.currentReservation) {
-        this.mountUser()
-        this.leavingTime = moment(this.table.currentReservation.endTime).format('HH:mm')
-        this.currentGuests = this.table.currentReservation.numberOfPersons
-        this.interval = setInterval(() => {
-          this.now = moment().valueOf()
-          this.value = ((this.now - this.table.currentReservation.startTime) / (this.table.currentReservation.endTime - this.table.currentReservation.startTime)) * 100
-          this.remainingTime = moment(this.table.currentReservation.endTime).toNow(true)
-        }, 1000)
-      }
-    }
+    this.mountAvailableTables()
   },
   methods: {
     cancel () {
@@ -622,14 +446,6 @@ export default {
       this.dialog = false
       this.$emit('dialogClosed')
       this.$store.commit('clearAvailableTables')
-      this.$store.dispatch('mountTodaysTablesWithReservations')
-    },
-    checkTableAvailability () {
-      this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
-      this.endTimeUnix = moment(this.date + ' - ' + this.endTime, 'YYYY-MM-DD - H:mm').valueOf()
-      this.newQuerry = true
-      this.$store.dispatch('checkAvailability', { tableID: this.table.tableID, numberOfPersons: this.numberOfPersons, startTime: this.startTimeUnix, endTime: this.endTimeUnix })
-      this.newQuerry = false
     },
     confirmReservation () {
       const reservationObject = {
@@ -640,7 +456,7 @@ export default {
         numberOfPersons: this.numberOfPersons,
         reservationID: 0,
         startTime: this.startTimeUnix,
-        tableID: this.table.tableID
+        tableID: this.selectedTable.tableID
       }
       this.$controller.reservations.newReservationNumber()
         .then(reservations => {
@@ -663,46 +479,17 @@ export default {
           })
         })
     },
-    customerLeft () {
-      const updateObject = this.table.currentReservation
-      updateObject.numberOfPersons = this.currentGuests
-      updateObject.endTime = moment().valueOf()
-      this.$store.dispatch('updateLiveReservation', updateObject)
-      this.cancel()
-    },
-    async mountUser () {
-      if (this.table.currentReservation.uid) {
-        this.user = await this.$fs.collection('users').doc(this.table.currentReservation.uid + '').get()
-          .then(user => {
-            user = user.data()
-            return user
-          })
-          .catch(error => {
-            console.log('Klarte ikke å hente bruker med uid: ' + this.table.currentReservation.uid)
-            console.log(error)
-          })
-      }
-      else if (this.table.currentReservation.guestID) {
-        this.user = await this.$fs.collection('guestUsers').doc(this.table.currentReservation.guestID + '').get()
-          .then(user => {
-            user = user.data()
-            return user
-          })
-          .catch(error => {
-            console.log('Klarte ikke å hente gjest med guestID: ' + this.table.currentReservation.guestID)
-            console.log(error)
-          })
-      }
+    mountAvailableTables () {
+      this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
+      this.endTimeUnix = moment(this.date + ' - ' + this.endTime, 'YYYY-MM-DD - H:mm').valueOf()
+      this.selectedTable.tableID = 0
+      this.confirmButton = false
+      this.$store.commit('setLoading', true)
+      this.$store.dispatch('mountAvailableTables', { numberOfPersons: this.numberOfPersons, startTime: this.startTimeUnix, endTime: this.endTimeUnix })
     },
     selectTable (table) {
       this.selectedTable = table
       this.confirmButton = true
-    },
-    updateReservation () {
-      const updateObject = this.table.currentReservation
-      updateObject.numberOfPersons = this.currentGuests
-      updateObject.endTime = moment(moment().format('YYYY-MM-DD') + ' - ' + this.leavingTime, 'YYYY-MM-DD - HH:mm').valueOf()
-      this.$store.dispatch('updateLiveReservation', updateObject)
     }
   }
 }
