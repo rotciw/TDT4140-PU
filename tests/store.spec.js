@@ -4,9 +4,8 @@ import * as Store from '../store/index'
 /* import firebase from 'firebase'
 import 'firebase/auth'
 import 'firebase/firestore' */
-
-
 import { cloneDeep } from 'lodash'
+
 beforeEach(() => {
   const localVue = createLocalVue()
   localVue.use(Vuex)
@@ -65,6 +64,7 @@ test('Clear states when user is logged out', () => {
     error: null,
     loading: false,
     tables: [],
+    todaysTables: [],
     user: null,
     reservations: []
   }

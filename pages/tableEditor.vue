@@ -86,7 +86,7 @@
       >
         <v-btn
           my-2
-          color="grey"
+          color="green accent-3"
           style="opacity: 0.7"
           block
           class="table"
@@ -186,6 +186,7 @@ export default {
   .table {
     height:100px;
     width:100px;
+    border-radius: 0px 18px 0px 18px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
   .table-text {

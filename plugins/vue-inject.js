@@ -1,4 +1,5 @@
-import VeeValidate from 'vee-validate'
 import Vue from 'vue'
+import * as controller from '../controller'
 
-Vue.use(VeeValidate)
+/*eslint-disable*/
+Vue.prototype.$controller = controller

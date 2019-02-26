@@ -51,6 +51,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
+          v-if="admin || employee"
           class="tile"
           active-class="background-color: green"
           to="/booking"
@@ -63,6 +64,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
+          v-if="admin || employee"
           class="tile"
           active-class="background-color: green"
           to="/allreservations"
