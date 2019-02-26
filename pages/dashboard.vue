@@ -32,6 +32,26 @@
             justify-center
           >
             <v-flex xs5>
+              <div style="...">
+                <v-btn
+                  v-if="$store.getters.admin || $store.getters.employee"
+                  large
+                  dark
+                  color="#444645"
+                  block
+                  class="roundedCorners"
+                  @click="$router.push('/booking')"
+                >
+                  Bookingsystem
+                </v-btn>
+              </div>
+            </v-flex>
+          </v-layout>
+          <v-layout
+            row
+            justify-center
+          >
+            <v-flex xs5>
               <div style="text-align: center">
                 <v-btn
                   v-if="$store.getters.admin || $store.getters.employee"
@@ -55,12 +75,13 @@
 
 <script>
 export default {
-  middleware: 'router-check',
+  middleware: ['router-check'],
   data () {
     return {
     }
   }
 }
+
 </script>
 
 <style scoped>

@@ -86,7 +86,7 @@
       >
         <v-btn
           my-2
-          color="grey"
+          color="green accent-3"
           style="opacity: 0.7"
           block
           class="table"
@@ -144,7 +144,7 @@ import AddTable from '../Components/AddTable'
 
 export default {
   components: { AddTable },
-  middleware: 'admin',
+  middleware: ['router-check', 'admin'],
   data () {
     return {
       key: 0,

@@ -131,7 +131,7 @@ import AddReservation from '../Components/AddReservation'
 
 export default {
   components: { AddReservation, ViewTable },
-  // TODO: Legge til middleware
+  middleware: ['router-check', 'employee'],
   data () {
     return {
       addReservationVisible: false,

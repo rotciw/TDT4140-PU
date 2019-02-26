@@ -5,6 +5,7 @@ import * as Store from '../store/index'
 import 'firebase/auth'
 import 'firebase/firestore' */
 import { cloneDeep } from 'lodash'
+import moment from 'moment'
 
 beforeEach(() => {
   const localVue = createLocalVue()
@@ -98,4 +99,44 @@ test('Removes table when removeTable is called with table', () => {
   expect(store.state.tables[0]).toBe(testTable)
   store.commit('removeTable', testTable)
   expect(store.getters.tables[testTable.tableID - 1]).toBe(null)
+})
+
+test('Sets reservation when setReservation is called and removes', () => {
+  const store = new Vuex.Store(cloneDeep(Store))
+  const testReservation = {
+    reservationID: 1,
+    tableID: 1,
+    numberOfPersons: 2,
+    uid: 1,
+    guestID: 2,
+    created: moment().valueOf(),
+    duration: 2,
+    comments: 'Hello',
+    startTime: moment().valueOf(),
+    endTime: moment().valueOf() + 3000000
+  }
+  store.commit('setReservation', testReservation)
+  expect(store.state.reservations[0]).toBe(testReservation)
+  store.commit('removeReservation', testReservation)
+  expect(store.getters.reservations[testReservation.reservationID - 1]).toBe(null)
+})
+
+test('Sets reservation when setReservation is called without guestID', () => {
+  const store = new Vuex.Store(cloneDeep(Store))
+  const testReservation = {
+    reservationID: 1,
+    tableID: 1,
+    numberOfPersons: 2,
+    uid: 1,
+    //guestID: ,
+    created: moment().valueOf(),
+    duration: 2,
+    comments: 'Hello',
+    startTime: moment().valueOf(),
+    endTime: moment().valueOf() + 3000000
+  }
+  store.commit('setReservation', testReservation)
+  expect(store.state.reservations[0]).toBe(testReservation)
+  store.commit('removeReservation', testReservation)
+  expect(store.getters.reservations[testReservation.reservationID - 1]).toBe(null)
 })
