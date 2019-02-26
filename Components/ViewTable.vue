@@ -223,7 +223,8 @@
                 <v-flex xs12>
                   <h2
                     style="text-align: center"
-                    class="mb-2">
+                    class="mb-2"
+                  >
                     Legg til ny reservasjon for bord # {{ table.tableID }}
                   </h2>
                 </v-flex>
