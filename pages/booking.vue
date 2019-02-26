@@ -137,7 +137,7 @@ export default {
     this.updateReservations()
     // Oppdaterer klokken hvert sekund
     this.interval = setInterval(() => {
-      this.now = moment().unix()
+      this.now = moment().valueOf()
       this.readableTime = moment().format('HH:mm:ss')
     }, 1000)
   },

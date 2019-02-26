@@ -16,6 +16,27 @@ export const users = {
         console.log('Klarte ikke å hente bruker med uid: ' + uid)
         console.log(error)
       })
+  },
+  createGuestUser (payload) {
+    const userObject = {
+      firstName: payload.firstName || '',
+      lastName: payload.lastName || '',
+      email: payload.email || '',
+      mobile: payload.mobile || ''
+    }
+    return fs.collection('guestUsers').add(userObject)
+      .then(guestID => {
+        userObject.guestID = guestID.id
+        return fs.collection('guestUsers').doc(userObject.guestID + '').set(userObject)
+          .then(() => {
+            console.log(guestID)
+            return guestID.id
+          })
+      })
+      .catch(error => {
+        console.log('Klarte ikke å lage gjestebruker')
+        console.log(error)
+      })
   }
 }
 
@@ -32,7 +53,7 @@ export const reservations = {
           .then(tables => {
             tables.forEach(table => {
               table = table.data()
-              availableTables[table.tableID - 1] = { available: true, id: table.tableID }
+              availableTables[table.tableID - 1] = { available: true, tableID: table.tableID }
             })
           }).catch(error => {
             console.log('Klarte ikke å hente bord')
@@ -51,5 +72,11 @@ export const reservations = {
         console.log(error)
       })
     return availableTables
+  },
+  newReservationNumber () {
+    return fs.collection('reservations')
+      .orderBy('reservationID', 'desc')
+      .limit(1)
+      .get()
   }
 }
