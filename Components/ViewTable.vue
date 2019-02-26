@@ -623,7 +623,6 @@ export default {
       this.dialog = false
       this.$emit('dialogClosed')
       this.$store.commit('clearAvailableTables')
-      this.$store.dispatch('mountTodaysTablesWithReservations')
     },
     checkTableAvailability () {
       this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
