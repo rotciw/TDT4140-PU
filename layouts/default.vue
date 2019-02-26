@@ -174,7 +174,6 @@ export default {
     signOut () {
       this.$store.dispatch('signUserOut')
       this.$router.push('/login')
-      console.log(this.$store.state)
     }
   }
 }

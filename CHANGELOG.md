@@ -5,6 +5,8 @@ Alle store endringer på prosjektet vil bli dokumentert her,
 Denne versjonen gjør det mulig for å ansatte og se statusen til restauranten, og de inviduelle bordene.
 * Bookingsystem som viser grønn farge for ledige bord, og rød for opptatt.
 * Info om de ulike bordene, og evt. om aktiv reservasjon
+* Oppdatere pågående reservasjoner
+* Opprette nye versjoner
 
 # v1.1.0 21.02.2019
 ### Lagt til

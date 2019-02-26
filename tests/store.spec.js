@@ -65,6 +65,7 @@ test('Clear states when user is logged out', () => {
     employee: false,
     error: null,
     loading: false,
+    tableAvailable: false,
     tables: [],
     todaysTables: [],
     user: null,
