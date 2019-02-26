@@ -363,7 +363,7 @@
                     </v-flex>
                   </v-layout>
                   <v-layout
-                    v-if="mountedAvailableTables.length > 0"
+                    v-if="!loading"
                     row
                     wrap
                     justify-center
@@ -494,6 +494,24 @@
                       </v-flex>
                     </div>
                   </v-layout>
+                  <v-layout
+                    v-else-if="loading"
+                  >
+                    <v-progress-circular
+                      indeterminate
+                      color="green"
+                    />
+                  </v-layout>
+                  <v-layout
+                    v-else-if="!loading && mountedAvailableTables.length === 0"
+                  >
+                    <h4
+                      style="text-align: center"
+                      color="red"
+                    >
+                      Fant ingen ledige bord for valgt gruppe
+                    </h4>
+                  </v-layout>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -597,6 +615,9 @@ export default {
     },
     mountedAvailableTables () {
       return this.$store.getters.availableTables
+    },
+    loading () {
+      return this.$store.getters.loading
     }
   },
   watch: {
@@ -692,7 +713,6 @@ export default {
         })
     },
     async mountUser () {
-      // TODO: Endre til uid
       if (this.table.currentReservation.uid) {
         this.user = await this.$fs.collection('users').doc(this.table.currentReservation.uid + '').get()
           .then(user => {
@@ -719,6 +739,9 @@ export default {
       }
     },
     mountAvailableTables () {
+      this.selectedTable.tableID = 0
+      this.confirmButton = false
+      this.$store.commit('setLoading', true)
       this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
       this.endTimeUnix = moment(this.date + ' - ' + this.endTime, 'YYYY-MM-DD - H:mm').valueOf()
       this.$store.dispatch('mountAvailableTables', { numberOfPersons: this.numberOfPersons, startTime: this.startTimeUnix, endTime: this.endTimeUnix })
@@ -732,7 +755,7 @@ export default {
       const updateObject = this.table.currentReservation
       updateObject.numberOfPersons = this.currentGuests
       updateObject.endTime = moment(moment().format('YYYY-MM-DD') + ' - ' + this.leavingTime, 'YYYY-MM-DD - HH:mm').valueOf()
-      this.$store.dispatch('updateReservation', updateObject)
+      this.$store.dispatch('updateLiveReservation', updateObject)
     }
   }
 }

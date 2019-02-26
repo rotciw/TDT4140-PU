@@ -61,6 +61,7 @@ test('Clear states when user is logged out', () => {
   store.commit('clearState')
   const emptyState = {
     admin: false,
+    availableTables: [],
     employee: false,
     error: null,
     loading: false,
