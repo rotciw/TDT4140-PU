@@ -144,7 +144,7 @@ import AddTable from '../Components/AddTable'
 
 export default {
   components: { AddTable },
-  middleware: 'admin',
+  middleware: ['router-check', 'admin'],
   data () {
     return {
       key: 0,

@@ -211,6 +211,7 @@
 import { mapGetters } from 'vuex'
 
 export default {
+  middleware: ['router-check', 'employee'],
   name: 'Allreservations',
   data () {
     return {

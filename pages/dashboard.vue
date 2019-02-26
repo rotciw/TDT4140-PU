@@ -55,12 +55,13 @@
 
 <script>
 export default {
-  middleware: 'router-check',
+  middleware: ['router-check'],
   data () {
     return {
     }
   }
 }
+
 </script>
 
 <style scoped>

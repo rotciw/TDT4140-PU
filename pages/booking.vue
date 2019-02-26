@@ -109,8 +109,8 @@ import moment from 'moment'
 import ViewTable from '../Components/ViewTable'
 
 export default {
+  middleware: ['router-check', 'employee'],
   components: { ViewTable },
-  // TODO: Legge til middleware
   data () {
     return {
       key: 0,
