@@ -4,7 +4,7 @@ import Vue from 'vue'
 
 export const state = () => ({
   admin: false, // Sier om brukeren er admin eller ikke
-  employee: false, // SIer om brukeren er ansatt eller ikke
+  employee: false, // Sier om brukeren er ansatt eller ikke
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
   tables: [], // Holder alle bordene til restauranten
