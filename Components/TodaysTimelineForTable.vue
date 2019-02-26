@@ -4,7 +4,6 @@
       v-for="(reservation, index) in reservations"
       :key="reservation.reservationID"
       :color="colors[index % colors.length]"
-      :icon="book"
     >
       <v-card
         :color="colors[index % colors.length]"
@@ -15,6 +14,10 @@
         </v-card-title>
         <v-card-text class="white text--primary">
           Kl: {{ convertTime(reservation.startTime) }} - {{ convertTime(reservation.endTime) }}
+          <v-icon color="green">
+            supervised_user_circle
+          </v-icon>
+          {{ reservation.numberOfPersons }}
         </v-card-text>
       </v-card>
     </v-timeline-item>
@@ -41,7 +44,7 @@ export default {
   },
   methods: {
     convertTime (time) {
-      moment(time).format('HH:mm:ss')
+      return moment(time).format('HH:mm')
     }
   }
 }

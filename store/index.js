@@ -132,21 +132,12 @@ export const actions = {
             commit('setAvailableTable', { tableID: reservation.tableID, available: false, currently: reservation.numberOfPersons })
           }
         })
-      }).catch(error => {
+      })
+      .catch(error => {
         console.log('Klarte ikke å hente reservasjoner')
         console.log(error)
       })
-      /* firebase.firestore().collection('tables')
-        .get()
-         .then(tables => {
-          tables.forEach(table => {
-            table = table.data()
-            availableTables[table.tableID - 1] = { available: true, tableID: table.tableID }
-          })
-        }).catch(error => {
-          console.log('Klarte ikke å hente bord')
-          console.log(error)
-        }) */
+    commit('setLoading', false)
   },
   // Laster inn alle reservasjoner fra databasen
   mountReservations ({ commit }) {
@@ -306,7 +297,7 @@ export const actions = {
         console.log(error)
       })
   },
-  updateReservation ({ commit }, payload) {
+  updateLiveReservation ({ commit }, payload) {
     firebase.firestore().collection('reservations').doc(payload.reservationID + '').set(payload)
       .then(commit('setReservation', payload))
       .catch(error => {
