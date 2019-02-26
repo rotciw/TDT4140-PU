@@ -12,11 +12,11 @@ export const state = () => ({
   employee: false, // SIer om brukeren er ansatt eller ikke
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
+  reservations: [], // Holder alle reservasjonene
   tables: [], // Holder alle bordene til restauranten
   tableAvailable: false, // Holder ledigheten for etterspurt bord
   todaysTables: [], // Holder alle bordene samt alle reservasjonene disse bordene har i dag
-  user: null, // Holder brukeren
-  reservations: [] // Holder alle reservasjonene
+  user: null // Holder brukeren
 })
 
 // Mutations are functions that the store uses to set its atrributes
@@ -31,10 +31,12 @@ export const mutations = {
   // Setter storen til en ren state
   clearState (state) {
     state.admin = false
+    state.availableTables = []
     state.employee = false
     state.error = null
     state.loading = false
     state.reservations = []
+    state.tableAvailable = false
     state.tables = []
     state.todaysTables = []
     state.user = null
