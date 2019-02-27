@@ -129,9 +129,134 @@
       >
         <td
           v-if="props.item"
-          class="text-xs-center"
+          class="text-xs"
         >
+          <v-icon
+            left
+            small
+            @click.stop="showAllInfo(props.item)"
+          >
+            info
+          </v-icon>
           {{ props.item.reservationID }}
+          <v-dialog
+            v-model="dialogNote"
+            max-width="800"
+          >
+            <v-card>
+              <v-card-title
+                class="headline grey lighten-2"
+                primary-title
+              >
+                Reservasjonsnr: {{ selectedReservation.reservationID }}
+              </v-card-title>
+              <v-form>
+                <v-container>
+                  <v-layout
+                    row
+                    wrap
+                  >
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.user.firstName"
+                        label="Fornavn"
+                        readonly
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.user.lastName"
+                        label="Etternavn"
+                        readonly
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.user.mobile"
+                        label="Tlfnr"
+                        readonly
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.user.email"
+                        label="Email"
+                        readonly
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.guestID"
+                        label="Gjeste ID"
+                        readonly
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.uid"
+                        label="Bruker ID"
+                        readonly
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.startTime"
+                        label="Starttid"
+                        readonly
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.endTime"
+                        label="Sluttid"
+                        readonly
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.tableID"
+                        label="Bordnummer"
+                        readonly
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.numberOfPersons"
+                        label="Antall Personer"
+                        readonly
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.created"
+                        label="Bestillingsdato"
+                        readonly
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="selectedReservation.comments"
+                        label="Kommentarer"
+                        readonly
+                      />
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-form>
+              <v-divider />
+
+              <v-card-actions>
+                <v-spacer />
+                <v-btn
+                  color="red"
+                  flat
+                  @click.stop="dialogNote = false"
+                >
+                  Close
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </td>
         <td
           v-if="props.item"
@@ -218,6 +343,7 @@ export default {
       key: 0,
       dialog: false,
       search: null,
+      dialogNote: false,
       editedIndex: -1,
       // HEADERE til tabell
       headers: [
@@ -280,6 +406,23 @@ export default {
     this.$store.dispatch('mountReservations')
   },
   methods: {
+    showAllInfo (item) {
+      this.dialogNote = true
+      this.selectedReservation.reservationID = item.reservationID
+      this.selectedReservation.user.firstName = item.user.firstName
+      this.selectedReservation.user.lastName = item.user.lastName
+      this.selectedReservation.user.email = item.user.email
+      this.selectedReservation.user.mobile = item.user.mobile
+      this.selectedReservation.numberOfPersons = item.numberOfPersons
+      this.selectedReservation.comments = item.comments
+      this.selectedReservation.tableID = item.tableID
+      this.selectedReservation.created = item.created
+      this.selectedReservation.duration = item.duration
+      this.selectedReservation.startTime = item.startTime
+      this.selectedReservation.endTime = item.endTime
+      this.selectedReservation.guestID = item.guestID
+      this.selectedReservation.uid = item.uid
+    },
     editItem (item) {
       // console.log(this.editedSelectedReservation)
       this.dialog = true
