@@ -623,6 +623,9 @@ export default {
       this.dialog = false
       this.$emit('dialogClosed')
       this.$store.commit('clearAvailableTables')
+      if (this.table.currentReservation.endTime > this.now) {
+        this.dispatch('mountTodaysTablesWithReservations')
+      }
     },
     checkTableAvailability () {
       this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
