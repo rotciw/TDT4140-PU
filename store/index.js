@@ -227,6 +227,8 @@ export const actions = {
   *  reservasjonen i riktig collection.
   * */
   updateReservation ({ commit }, payload) {
+    let startTime = moment(new Date().toISOString().substr(0, 10) + ' - ' + payload.startTime, 'YYYY-MM-DD - H:mm').valueOf(),
+        endTime = moment(new Date().toISOString().substr(0, 10) + ' - ' + payload.endTime, 'YYYY-MM-DD - H:mm').valueOf()
     firebase.firestore().collection('reservations').doc(payload.reservationID + '').set({
       reservationID: payload.reservationID,
       tableID: payload.tableID,
@@ -236,10 +238,12 @@ export const actions = {
       created: payload.created,
       duration: payload.duration,
       comments: payload.comments,
-      startTime: payload.startTime,
-      endTime: payload.endTime
+      startTime: startTime,
+      endTime: endTime
     })
       .then(() => {
+        payload.startTime = startTime
+        payload.endTime = endTime
         commit('setReservation', payload)
         if (payload.uid > 0) {
           firebase.firestore().collection('users').doc(payload.uid + '').set({

@@ -3,6 +3,8 @@
     <v-card-title>
       <h2>Oversikt over reservasjoner:</h2>
       <v-spacer />
+      <!-- Dialogen (popup) her er for endring av reservasjonen
+      ENDRING AV RESERVASJON START -->
       <v-dialog
         v-model="dialog"
         max-width="600px"
@@ -30,6 +32,8 @@
                   sm6
                   md4
                 >
+                  <!-- Her hentes data fra editedSelectedReservation som er definert under.
+                  Disse henter fra users og reservations tabellene i databasen -->
                   <v-text-field
                     v-model="editedSelectedReservation.user.lastName"
                     label="Etternavn"
@@ -63,6 +67,7 @@
                   <v-text-field
                     v-model="editedSelectedReservation.numberOfPersons"
                     label="Antall Personer"
+                    type="number"
                   />
                 </v-flex>
                 <v-flex
@@ -73,6 +78,7 @@
                   <v-text-field
                     v-model="editedSelectedReservation.tableID"
                     label="Bordnr"
+                    type="number"
                   />
                 </v-flex>
                 <v-flex
@@ -84,6 +90,82 @@
                     v-model="editedSelectedReservation.comments"
                     label="Kommentarer"
                   />
+                </v-flex>
+                <v-flex
+                  xs12
+                  sm6
+                  md4
+                >
+                  <v-menu
+                    ref="startMenu"
+                    v-model="menu2"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    :return-value.sync="editedSelectedReservation.startTime"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    max-width="250px"
+                    min-width="250px"
+                  >
+                    <v-text-field
+                      slot="activator"
+                      v-model="editedSelectedReservation.startTime"
+                      color="green"
+                      prepend-icon="access_time"
+                      label="Starttid"
+                      readonly
+                    />
+                    <v-time-picker
+                      v-if="menu2"
+                      v-model="editedSelectedReservation.startTime"
+                      color="green"
+                      format="24hr"
+                      full-width
+                      :min="minStartTime"
+                      :max="tomorrow"
+                      @click:minute="$refs.startMenu.save(editedSelectedReservation.startTime)"
+                    />
+                  </v-menu>
+                </v-flex>
+                <v-flex
+                  xs12
+                  sm6
+                  md4
+                >
+                  <v-menu
+                    ref="leavingMenu"
+                    v-model="menu1"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    :return-value.sync="editedSelectedReservation.endTime"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    max-width="250px"
+                    min-width="250px"
+                  >
+                    <v-text-field
+                      slot="activator"
+                      v-model="editedSelectedReservation.endTime"
+                      color="green"
+                      prepend-icon="directions_walk"
+                      label="Sluttid"
+                      readonly
+                    />
+                    <v-time-picker
+                      v-if="menu1"
+                      v-model="editedSelectedReservation.endTime"
+                      color="green"
+                      format="24hr"
+                      :min="minEndTime"
+                      :max="tomorrow"
+                      full-width
+                      @click:minute="$refs.leavingMenu.save(editedSelectedReservation.endTime)"
+                    />
+                  </v-menu>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -108,6 +190,8 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <!-- ENDRING AV RESERVASJON DIALOG SLUTT -->
+      <!-- Fra her defineres data tabellen, som har søke funksjon -->
       <v-text-field
         v-model="search"
         append-icon="search"
@@ -136,6 +220,7 @@
             small
             @click.stop="showAllInfo(props.item)"
           >
+            <!-- .stop gjør at man kan klikke utenfor boksen for å krysse av -->
             info
           </v-icon>
           {{ props.item.reservationID }}
@@ -258,6 +343,7 @@
             </v-card>
           </v-dialog>
         </td>
+        <!--  Her hentes verdiene fra databasen, en etter en for hver td tag -->
         <td
           v-if="props.item"
           class="text-xs-left"
@@ -298,6 +384,7 @@
           v-if="props.item"
           class="justify-center layout px-0"
         >
+          <!-- IKONER FOR ENDRING OG SLETTING AV ENTRIES -->
           <v-icon
             small
             class="mr-2"
@@ -317,7 +404,7 @@
         slot="pageText"
         slot-scope="props"
       >
-        Side {{ props.pageStart }} - {{ props.pageStop }} av {{ props.itemsLength }}
+        {{ props.pageStart }} - {{ props.pageStop }} av {{ props.itemsLength }}
       </template>
       <v-alert
         slot="no-results"
@@ -328,24 +415,35 @@
         Ingen resultater for "{{ search }}".
       </v-alert>
     </v-data-table>
+    <!-- DATA TABELL SLUTT -->
   </v-card>
 </template>
 
 <script>
 // Hente gettere fra vuex store
 import { mapGetters } from 'vuex'
+// Moment er biblioteket vi bruker for tid/time picker etc.
+import moment from 'moment'
 
 export default {
+  // Middleware passer på hvem som har tilgang til denne siden
   middleware: ['router-check', 'employee'],
   name: 'Allreservations',
+  // Her kommer all data som blir brukt for denne undersiden
   data () {
     return {
       key: 0,
       dialog: false,
+      date: new Date().toISOString().substr(0, 10),
       search: null,
       dialogNote: false,
       editedIndex: -1,
-      // HEADERE til tabell
+      menu1: false,
+      menu2: false,
+      startTime: '',
+      endTime: '',
+      tomorrow: moment().endOf('day').format('H:mm'),
+      // HEADERE til tabell. Value må korrespondere med text field v-model
       headers: [
         { text: 'Reservasjonsnr', value: 'reservationID' },
         { text: 'Fornavn', value: 'user.firstName' },
@@ -375,6 +473,7 @@ export default {
           email: ''
         }
       },
+      // For endring av entries skal det opprettes et nytt object også sendes til databasen gjennom denne
       editedSelectedReservation: {
         reservationID: '',
         tableID: '',
@@ -395,17 +494,33 @@ export default {
       }
     }
   },
-  // Getter for reservasjoner fra Vuex Store
+  watch: {
+    startTime () {
+      if (this.endTime < this.startTime) {
+        this.updateEndTime()
+      }
+    }
+  },
+  // Getter for reservasjoner fra Vuex Store. Henter reservations og users fra firestore
   computed: {
     ...mapGetters({
       reservations: 'reservations',
       users: 'users'
-    })
+    }),
+    minStartTime () {
+      return moment().format('H:mm')
+    },
+    minEndTime () {
+      return moment().format('H:mm')
+    }
   },
+  // Når siden mounter(er lastet inn) skal den hente alle reservasjonene fra firestore
   mounted () {
     this.$store.dispatch('mountReservations')
   },
+  // Her kommer alle metodene/funksjonene
   methods: {
+    // item sender ned info om hvilket objekt som er trykket. Denne dataen blir så lagt inn i selectedReservation objekt
     showAllInfo (item) {
       this.dialogNote = true
       this.selectedReservation.reservationID = item.reservationID
@@ -416,13 +531,14 @@ export default {
       this.selectedReservation.numberOfPersons = item.numberOfPersons
       this.selectedReservation.comments = item.comments
       this.selectedReservation.tableID = item.tableID
-      this.selectedReservation.created = item.created
+      this.selectedReservation.created = moment(item.created).format('HH:mm - dddd DD MMM')
       this.selectedReservation.duration = item.duration
-      this.selectedReservation.startTime = item.startTime
-      this.selectedReservation.endTime = item.endTime
+      this.selectedReservation.startTime = moment(item.startTime).format('HH:mm')
+      this.selectedReservation.endTime = moment(item.endTime).format('HH:mm')
       this.selectedReservation.guestID = item.guestID
       this.selectedReservation.uid = item.uid
     },
+    // Endret items sendes inn i editedSelectedReservation objekt
     editItem (item) {
       // console.log(this.editedSelectedReservation)
       this.dialog = true
@@ -436,20 +552,24 @@ export default {
       this.editedSelectedReservation.tableID = item.tableID
       this.editedSelectedReservation.created = item.created
       this.editedSelectedReservation.duration = item.duration
-      this.editedSelectedReservation.startTime = item.startTime
-      this.editedSelectedReservation.endTime = item.endTime
+      this.editedSelectedReservation.startTime = moment(item.startTime).format('H:mm')
+      this.editedSelectedReservation.endTime = moment(item.endTime).format('H:mm')
+      this.startTime = this.editedSelectedReservation.startTime
+      this.endTime = this.editedSelectedReservation.endTime
       this.editedSelectedReservation.guestID = item.guestID
       this.editedSelectedReservation.uid = item.uid
     },
 
     deleteItem (item) {
       confirm('Er du sikker på at du har lyst til å slette?')
+      // Kaller på removeReservation fra Vuex Store som sletter en reservasjon fra databasen
       this.$store.dispatch('removeReservation', item)
     },
     close () {
       this.dialog = false
     },
     save () {
+      // Kaller på updateReservation fra vuex store som skal oppdatere hver reservasjon med dataen fra editedSelectedReservation
       this.$store.dispatch('updateReservation', this.editedSelectedReservation)
       this.close()
       this.editedSelectedReservation = {
@@ -470,6 +590,9 @@ export default {
           email: ''
         }
       }
+    },
+    updateEndTime () {
+      this.editedSelectedReservation.endTime = this.editedSelectedReservation.startTime
     }
   }
 }
