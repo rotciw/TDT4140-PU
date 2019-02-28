@@ -673,12 +673,14 @@ export default {
               this.$controller.users.createGuestUser(this.guestUser)
                 .then(guestID => {
                   reservationObject.guestID = guestID
+                  reservationObject.uid = ''
                   this.$store.dispatch('createReservation', reservationObject)
                   this.cancel()
                 })
             }
             else {
               reservationObject.uid = this.$store.getters.user.uid
+              reservationObject.guestID = ''
               this.$store.dispatch('createReservation', reservationObject)
               this.cancel()
             }
