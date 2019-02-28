@@ -1,6 +1,29 @@
 # Changelog
 Alle store endringer på prosjektet vil bli dokumentert her,
 
+# v1.1.9 28.02.2019
+Denne versjonen inneholder den ferdige brukerhistorien #7 (Issue #18):
+07: Ansatte endre reservasjon
+* Reservasjonsoversikt
+* Endre reservasjon
+* Slette reservasjon
+
+# v1.1.8 26.02.2019
+Inneholder brukerhistoriene 4, 5, 6, 7 og 8 (Issues: #10, #15, #16, #18 og #19):
+## Nytt i denne versjonen:
+* 04: Ansatte kan logge inn
+  * Store riktig state
+  * Middleware på employee sider
+* 05: Ansatte kan logge ut
+* 06: Ansatte kan reservere bord:
+  * Booking oversikt
+  * Dialog for å opprette reservasjon
+  * Dialog for å endre reservasjon
+* 07: **WIP**: Ansatte endre reservasjon
+  * Reservasjonsoversikt
+  * Endre reservasjon
+* 08: Ansatte slette reservasjon
+
 # v1.1.4
 Denne versjonen gjør det mulig for å ansatte og se statusen til restauranten, og de inviduelle bordene.
 * Bookingsystem som viser grønn farge for ledige bord, og rød for opptatt.
