@@ -123,6 +123,8 @@
                       color="green"
                       format="24hr"
                       full-width
+                      :min="minStartTime"
+                      :max="tomorrow"
                       @click:minute="$refs.startMenu.save(editedSelectedReservation.startTime)"
                     />
                   </v-menu>
@@ -158,6 +160,8 @@
                       v-model="editedSelectedReservation.endTime"
                       color="green"
                       format="24hr"
+                      :min="minEndTime"
+                      :max="tomorrow"
                       full-width
                       @click:minute="$refs.leavingMenu.save(editedSelectedReservation.endTime)"
                     />
@@ -430,11 +434,15 @@ export default {
     return {
       key: 0,
       dialog: false,
+      date: new Date().toISOString().substr(0, 10),
       search: null,
       dialogNote: false,
       editedIndex: -1,
       menu1: false,
       menu2: false,
+      startTime: '',
+      endTime: '',
+      tomorrow: moment().endOf('day').format('H:mm'),
       // HEADERE til tabell. Value må korrespondere med text field v-model
       headers: [
         { text: 'Reservasjonsnr', value: 'reservationID' },
@@ -486,12 +494,25 @@ export default {
       }
     }
   },
+  watch: {
+    startTime () {
+      if (this.endTime < this.startTime) {
+        this.updateEndTime()
+      }
+    }
+  },
   // Getter for reservasjoner fra Vuex Store. Henter reservations og users fra firestore
   computed: {
     ...mapGetters({
       reservations: 'reservations',
       users: 'users'
-    })
+    }),
+    minStartTime () {
+      return moment().format('H:mm')
+    },
+    minEndTime () {
+      return moment().format('H:mm')
+    }
   },
   // Når siden mounter(er lastet inn) skal den hente alle reservasjonene fra firestore
   mounted () {
@@ -531,8 +552,10 @@ export default {
       this.editedSelectedReservation.tableID = item.tableID
       this.editedSelectedReservation.created = item.created
       this.editedSelectedReservation.duration = item.duration
-      this.editedSelectedReservation.startTime = moment(item.startTime).format('HH:mm')
-      this.editedSelectedReservation.endTime = moment(item.endTime).format('HH:mm')
+      this.editedSelectedReservation.startTime = moment(item.startTime).format('H:mm')
+      this.editedSelectedReservation.endTime = moment(item.endTime).format('H:mm')
+      this.startTime = this.editedSelectedReservation.startTime
+      this.endTime = this.editedSelectedReservation.endTime
       this.editedSelectedReservation.guestID = item.guestID
       this.editedSelectedReservation.uid = item.uid
     },
@@ -567,6 +590,9 @@ export default {
           email: ''
         }
       }
+    },
+    updateEndTime () {
+      this.editedSelectedReservation.endTime = this.editedSelectedReservation.startTime
     }
   }
 }
