@@ -48,7 +48,7 @@
       >
         <div v-if="table">
           <v-btn
-            v-if="table.currentReservation"
+            v-if="table.currentReservation && table.currentReservation.endTime > now"
             my-2
             color="red"
             block
