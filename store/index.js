@@ -197,7 +197,7 @@ export const actions = {
       .onSnapshot(reservations => {
         reservations.forEach(reservation => {
           reservation = reservation.data()
-          if (reservation.uid.length > 1) {
+          if (reservation.uid && reservation.uid.length > 1) {
             firebase.firestore().collection('users')
               .doc(reservation.uid + '').get()
               .then(user => {
@@ -205,7 +205,7 @@ export const actions = {
                 commit('setReservation', reservation)
               })
           }
-          else if (reservation.guestID.length > 1) {
+          else if (reservation.guestID && reservation.guestID.length > 1) {
             firebase.firestore().collection('guestUsers')
               .doc(reservation.guestID + '').get()
               .then(user => {
