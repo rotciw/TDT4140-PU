@@ -407,6 +407,7 @@ export default {
       showTables: false,
       startTime: moment().format('H:mm'),
       startTimeUnix: '',
+      tomorrow: moment().endOf('day').valueOf(),
       user: null,
       value: 0
     }
