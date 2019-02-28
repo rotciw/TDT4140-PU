@@ -135,6 +135,8 @@
                       color="green"
                       format="24hr"
                       full-width
+                      :min="minStartTime"
+                      :max="tomorrow"
                       @click:minute="$refs.leavingMenu.save(leavingTime)"
                     />
                   </v-menu>
@@ -300,6 +302,8 @@
                           color="green"
                           format="24hr"
                           full-width
+                          :min="minStartTime"
+                          :max="tomorrow"
                           @click:minute="$refs.startMenu.save(startTime)"
                         />
                       </v-menu>
@@ -337,6 +341,8 @@
                           color="green"
                           format="24hr"
                           full-width
+                          :min="minEndTime"
+                          :max="tomorrow"
                           @click:minute="$refs.endMenu.save(endTime)"
                         />
                       </v-menu>
@@ -568,6 +574,7 @@ export default {
       showTables: false,
       startTime: moment().format('H:mm'),
       startTimeUnix: '',
+      tomorrow: moment().endOf('day').format('H:mm'),
       user: null,
       value: 0
     }
@@ -581,11 +588,23 @@ export default {
     },
     loading () {
       return this.$store.getters.loading
+    },
+    minStartTime () {
+      return moment().format('H:mm')
+    },
+    minEndTime () {
+      return this.startTime
+    },
+    minDate () {
+      return new Date().toISOString().substr(0, 10)
     }
   },
   watch: {
     startTime () {
       this.checkTableAvailability()
+      if (this.endTime < this.startTime) {
+        this.updateEndTime()
+      }
     },
     endTime () {
       this.checkTableAvailability()
@@ -624,7 +643,7 @@ export default {
       this.$emit('dialogClosed')
       this.$store.commit('clearAvailableTables')
       if (this.table.currentReservation && (this.table.currentReservation.endTime > this.now)) {
-        this.dispatch('mountTodaysTablesWithReservations')
+        this.$store.dispatch('mountTodaysTablesWithReservations')
       }
     },
     checkTableAvailability () {
@@ -706,6 +725,9 @@ export default {
       updateObject.numberOfPersons = this.currentGuests
       updateObject.endTime = moment(moment().format('YYYY-MM-DD') + ' - ' + this.leavingTime, 'YYYY-MM-DD - HH:mm').valueOf()
       this.$store.dispatch('updateLiveReservation', updateObject)
+    },
+    updateEndTime () {
+      this.endTime = this.startTime
     }
   }
 }

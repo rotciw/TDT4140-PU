@@ -58,6 +58,7 @@
                         <v-date-picker
                           v-model="date"
                           color="green"
+                          :min="minDate"
                           @input="menu = false"
                         />
                       </v-menu>
@@ -94,6 +95,8 @@
                           color="green"
                           format="24hr"
                           full-width
+                          :min="minStartTime"
+                          :max="tomorrow"
                           @click:minute="$refs.startMenu.save(startTime)"
                         />
                       </v-menu>
@@ -131,6 +134,8 @@
                           color="green"
                           format="24hr"
                           full-width
+                          :min="minEndTime"
+                          :max="tomorrow"
                           @click:minute="$refs.endMenu.save(endTime)"
                         />
                       </v-menu>
@@ -159,15 +164,6 @@
                       />
                     </v-flex>
                     <v-flex xs12>
-                      <div class="text-xs-center">
-                        <v-btn
-                          color="green"
-                          class="button"
-                          @click="mountAvailableTables()"
-                        >
-                          Søk
-                        </v-btn>
-                      </div>
                       <v-divider class="my-2" />
                     </v-flex>
                   </v-layout>
@@ -407,7 +403,7 @@ export default {
       showTables: false,
       startTime: moment().format('H:mm'),
       startTimeUnix: '',
-      tomorrow: moment().endOf('day').valueOf(),
+      tomorrow: moment().endOf('day').format('H:mm'),
       user: null,
       value: 0
     }
@@ -421,11 +417,23 @@ export default {
     },
     loading () {
       return this.$store.getters.loading
+    },
+    minStartTime () {
+      return moment().format('H:mm')
+    },
+    minEndTime () {
+      return this.startTime
+    },
+    minDate () {
+      return new Date().toISOString().substr(0, 10)
     }
   },
   watch: {
     startTime () {
       this.mountAvailableTables()
+      if (this.endTime < this.startTime) {
+        this.updateEndTime()
+      }
     },
     endTime () {
       this.mountAvailableTables()
@@ -486,11 +494,19 @@ export default {
       this.selectedTable.tableID = 0
       this.confirmButton = false
       this.$store.commit('setLoading', true)
-      this.$store.dispatch('mountAvailableTables', { numberOfPersons: this.numberOfPersons, startTime: this.startTimeUnix, endTime: this.endTimeUnix })
+      this.$store.dispatch('mountAvailableTables', {
+        numberOfPersons: this.numberOfPersons,
+        startTime: this.startTimeUnix,
+        endTime: this.endTimeUnix
+      })
     },
     selectTable (table) {
       this.selectedTable = table
       this.confirmButton = true
+    },
+    updateEndTime () {
+      this.endTime = this.startTime
+      console.log(this.endTime)
     }
   }
 }
