@@ -48,9 +48,6 @@ export default {
       colors: ['green', 'yellow darken-3', 'purple', 'grey', 'orange']
     }
   },
-  mounted () {
-    console.log(this.reservations)
-  },
   methods: {
     convertTime (time) {
       return moment(time).format('HH:mm')

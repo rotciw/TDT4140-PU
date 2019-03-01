@@ -14,7 +14,7 @@ export const state = () => ({
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
   reservations: [], // Holder alle reservasjonene
   tables: [], // Holder alle bordene til restauranten
-  tableAvailable: false, // Holder ledigheten for etterspurt bord
+  tableAvailable: [], // Holder ledigheten for etterspurt bord
   todaysTables: [], // Holder alle bordene samt alle reservasjonene disse bordene har i dag
   user: null // Holder brukeren
 })
@@ -23,6 +23,9 @@ export const state = () => ({
 export const mutations = {
   clearAvailableTables (state) {
     state.availableTables = []
+  },
+  clearAvailability (state) {
+    state.tableAvailable = []
   },
   // Fjerner error melding
   clearError (state, payload) {
@@ -36,7 +39,7 @@ export const mutations = {
     state.error = null
     state.loading = false
     state.reservations = []
-    state.tableAvailable = false
+    state.tableAvailable = []
     state.tables = []
     state.todaysTables = []
     state.user = null
@@ -70,7 +73,7 @@ export const mutations = {
   },
   // Setter ledigheten til forespurt bord ved gitte tidspunkt til enten ledig eller ei. Brukes av ViewTable når man etterspør spesifikt bord.
   setTableAvailability (state, payload) {
-    state.tableAvailable = payload
+    Vue.set(state.tableAvailable, state.tableAvailable.length, payload)
   },
   // Setter loading som brukes ved innlogging
   setLoading (state, payload) {
@@ -112,6 +115,8 @@ export const actions = {
   * collectionen. Dette brukes så av ViewTable for å si at bordet ikke er ledig for valgte tidspunkt.
   * */
   checkAvailability ({ commit }, payload) {
+    commit('setLoading', true)
+    commit('clearAvailability')
     let now = moment().valueOf(),
         available = true
     firebase.firestore().collection('reservations')
@@ -132,7 +137,36 @@ export const actions = {
           }
         })
       })
-    commit('setTableAvailability', available)
+    commit('setLoading', false)
+  },
+  /* Brukes av allReservations for å sjekke om bordet er ledig for valgte tidspunkt. Denne henter alle reservasjoner som er
+  * fram i tid for valgt bord. Hvis reservasjonstidene overlapper vet vi at bordet er opptatt på valgte tidspunkt
+  * og vi pusher så på mutasjonen setTableAvailability med false, fordi bordet ikke er ledig. Hvis det er ledig kalles
+  * den samme mutasjonen, men med ledig. Ved å bruke onSnapshot vil denne kjøre hver gang det skjer en endring i reservations
+  * collectionen. Dette brukes så av allReservations når man endrer en reservasjon for å si at bordet ikke er ledig for valgte tidspunkt.
+  * Fordi checkAvailability ikke tar hensyn til hvilket reservajonsnummer man prøver å endre, vil den si at bordet er opptatt hvis man prøver å endre
+  * en egen reservasjon. I checkAvailabilityWithReservation sjekker vi kun overlapp på reservasjonene som ikke har lik reservasjonsID.
+  * */
+  checkAvailabilityWithReservation ({ commit }, payload) {
+    commit('setLoading', true)
+    commit('clearAvailability')
+    let now = moment().valueOf()
+    firebase.firestore().collection('reservations')
+      .where('tableID', '==', payload.tableID)
+      .where('endTime', '>', now)
+      .onSnapshot(reservations => {
+        reservations.forEach(reservation => {
+          reservation = reservation.data()
+          if (Number(reservation.reservationID) !== Number(payload.reservationID)) {
+            if ((reservation.startTime > payload.startTime && reservation.startTime < payload.endTime) ||
+              (reservation.endTime > payload.startTime && reservation.endTime < payload.endTime) ||
+              (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {
+              commit('setTableAvailability', false)
+            }
+          }
+        })
+      })
+    commit('setLoading', false)
   },
   // FJerner feilmeldingen
   clearError ({ commit }) {
@@ -193,11 +227,13 @@ export const actions = {
   *  allreservations til å vise info om alle reservasjoner og informasjonen om brukeren tilknyttet reservasjonen
   * */
   mountReservations ({ commit }) {
+    const today = moment().startOf('day').valueOf()
     firebase.firestore().collection('reservations')
+      .where('startTime', '>', today)
       .onSnapshot(reservations => {
         reservations.forEach(reservation => {
           reservation = reservation.data()
-          if (reservation.uid.length > 1) {
+          if (reservation.uid && reservation.uid.length > 1) {
             firebase.firestore().collection('users')
               .doc(reservation.uid + '').get()
               .then(user => {
@@ -205,7 +241,7 @@ export const actions = {
                 commit('setReservation', reservation)
               })
           }
-          else if (reservation.guestID.length > 1) {
+          else if (reservation.guestID && reservation.guestID.length > 1) {
             firebase.firestore().collection('guestUsers')
               .doc(reservation.guestID + '').get()
               .then(user => {
@@ -227,8 +263,6 @@ export const actions = {
   *  reservasjonen i riktig collection.
   * */
   updateReservation ({ commit }, payload) {
-    let startTime = moment(new Date().toISOString().substr(0, 10) + ' - ' + payload.startTime, 'YYYY-MM-DD - H:mm').valueOf(),
-        endTime = moment(new Date().toISOString().substr(0, 10) + ' - ' + payload.endTime, 'YYYY-MM-DD - H:mm').valueOf()
     firebase.firestore().collection('reservations').doc(payload.reservationID + '').set({
       reservationID: payload.reservationID,
       tableID: payload.tableID,
@@ -238,12 +272,10 @@ export const actions = {
       created: payload.created,
       duration: payload.duration,
       comments: payload.comments,
-      startTime: startTime,
-      endTime: endTime
+      startTime: payload.startTime,
+      endTime: payload.endTime
     })
       .then(() => {
-        payload.startTime = startTime
-        payload.endTime = endTime
         commit('setReservation', payload)
         if (payload.uid > 0) {
           firebase.firestore().collection('users').doc(payload.uid + '').set({
