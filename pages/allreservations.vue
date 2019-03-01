@@ -1,7 +1,7 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <v-card>
     <v-card-title>
-      <h2>Oversikt over reservasjoner:</h2>
+      <h2>Oversikt over kommende reservasjoner:</h2>
       <v-spacer />
       <!-- Dialogen (popup) her er for endring av reservasjonen
       ENDRING AV RESERVASJON START -->
@@ -65,8 +65,9 @@
                   md4
                 >
                   <v-text-field
-                    v-model="editedSelectedReservation.numberOfPersons"
+                    v-model="numberOfPersons"
                     label="Antall Personer"
+                    min="1"
                     type="number"
                   />
                 </v-flex>
@@ -75,11 +76,34 @@
                   sm6
                   md4
                 >
-                  <v-text-field
-                    v-model="editedSelectedReservation.tableID"
-                    label="Bordnr"
-                    type="number"
-                  />
+                  <div class="text-xs-center">
+                    <v-menu
+                      top
+                      offset-y
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-btn
+                          color="green"
+                          dark
+                          v-on="on"
+                        >
+                          Endre bord: {{ tableID }}
+                        </v-btn>
+                      </template>
+
+                      <v-list>
+                        <v-list-tile
+                          v-for="(item, index) in tables"
+                          :key="index"
+                          @click="updateTable(item.tableID)"
+                        >
+                          <v-list-tile-title v-if="item">
+                            {{ item.tableID }}
+                          </v-list-tile-title>
+                        </v-list-tile>
+                      </v-list>
+                    </v-menu>
+                  </div>
                 </v-flex>
                 <v-flex
                   xs12
@@ -101,7 +125,7 @@
                     v-model="menu2"
                     :close-on-content-click="false"
                     :nudge-right="40"
-                    :return-value.sync="editedSelectedReservation.startTime"
+                    :return-value.sync="startTime"
                     lazy
                     transition="scale-transition"
                     offset-y
@@ -111,7 +135,7 @@
                   >
                     <v-text-field
                       slot="activator"
-                      v-model="editedSelectedReservation.startTime"
+                      v-model="startTime"
                       color="green"
                       prepend-icon="access_time"
                       label="Starttid"
@@ -119,13 +143,13 @@
                     />
                     <v-time-picker
                       v-if="menu2"
-                      v-model="editedSelectedReservation.startTime"
+                      v-model="startTime"
                       color="green"
                       format="24hr"
                       full-width
                       :min="minStartTime"
                       :max="tomorrow"
-                      @click:minute="$refs.startMenu.save(editedSelectedReservation.startTime)"
+                      @click:minute="$refs.startMenu.save(startTime); updateMinEndTime()"
                     />
                   </v-menu>
                 </v-flex>
@@ -139,7 +163,7 @@
                     v-model="menu1"
                     :close-on-content-click="false"
                     :nudge-right="40"
-                    :return-value.sync="editedSelectedReservation.endTime"
+                    :return-value.sync="endTime"
                     lazy
                     transition="scale-transition"
                     offset-y
@@ -149,7 +173,7 @@
                   >
                     <v-text-field
                       slot="activator"
-                      v-model="editedSelectedReservation.endTime"
+                      v-model="endTime"
                       color="green"
                       prepend-icon="directions_walk"
                       label="Sluttid"
@@ -157,13 +181,51 @@
                     />
                     <v-time-picker
                       v-if="menu1"
-                      v-model="editedSelectedReservation.endTime"
+                      v-model="endTime"
                       color="green"
                       format="24hr"
                       :min="minEndTime"
                       :max="tomorrow"
                       full-width
-                      @click:minute="$refs.leavingMenu.save(editedSelectedReservation.endTime)"
+                      @click:minute="$refs.leavingMenu.save(endTime)"
+                    />
+                  </v-menu>
+                </v-flex>
+              </v-layout>
+              <v-layout
+                row
+                wrap
+                justify-center
+              >
+                <v-flex
+                  xs12
+                  sm6
+                  md4
+                >
+                  <v-menu
+                    v-model="menu"
+                    color="green"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    min-width="290px"
+                  >
+                    <v-text-field
+                      slot="activator"
+                      v-model="date"
+                      label="Dato"
+                      color="green"
+                      prepend-icon="event"
+                      readonly
+                    />
+                    <v-date-picker
+                      v-model="date"
+                      color="green"
+                      :min="minDate"
+                      @input="menu = false"
                     />
                   </v-menu>
                 </v-flex>
@@ -172,6 +234,12 @@
           </v-card-text>
 
           <v-card-actions>
+            <h3
+              v-if="!tableAvailable"
+              style="text-align: right; color: red"
+            >
+              Bordet er ikke ledig for valgt tidspunkt
+            </h3>
             <v-spacer />
             <v-btn
               color="red darken-1"
@@ -181,6 +249,7 @@
               Avbryt
             </v-btn>
             <v-btn
+              v-if="tableAvailable"
               color="blue darken-1"
               flat
               @click="save"
@@ -212,7 +281,7 @@
         slot-scope="props"
       >
         <td
-          v-if="props.item"
+          v-if="props.item && props.item.user"
           class="text-xs"
         >
           <v-icon
@@ -238,6 +307,7 @@
               <v-form>
                 <v-container>
                   <v-layout
+                    v-if="selectedReservation"
                     row
                     wrap
                   >
@@ -345,25 +415,25 @@
         </td>
         <!--  Her hentes verdiene fra databasen, en etter en for hver td tag -->
         <td
-          v-if="props.item"
+          v-if="props.item && props.item.user"
           class="text-xs-left"
         >
           {{ props.item.user.firstName }}
         </td>
         <td
-          v-if="props.item"
+          v-if="props.item && props.item.user"
           class="text-xs-left"
         >
           {{ props.item.user.lastName }}
         </td>
         <td
-          v-if="props.item"
+          v-if="props.item && props.item.user"
           class="text-xs-left"
         >
           {{ props.item.user.mobile }}
         </td>
         <td
-          v-if="props.item"
+          v-if="props.item && props.item.user"
           class="text-xs-left"
         >
           {{ props.item.user.email }}
@@ -433,15 +503,23 @@ export default {
   data () {
     return {
       key: 0,
+      counter: 0,
       dialog: false,
       date: new Date().toISOString().substr(0, 10),
       search: null,
       dialogNote: false,
       editedIndex: -1,
+      endTimeUnix: 0,
+      minEndTime: moment().format('H:mm'),
+      menu: false,
       menu1: false,
       menu2: false,
+      numberOfPersons: 1,
+      reservationID: 0,
       startTime: '',
+      startTimeUnix: 0,
       endTime: '',
+      tableID: 0,
       tomorrow: moment().endOf('day').format('H:mm'),
       // HEADERE til tabell. Value må korrespondere med text field v-model
       headers: [
@@ -494,24 +572,54 @@ export default {
       }
     }
   },
-  watch: {
-    startTime () {
-      if (this.endTime < this.startTime) {
-        this.updateEndTime()
-      }
-    }
-  },
   // Getter for reservasjoner fra Vuex Store. Henter reservations og users fra firestore
   computed: {
     ...mapGetters({
       reservations: 'reservations',
-      users: 'users'
+      users: 'users',
+      tables: 'tables'
     }),
     minStartTime () {
       return moment().format('H:mm')
     },
-    minEndTime () {
-      return moment().format('H:mm')
+    minDate () {
+      return new Date().toISOString().substr(0, 10)
+    },
+    tableAvailable () {
+      return !this.$store.getters.tableAvailable.includes(false)
+    }
+  },
+  watch: {
+    endTime () {
+      if (this.counter > 3) {
+        this.checkTableAvailability()
+      }
+      this.counter++
+    },
+    numberOfPersons () {
+      if (this.counter > 3) {
+        this.checkTableAvailability()
+      }
+      this.counter++
+    },
+    date () {
+      if (this.counter > 3) {
+        this.checkTableAvailability()
+      }
+      this.counter++
+    },
+    startTime () {
+      let counter = 0
+      if (counter > 0) {
+        this.checkTableAvailability()
+      }
+      this.counter++
+    },
+    tableID () {
+      if (this.counter > 3) {
+        this.checkTableAvailability()
+      }
+      this.counter++
     }
   },
   // Når siden mounter(er lastet inn) skal den hente alle reservasjonene fra firestore
@@ -531,31 +639,30 @@ export default {
       this.selectedReservation.numberOfPersons = item.numberOfPersons
       this.selectedReservation.comments = item.comments
       this.selectedReservation.tableID = item.tableID
-      this.selectedReservation.created = moment(item.created).format('HH:mm - dddd DD MMM')
+      this.selectedReservation.created = moment(item.created).format('H:mm - dddd DD MMM')
       this.selectedReservation.duration = item.duration
-      this.selectedReservation.startTime = moment(item.startTime).format('HH:mm')
-      this.selectedReservation.endTime = moment(item.endTime).format('HH:mm')
+      this.selectedReservation.startTime = moment(item.startTime).format('H:mm')
+      this.selectedReservation.endTime = moment(item.endTime).format('H:mm')
       this.selectedReservation.guestID = item.guestID
       this.selectedReservation.uid = item.uid
     },
     // Endret items sendes inn i editedSelectedReservation objekt
     editItem (item) {
-      // console.log(this.editedSelectedReservation)
+      this.$store.commit('clearAvailability')
       this.dialog = true
-      this.editedSelectedReservation.reservationID = item.reservationID
+      this.date = moment(item.startTime).format('YYYY-MM-DD')
+      this.reservationID = item.reservationID
       this.editedSelectedReservation.user.firstName = item.user.firstName
       this.editedSelectedReservation.user.lastName = item.user.lastName
       this.editedSelectedReservation.user.email = item.user.email
       this.editedSelectedReservation.user.mobile = item.user.mobile
-      this.editedSelectedReservation.numberOfPersons = item.numberOfPersons
+      this.numberOfPersons = item.numberOfPersons
       this.editedSelectedReservation.comments = item.comments
-      this.editedSelectedReservation.tableID = item.tableID
+      this.tableID = item.tableID
       this.editedSelectedReservation.created = item.created
       this.editedSelectedReservation.duration = item.duration
-      this.editedSelectedReservation.startTime = moment(item.startTime).format('H:mm')
-      this.editedSelectedReservation.endTime = moment(item.endTime).format('H:mm')
-      this.startTime = this.editedSelectedReservation.startTime
-      this.endTime = this.editedSelectedReservation.endTime
+      this.startTime = moment(item.startTime).format('H:mm')
+      this.endTime = moment(item.endTime).format('H:mm')
       this.editedSelectedReservation.guestID = item.guestID
       this.editedSelectedReservation.uid = item.uid
     },
@@ -565,13 +672,14 @@ export default {
       // Kaller på removeReservation fra Vuex Store som sletter en reservasjon fra databasen
       this.$store.dispatch('removeReservation', item)
     },
+    checkTableAvailability () {
+      this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - HH:mm').valueOf()
+      this.endTimeUnix = moment(this.date + ' - ' + this.endTime, 'YYYY-MM-DD - HH:mm').valueOf()
+      this.$store.dispatch('checkAvailabilityWithReservation', { tableID: this.tableID, numberOfPersons: this.numberOfPersons, startTime: this.startTimeUnix, endTime: this.endTimeUnix, reservationID: this.reservationID })
+    },
     close () {
       this.dialog = false
-    },
-    save () {
-      // Kaller på updateReservation fra vuex store som skal oppdatere hver reservasjon med dataen fra editedSelectedReservation
-      this.$store.dispatch('updateReservation', this.editedSelectedReservation)
-      this.close()
+      this.counter = 0
       this.editedSelectedReservation = {
         reservationID: '',
         tableID: '',
@@ -590,9 +698,30 @@ export default {
           email: ''
         }
       }
+      /* this.endTime = ''
+      this.startTime = ''
+      this.numberOfPersons = 0
+      this.tableID = 0 */
+      this.$store.commit('clearAvailability')
     },
-    updateEndTime () {
-      this.editedSelectedReservation.endTime = this.editedSelectedReservation.startTime
+    save () {
+      // Kaller på updateReservation fra vuex store som skal oppdatere hver reservasjon med dataen fra editedSelectedReservation
+      this.editedSelectedReservation.startTime = this.startTimeUnix
+      this.editedSelectedReservation.endTime = this.endTimeUnix
+      this.editedSelectedReservation.numberOfPersons = this.numberOfPersons
+      this.editedSelectedReservation.tableID = this.tableID
+      this.editedSelectedReservation.reservationID = this.reservationID
+      this.$store.dispatch('updateReservation', this.editedSelectedReservation)
+      this.close()
+    },
+    updateMinEndTime () {
+      this.minEndTime = this.startTime
+      if (this.startTime > this.endTime) {
+        this.endTime = this.startTime
+      }
+    },
+    updateTable (table) {
+      this.tableID = table
     }
   }
 }
