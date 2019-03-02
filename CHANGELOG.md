@@ -13,6 +13,8 @@ Denne versjonen inneholder den ferdige brukerhistorien #7 (Issue #18):
 * Reservasjoner kan nå endre dato
 * Allreservations sjekker nå om bordet er ledig før det kan bookes
 * Bookingsystemet tillater ikke lenger flere gjester enn det er kapasitet til på bordet
+* Fikset feil hvor ViewTable tillot booking tilbake i tid.
+* FIkset feil hvor ViewTable ikke slo ut på alle tall i antall personer
 
 # v1.1.8 26.02.2019
 Inneholder brukerhistoriene 4, 5, 6, 7 og 8 (Issues: #10, #15, #16, #18 og #19):

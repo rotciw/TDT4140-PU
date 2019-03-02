@@ -111,6 +111,7 @@
     </v-layout>
     <view-table
       :key="key"
+      :capacity="Number(selectedTable.capacity)"
       :dialog-visible="dialogVisible"
       :table="selectedTable"
       @dialogClosed="dialogVisible = false"

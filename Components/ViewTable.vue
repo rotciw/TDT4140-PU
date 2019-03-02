@@ -279,6 +279,7 @@
                         />
                         <v-date-picker
                           v-model="date"
+                          :min="minDate"
                           color="green"
                           @input="menu = false"
                         />
@@ -388,6 +389,7 @@
                       xs8
                     >
                       <v-text-field
+                        v-model="comments"
                         label="Kommentar"
                         hint="Er det noe som bør merkes"
                       />
@@ -542,6 +544,10 @@ export default {
   name: 'ViewTable',
   components: { TodaysTimelineForTable },
   props: {
+    capacity: {
+      type: Number,
+      default: 25
+    },
     dialogVisible: Boolean,
     table: {
       type: Object,
@@ -560,7 +566,7 @@ export default {
       availableTables: [],
       capacityRules: [
         v => !!v || 'Trenger kapasiteten',
-        v => (v > 0 && v <= this.table.capacity) || 'Må være mellom 0 og ' + this.table.capacity
+        v => (v > 0 && v <= this.capacity) || 'Må være mellom 0 og ' + this.capacity
       ],
       confirmButton: false,
       comments: '',
@@ -637,7 +643,7 @@ export default {
       this.checkTableAvailability()
     },
     numberOfPersons () {
-      this.checkTableAvailability()
+      if (this.$refs.form.validate()) this.checkTableAvailability()
     },
     date () {
       this.checkTableAvailability()
@@ -651,14 +657,19 @@ export default {
     if (this.table) {
       this.newTable = this.tables[this.table.tableID - 1]
       if (this.table.currentReservation) {
-        this.mountUser()
-        this.leavingTime = moment(this.table.currentReservation.endTime).format('HH:mm')
-        this.currentGuests = this.table.currentReservation.numberOfPersons
-        this.interval = setInterval(() => {
-          this.now = moment().valueOf()
-          this.value = ((this.now - this.table.currentReservation.startTime) / (this.table.currentReservation.endTime - this.table.currentReservation.startTime)) * 100
-          this.remainingTime = moment(this.table.currentReservation.endTime).toNow(true)
-        }, 1000)
+        if (this.table.currentReservation.endTime < this.now) {
+          this.customerLeft()
+        }
+        else {
+          this.mountUser()
+          this.leavingTime = moment(this.table.currentReservation.endTime).format('HH:mm')
+          this.currentGuests = this.table.currentReservation.numberOfPersons
+          this.interval = setInterval(() => {
+            this.now = moment().valueOf()
+            this.value = ((this.now - this.table.currentReservation.startTime) / (this.table.currentReservation.endTime - this.table.currentReservation.startTime)) * 100
+            this.remainingTime = moment(this.table.currentReservation.endTime).toNow(true)
+          }, 1000)
+        }
       }
     }
   },
