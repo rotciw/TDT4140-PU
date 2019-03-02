@@ -166,6 +166,7 @@
                       xs8
                     >
                       <v-text-field
+                        v-model="comments"
                         label="Kommentar"
                         hint="Er det noe som bør merkes"
                       />
@@ -521,7 +522,6 @@ export default {
     },
     updateEndTime () {
       this.endTime = this.startTime
-      console.log(this.endTime)
     }
   }
 }
