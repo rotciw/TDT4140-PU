@@ -1,3 +1,4 @@
+<!-- Denne komponenten viser info om valgt bord -->
 <template>
   <v-layout
     row
@@ -8,6 +9,7 @@
       persistent
       max-width="800px"
     >
+      <!-- Denne delen er i bruk hvis det er en aktiv reservasjon på bordet-->
       <div v-if="table.currentReservation">
         <v-card>
           <v-card-text>
@@ -20,6 +22,7 @@
                 <v-flex
                   xs12
                 >
+                  <!-- Hvis reservasjonen er aktiv viser vi gjenstående tid -->
                   <div
                     v-if="now < table.currentReservation.endTime"
                     class="text-xs-center"
@@ -33,6 +36,7 @@
                       {{ remainingTime }} left
                     </v-progress-circular>
                   </div>
+                  <!-- Hvis reservasjonen er ferdi kommer det opp en melding om at den er ferdig -->
                   <div v-else>
                     <h2
                       style="text-align: center; color: red"
@@ -40,6 +44,7 @@
                       Denne reservasjonen er ferdig. Lukk denne dialogen eller oppdater tiden.
                     </h2>
                   </div>
+                  <!-- Felter som viser informasjon om kunden og om reservasjonen -->
                   <h3
                     style="text-align: center"
                     class="mt-2"
@@ -89,6 +94,7 @@
                 <v-flex
                   xs4
                 >
+                  <!-- Form for å oppdatere antall gjester. Sjekker samtidig at man ikke oppdaterer til mer enn det er plass til på bordet -->
                   <v-form
                     ref="form1"
                     v-model="valid1"
@@ -111,6 +117,7 @@
                 justify-center
               >
                 <v-flex xs12>
+                  <!-- Viser slutttid til reservasjonen. Kan oppdateres ved drop-down meny -->
                   <h4 style="text-align: center">
                     Sluttid
                   </h4>
@@ -162,6 +169,7 @@
                 justify-center
               >
                 <v-flex xs12>
+                  <!-- Knapp for å oppdatere reservasjonen, hvis man har endret slutttid eller antall gjester. Kaller på updateReservation () -->
                   <div class="text-xs-center">
                     <v-btn
                       color="green"
@@ -174,6 +182,7 @@
                   </div>
                 </v-flex>
                 <v-flex xs12>
+                  <!-- Knapp for å si at kunden gikk. Kaller på customerLeft ()-->
                   <div class="text-xs-center">
                     <v-btn
                       color="red"
@@ -188,6 +197,7 @@
                   />
                 </v-flex>
               </v-layout>
+              <!-- Komponent som viser de kommende reservasjonen på dette bordet -->
               <v-layout
                 row
                 wrap
@@ -227,6 +237,7 @@
           </v-card-actions>
         </v-card>
       </div>
+      <!-- Denne delen vises hvis det ikke er noen aktiv reservasjon på bordet -->
       <div v-else>
         <v-card>
           <v-card-text>
@@ -245,6 +256,7 @@
                   </h2>
                 </v-flex>
                 <v-flex xs12>
+                  <!-- Velger dato og tidspunkt. Maks og min blir regnet ut ved mounting av komponenten -->
                   <h3 style="text-align: center">
                     Dato og tidspunkt
                   </h3>
@@ -362,6 +374,7 @@
                         />
                       </v-menu>
                     </v-flex>
+                    <!-- Valg for antall gjester og kommentar -->
                     <v-flex xs12>
                       <h3 style="text-align: center">
                         Antall gjester og evt. kommentar
@@ -407,12 +420,14 @@
                       <v-divider class="my-2" />
                     </v-flex>
                   </v-layout>
+                  <!-- Del som viser om bordet er ledig for valgt tidspunkt -->
                   <v-layout
                     v-if="!loading"
                     row
                     wrap
                     justify-center
                   >
+                    <!-- TableAvailable er en computed variabel som konstant oppdateres ut i fra hva storen returnerer-->
                     <div v-if="tableAvailable">
                       <v-flex
                         xs12
@@ -421,6 +436,7 @@
                         <h3 style="text-align: center; color: green">
                           Bordet er ledig for valgte tidspunkt
                         </h3>
+                        <!-- Hvis man ønsker å lagre informasjon om kunden kan dette gjøres her. Enten så må firstName eller lastName til kunden være fylt ut for at dette skal skje-->
                         <h5 style="text-align: center">
                           Fyll ut feltene under hvis du ønsker å lagre informasjon om kunden
                         </h5>
@@ -469,6 +485,7 @@
                         xs12
                         mt-3
                       >
+                        <!-- Knapp som kaller på confirmReservation -->
                         <div class="text-xs-center">
                           <v-btn
                             color="green"
@@ -481,15 +498,17 @@
                         </div>
                       </v-flex>
                     </div>
+                    <!-- Tilbakemelding hvis ikke bordet er ledig for valgt tidspunkt-->
                     <div v-else>
                       <h4
                         style="text-align: center"
                         color="red"
                       >
-                        Bordet er opptatt for valgt tid. Prøv en annen tid eller søk på alle bord ved å trykke på "avbryt" og "ny reservasjon".
+                        Bordet er opptatt for valgt tid. Prøv en annen tid eller søk på alle bord ved å trykke på "lukk" og "ny reservasjon".
                       </h4>
                     </div>
                   </v-layout>
+                  <!-- Komponent som viser kommende reservasjoner på bordet i dag -->
                   <v-layout
                     row
                     wrap
@@ -543,6 +562,7 @@ import TodaysTimelineForTable from './TodaysTimelineForTable'
 export default {
   name: 'ViewTable',
   components: { TodaysTimelineForTable },
+  // Props arves fra bookingsiden
   props: {
     capacity: {
       type: Number,
@@ -563,26 +583,27 @@ export default {
   },
   data () {
     return {
-      availableTables: [],
+      // Regler som brukes for å sjekke at antall personer skrevet inn på bordet er riktig
       capacityRules: [
         v => !!v || 'Trenger kapasiteten',
         v => (v > 0 && v <= this.capacity) || 'Må være mellom 0 og ' + this.capacity
       ],
-      confirmButton: false,
-      comments: '',
-      currentGuests: 0,
-      date: new Date().toISOString().substr(0, 10),
+      comments: '', // Lagrer kommentarene som blir skrevet inn
+      currentGuests: 0, // Antall gjester som sitter på bordet hvis det er en aktiv reservasjon
+      date: new Date().toISOString().substr(0, 10), // Holder valgt dato
       dialog: this.dialogVisible,
-      endTime: moment().format('H:mm'),
-      endTimeUnix: '',
+      endTime: moment().format('H:mm'), // Holder valgt sluttid.
+      endTimeUnix: '', // Regner om valgt slutttid og dato til unix og millisekunder
+      // Objekt som brukes hvis det lagres informasjon om kunden
       guestUser: {
         firstName: '',
         lastName: '',
         mobile: '',
         email: ''
       },
-      interval: 0,
-      leavingTime: null,
+      interval: 0, // Brukes til å oppdatere tiden som er igjen
+      leavingTime: null, // Hvis gjestene drar lagres det her
+      // Kopi av valgt bord for å ikke få feilmelding i storen
       newTable: {
         tableID: 0,
         capacity: '',
@@ -591,57 +612,64 @@ export default {
         occupied: false,
         reservations: []
       },
+      // Anall personer på bordet
       numberOfPersons: 1,
+      // Holder styr på synligheten til de ulike drop down menyene for tid og dato
       menu: false,
       menu2: false,
       menu3: false,
       menu4: false,
-      newQuerry: true,
-      now: 0,
-      remainingTime: 0,
-      selectedTable: {
-        tableID: 0
-      },
-      showTables: false,
-      startTime: moment().format('H:mm'),
-      startTimeUnix: '',
-      tomorrow: moment().endOf('day').format('H:mm'),
-      user: null,
-      valid: false,
+      now: 0, // Holder nåtid
+      remainingTime: 0, // TId som gjenstår på reservasjonen
+      startTime: moment().format('H:mm'), // Holder starttid på reservasjon
+      startTimeUnix: '', // Brukes for å regne om til unix tid
+      tomorrow: moment().endOf('day').format('H:mm'), // Brukes som maks verdi på klokke og datovelger
+      user: null, // Holder informasjon om brukeren reservasjonen står på
+      valid: false, // Holder styr på om formene er gyldige
       valid1: false,
-      value: 0
+      value: 0 // Brukes hvis det er en pågående reservasjon til å regne ut hvor langt circular-progress har kommet
     }
   },
   computed: {
+    // Henter bordene fra storen
     tables () {
       return this.$store.getters.tables
     },
+    // Sjekker om bordet er ledig
     tableAvailable () {
       return !this.$store.getters.tableAvailable.includes(false)
     },
+    // Brukes til å si om storen jobber eller ikke
     loading () {
       return this.$store.getters.loading
     },
+    // Minimum starttid på reservasjonen er nå
     minStartTime () {
-      return moment().format('H:mm')
+      if (this.date === new Date().toISOString().substr(0, 10)) return moment().format('H:mm')
+      else return '8:00'
     },
+    // Mimumslutttid er startttiden
     minEndTime () {
       return this.startTime
     },
+    // Mimum dato er i dag
     minDate () {
       return new Date().toISOString().substr(0, 10)
     }
   },
   watch: {
+    // Overvåker starttiden. Hvis den endres sjekker vi om bordet er ledig fortløpende. Hvis sluttiden er etter starttiden, oppdaterer vi sluttiden
     startTime () {
       this.checkTableAvailability()
       if (this.endTime < this.startTime) {
         this.updateEndTime()
       }
     },
+    // Overvåker feltene. Hvis noen av de endres oppdaterer vi sjekken.
     endTime () {
       this.checkTableAvailability()
     },
+    // Her sjekker vi i tillegg at antall personer skrevet inn er gyldig valg
     numberOfPersons () {
       if (this.$refs.form.validate()) this.checkTableAvailability()
     },
@@ -653,7 +681,11 @@ export default {
     this.checkTableAvailability()
   },
   mounted () {
-    // Denne løsningen oppdaterer bare referansen.
+    // Denne løsningen oppdaterer bare referansen, men fungerer for øyeblikket.
+    /* Sjekker om vi har et bord, henter i såfall bordet, og sjekker at reservasjonen fortsatt er gyldig.
+     Hvis den ikke er gyldig kalles customerLeft(), hvis den er gyldig mounter vi informasjon om reservasjonen og oppdaterer tidsverdiene,
+     samt at vi lager en timer som oppdaterer gjenstående tid
+     */
     if (this.table) {
       this.newTable = this.tables[this.table.tableID - 1]
       if (this.table.currentReservation) {
@@ -674,6 +706,9 @@ export default {
     }
   },
   methods: {
+    /*
+    cancel() lukker dialogen
+     */
     cancel () {
       this.newTable = null
       this.confirmButton = true
@@ -684,13 +719,18 @@ export default {
         this.$store.dispatch('mountTodaysTablesWithReservations')
       }
     },
+    /*
+    checkTableAvailability sjekker om bordet er ledig for valgt tidspunkt. Må regne om til unix ved å ta hensyn til valgt dato
+     */
     checkTableAvailability () {
       this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
       this.endTimeUnix = moment(this.date + ' - ' + this.endTime, 'YYYY-MM-DD - H:mm').valueOf()
-      this.newQuerry = true
       this.$store.dispatch('checkAvailability', { tableID: this.table.tableID, numberOfPersons: this.numberOfPersons, startTime: this.startTimeUnix, endTime: this.endTimeUnix })
-      this.newQuerry = false
     },
+    /*
+    confirmReservation brukes for å lagre en reservasjon. Først sjekkes det at formet har gyldige inputs, deretter lages
+    en gjestebruker hvis det er lagt inn informasjon om kunden, og gjesteIDen kobles til reservasjonen.
+     */
     confirmReservation () {
       if (this.$refs.form.validate()) {
         const reservationObject = {
@@ -727,6 +767,9 @@ export default {
           })
       }
     },
+    /*
+    customerLeft () brukes hvis kunden forlater restauranten. Oppdaterer også med data fra feltene.
+     */
     customerLeft () {
       const updateObject = this.table.currentReservation
       updateObject.numberOfPersons = this.currentGuests
@@ -734,6 +777,7 @@ export default {
       this.$store.dispatch('updateLiveReservation', updateObject)
       this.cancel()
     },
+    // Mounter informasjon om brukeren som er koblet til reservasjonen, enten user eller guestUser
     async mountUser () {
       if (this.table.currentReservation.uid) {
         this.user = await this.$fs.collection('users').doc(this.table.currentReservation.uid + '').get()
@@ -758,10 +802,7 @@ export default {
           })
       }
     },
-    selectTable (table) {
-      this.selectedTable = table
-      this.confirmButton = true
-    },
+    // Oppdaterer pågående reservasjon
     updateReservation () {
       if (this.$refs.form1.validate()) {
         const updateObject = this.table.currentReservation
@@ -770,6 +811,7 @@ export default {
         this.$store.dispatch('updateLiveReservation', updateObject)
       }
     },
+    // Oppdaterer slutttid hvis starttiden er større en slutttiden
     updateEndTime () {
       this.endTime = this.startTime
     }
@@ -780,17 +822,5 @@ export default {
 <style scoped>
   .button {
     border-radius: 0px 18px 0px 18px;
-  }
-  .table {
-    height:90px;
-    width:90px;
-    border-radius: 0px 18px 0px 18px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  }
-  .table-text {
-    word-wrap: break-word;
-    overflow: hidden;
-    height: 100%;
-    white-space:normal;
   }
 </style>

@@ -1,4 +1,4 @@
-const admin       = require('firebase-admin'),
+/*  admin       = require('firebase-admin'),
       auth        = require('basic-auth'),
       bodyParser  = require('body-parser'),
       cors        = require('cors')({ origin: true }),
@@ -23,6 +23,6 @@ app.use(bodyParser.json())
 
 admin.initializeApp(functions.config().firebase);
 
-var db = admin.firestore();
+var db = admin.firestore(); */
 
 
