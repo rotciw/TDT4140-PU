@@ -125,7 +125,8 @@ export default {
     return {
       // Regler som definerer kapasiteten
       capacityRules: [
-        v => !!v || 'Trenger kapasiteten'
+        v => !!v || 'Trenger kapasiteten',
+        v => (v > 0 && v < 75) || 'Må være mellom 0 og 75'
       ],
       confirmDelete: 0, // Brukes for å bekrefte at en ønsker å slette et bord
       dialog: this.dialogVisible, // Brukes for å si om dialogen skal være synlig
@@ -137,7 +138,8 @@ export default {
         occupied: false
       },
       numberRules: [ // Regel for nordnummer
-        v => !!v || 'Trenger bord id'
+        v => !!v || 'Trenger bord id',
+        v => (v > 0 && v < 150) || 'Må være større enn 0 og mindre enn 150'
       ],
       valid: false // Om det brukeren har skrevet er valid eller ei
     }

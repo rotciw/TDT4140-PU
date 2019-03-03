@@ -72,6 +72,12 @@
                     >
                       E-post: {{ user.email }}
                     </h5>
+                    <h5
+                      v-if="table.currentReservation.comments"
+                      style="text-align: center"
+                    >
+                      Kommentar: {{ table.currentReservation.comments }}
+                    </h5>
                   </div>
                 </v-flex>
               </v-layout>
@@ -83,12 +89,20 @@
                 <v-flex
                   xs4
                 >
-                  <v-text-field
-                    v-model="currentGuests"
-                    label="Antall gjester"
-                    hint="Hvor mange gjester er det?"
-                    prepend-icon="supervised_user_circle"
-                  />
+                  <v-form
+                    ref="form1"
+                    v-model="valid1"
+                  >
+                    <v-text-field
+                      v-model="currentGuests"
+                      label="Antall gjester"
+                      hint="Hvor mange gjester er det?"
+                      prepend-icon="supervised_user_circle"
+                      :rules="capacityRules"
+                      min="1"
+                      type="Number"
+                    />
+                  </v-form>
                 </v-flex>
               </v-layout>
               <v-layout
@@ -135,6 +149,8 @@
                       color="green"
                       format="24hr"
                       full-width
+                      :min="minStartTime"
+                      :max="tomorrow"
                       @click:minute="$refs.leavingMenu.save(leavingTime)"
                     />
                   </v-menu>
@@ -263,6 +279,7 @@
                         />
                         <v-date-picker
                           v-model="date"
+                          :min="minDate"
                           color="green"
                           @input="menu = false"
                         />
@@ -300,6 +317,8 @@
                           color="green"
                           format="24hr"
                           full-width
+                          :min="minStartTime"
+                          :max="tomorrow"
                           @click:minute="$refs.startMenu.save(startTime)"
                         />
                       </v-menu>
@@ -337,6 +356,8 @@
                           color="green"
                           format="24hr"
                           full-width
+                          :min="minEndTime"
+                          :max="tomorrow"
                           @click:minute="$refs.endMenu.save(endTime)"
                         />
                       </v-menu>
@@ -349,17 +370,26 @@
                     <v-flex
                       xs4
                     >
-                      <v-text-field
-                        v-model="numberOfPersons"
-                        label="Antall gjester"
-                        hint="Hvor mange gjester er det?"
-                        prepend-icon="supervised_user_circle"
-                      />
+                      <v-form
+                        ref="form"
+                        v-model="valid"
+                      >
+                        <v-text-field
+                          v-model="numberOfPersons"
+                          label="Antall gjester"
+                          min="1"
+                          hint="Hvor mange gjester er det?"
+                          prepend-icon="supervised_user_circle"
+                          :rules="capacityRules"
+                          type="Number"
+                        />
+                      </v-form>
                     </v-flex>
                     <v-flex
                       xs8
                     >
                       <v-text-field
+                        v-model="comments"
                         label="Kommentar"
                         hint="Er det noe som bør merkes"
                       />
@@ -514,6 +544,10 @@ export default {
   name: 'ViewTable',
   components: { TodaysTimelineForTable },
   props: {
+    capacity: {
+      type: Number,
+      default: 25
+    },
     dialogVisible: Boolean,
     table: {
       type: Object,
@@ -530,10 +564,13 @@ export default {
   data () {
     return {
       availableTables: [],
+      capacityRules: [
+        v => !!v || 'Trenger kapasiteten',
+        v => (v > 0 && v <= this.capacity) || 'Må være mellom 0 og ' + this.capacity
+      ],
       confirmButton: false,
       comments: '',
       currentGuests: 0,
-      // TODO: Legge inn gyldige tidsvalg
       date: new Date().toISOString().substr(0, 10),
       dialog: this.dialogVisible,
       endTime: moment().format('H:mm'),
@@ -554,7 +591,7 @@ export default {
         occupied: false,
         reservations: []
       },
-      numberOfPersons: 0,
+      numberOfPersons: 1,
       menu: false,
       menu2: false,
       menu3: false,
@@ -568,7 +605,10 @@ export default {
       showTables: false,
       startTime: moment().format('H:mm'),
       startTimeUnix: '',
+      tomorrow: moment().endOf('day').format('H:mm'),
       user: null,
+      valid: false,
+      valid1: false,
       value: 0
     }
   },
@@ -577,21 +617,33 @@ export default {
       return this.$store.getters.tables
     },
     tableAvailable () {
-      return this.$store.getters.tableAvailable
+      return !this.$store.getters.tableAvailable.includes(false)
     },
     loading () {
       return this.$store.getters.loading
+    },
+    minStartTime () {
+      return moment().format('H:mm')
+    },
+    minEndTime () {
+      return this.startTime
+    },
+    minDate () {
+      return new Date().toISOString().substr(0, 10)
     }
   },
   watch: {
     startTime () {
       this.checkTableAvailability()
+      if (this.endTime < this.startTime) {
+        this.updateEndTime()
+      }
     },
     endTime () {
       this.checkTableAvailability()
     },
     numberOfPersons () {
-      this.checkTableAvailability()
+      if (this.$refs.form.validate()) this.checkTableAvailability()
     },
     date () {
       this.checkTableAvailability()
@@ -605,14 +657,19 @@ export default {
     if (this.table) {
       this.newTable = this.tables[this.table.tableID - 1]
       if (this.table.currentReservation) {
-        this.mountUser()
-        this.leavingTime = moment(this.table.currentReservation.endTime).format('HH:mm')
-        this.currentGuests = this.table.currentReservation.numberOfPersons
-        this.interval = setInterval(() => {
-          this.now = moment().valueOf()
-          this.value = ((this.now - this.table.currentReservation.startTime) / (this.table.currentReservation.endTime - this.table.currentReservation.startTime)) * 100
-          this.remainingTime = moment(this.table.currentReservation.endTime).toNow(true)
-        }, 1000)
+        if (this.table.currentReservation.endTime < this.now) {
+          this.customerLeft()
+        }
+        else {
+          this.mountUser()
+          this.leavingTime = moment(this.table.currentReservation.endTime).format('HH:mm')
+          this.currentGuests = this.table.currentReservation.numberOfPersons
+          this.interval = setInterval(() => {
+            this.now = moment().valueOf()
+            this.value = ((this.now - this.table.currentReservation.startTime) / (this.table.currentReservation.endTime - this.table.currentReservation.startTime)) * 100
+            this.remainingTime = moment(this.table.currentReservation.endTime).toNow(true)
+          }, 1000)
+        }
       }
     }
   },
@@ -623,7 +680,9 @@ export default {
       this.dialog = false
       this.$emit('dialogClosed')
       this.$store.commit('clearAvailableTables')
-      this.$store.dispatch('mountTodaysTablesWithReservations')
+      if (this.table.currentReservation && (this.table.currentReservation.endTime > this.now)) {
+        this.$store.dispatch('mountTodaysTablesWithReservations')
+      }
     },
     checkTableAvailability () {
       this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
@@ -633,36 +692,40 @@ export default {
       this.newQuerry = false
     },
     confirmReservation () {
-      const reservationObject = {
-        comments: this.comments,
-        created: moment().valueOf(),
-        duration: this.endTimeUnix - this.startTimeUnix,
-        endTime: this.endTimeUnix,
-        numberOfPersons: this.numberOfPersons,
-        reservationID: 0,
-        startTime: this.startTimeUnix,
-        tableID: this.table.tableID
-      }
-      this.$controller.reservations.newReservationNumber()
-        .then(reservations => {
-          reservations.forEach(reservation => {
-            reservation = reservation.data()
-            reservationObject.reservationID = reservation.reservationID + 1
-            if (this.guestUser.firstName !== '' && this.guestUser.lastName !== '') {
-              this.$controller.users.createGuestUser(this.guestUser)
-                .then(guestID => {
-                  reservationObject.guestID = guestID
-                  this.$store.dispatch('createReservation', reservationObject)
-                  this.cancel()
-                })
-            }
-            else {
-              reservationObject.uid = this.$store.getters.user.uid
-              this.$store.dispatch('createReservation', reservationObject)
-              this.cancel()
-            }
+      if (this.$refs.form.validate()) {
+        const reservationObject = {
+          comments: this.comments,
+          created: moment().valueOf(),
+          duration: this.endTimeUnix - this.startTimeUnix,
+          endTime: this.endTimeUnix,
+          numberOfPersons: this.numberOfPersons,
+          reservationID: 0,
+          startTime: this.startTimeUnix,
+          tableID: this.table.tableID
+        }
+        this.$controller.reservations.newReservationNumber()
+          .then(reservations => {
+            reservations.forEach(reservation => {
+              reservation = reservation.data()
+              reservationObject.reservationID = reservation.reservationID + 1
+              if (this.guestUser.firstName !== '' || this.guestUser.lastName !== '') {
+                this.$controller.users.createGuestUser(this.guestUser)
+                  .then(guestID => {
+                    reservationObject.guestID = guestID
+                    reservationObject.uid = ''
+                    this.$store.dispatch('createReservation', reservationObject)
+                    this.cancel()
+                  })
+              }
+              else {
+                reservationObject.uid = this.$store.getters.user.uid
+                reservationObject.guestID = ''
+                this.$store.dispatch('createReservation', reservationObject)
+                this.cancel()
+              }
+            })
           })
-        })
+      }
     },
     customerLeft () {
       const updateObject = this.table.currentReservation
@@ -700,10 +763,15 @@ export default {
       this.confirmButton = true
     },
     updateReservation () {
-      const updateObject = this.table.currentReservation
-      updateObject.numberOfPersons = this.currentGuests
-      updateObject.endTime = moment(moment().format('YYYY-MM-DD') + ' - ' + this.leavingTime, 'YYYY-MM-DD - HH:mm').valueOf()
-      this.$store.dispatch('updateLiveReservation', updateObject)
+      if (this.$refs.form1.validate()) {
+        const updateObject = this.table.currentReservation
+        updateObject.numberOfPersons = this.currentGuests
+        updateObject.endTime = moment(moment().format('YYYY-MM-DD') + ' - ' + this.leavingTime, 'YYYY-MM-DD - HH:mm').valueOf()
+        this.$store.dispatch('updateLiveReservation', updateObject)
+      }
+    },
+    updateEndTime () {
+      this.endTime = this.startTime
     }
   }
 }

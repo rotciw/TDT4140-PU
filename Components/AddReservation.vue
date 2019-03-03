@@ -58,6 +58,7 @@
                         <v-date-picker
                           v-model="date"
                           color="green"
+                          :min="minDate"
                           @input="menu = false"
                         />
                       </v-menu>
@@ -94,11 +95,12 @@
                           color="green"
                           format="24hr"
                           full-width
+                          :min="minStartTime"
+                          :max="tomorrow"
                           @click:minute="$refs.startMenu.save(startTime)"
                         />
                       </v-menu>
                     </v-flex>
-                    <!-- TODO: Ikke kunne legge inn sluttid som er etter starttid-->
                     <v-flex
                       xs12
                       sm6
@@ -131,6 +133,8 @@
                           color="green"
                           format="24hr"
                           full-width
+                          :min="minEndTime"
+                          :max="tomorrow"
                           @click:minute="$refs.endMenu.save(endTime)"
                         />
                       </v-menu>
@@ -140,34 +144,34 @@
                         Antall gjester og evt. kommentar
                       </h3>
                     </v-flex>
-                    <v-flex
-                      xs4
+                    <v-form
+                      ref="form"
+                      v-model="valid"
                     >
-                      <v-text-field
-                        v-model="numberOfPersons"
-                        label="Antall gjester"
-                        hint="Hvor mange gjester er det?"
-                        prepend-icon="supervised_user_circle"
-                      />
-                    </v-flex>
+                      <v-flex
+                        xs12
+                      >
+                        <v-text-field
+                          v-model="numberOfPersons"
+                          label="Antall gjester"
+                          hint="Hvor mange gjester er det?"
+                          prepend-icon="supervised_user_circle"
+                          min="1"
+                          :rules="capacityRules"
+                          type="Number"
+                        />
+                      </v-flex>
+                    </v-form>
                     <v-flex
                       xs8
                     >
                       <v-text-field
+                        v-model="comments"
                         label="Kommentar"
                         hint="Er det noe som bør merkes"
                       />
                     </v-flex>
                     <v-flex xs12>
-                      <div class="text-xs-center">
-                        <v-btn
-                          color="green"
-                          class="button"
-                          @click="mountAvailableTables()"
-                        >
-                          Søk
-                        </v-btn>
-                      </div>
                       <v-divider class="my-2" />
                     </v-flex>
                   </v-layout>
@@ -372,8 +376,11 @@ export default {
     return {
       availableTables: [],
       confirmButton: false,
+      capacityRules: [
+        v => !!v || 'Trenger antall',
+        v => (v > 0 && v < 75) || 'Må være mellom 0 og 75'
+      ],
       comments: '',
-      // TODO: Legge inn gyldige tidsvalg
       date: new Date().toISOString().substr(0, 10),
       dialog: this.dialogVisible,
       endTime: moment().format('H:mm'),
@@ -394,7 +401,7 @@ export default {
         occupied: false,
         reservations: []
       },
-      numberOfPersons: 0,
+      numberOfPersons: 1,
       menu: false,
       menu2: false,
       menu3: false,
@@ -407,7 +414,9 @@ export default {
       showTables: false,
       startTime: moment().format('H:mm'),
       startTimeUnix: '',
+      tomorrow: moment().endOf('day').format('H:mm'),
       user: null,
+      valid: false,
       value: 0
     }
   },
@@ -420,11 +429,23 @@ export default {
     },
     loading () {
       return this.$store.getters.loading
+    },
+    minStartTime () {
+      return moment().format('H:mm')
+    },
+    minEndTime () {
+      return this.startTime
+    },
+    minDate () {
+      return new Date().toISOString().substr(0, 10)
     }
   },
   watch: {
     startTime () {
       this.mountAvailableTables()
+      if (this.endTime < this.startTime) {
+        this.updateEndTime()
+      }
     },
     endTime () {
       this.mountAvailableTables()
@@ -448,36 +469,40 @@ export default {
       this.$store.commit('clearAvailableTables')
     },
     confirmReservation () {
-      const reservationObject = {
-        comments: this.comments,
-        created: moment().valueOf(),
-        duration: this.endTimeUnix - this.startTimeUnix,
-        endTime: this.endTimeUnix,
-        numberOfPersons: this.numberOfPersons,
-        reservationID: 0,
-        startTime: this.startTimeUnix,
-        tableID: this.selectedTable.tableID
-      }
-      this.$controller.reservations.newReservationNumber()
-        .then(reservations => {
-          reservations.forEach(reservation => {
-            reservation = reservation.data()
-            reservationObject.reservationID = reservation.reservationID + 1
-            if (this.guestUser.firstName !== '' && this.guestUser.lastName !== '') {
-              this.$controller.users.createGuestUser(this.guestUser)
-                .then(guestID => {
-                  reservationObject.guestID = guestID
-                  this.$store.dispatch('createReservation', reservationObject)
-                  this.cancel()
-                })
-            }
-            else {
-              reservationObject.uid = this.$store.getters.user.uid
-              this.$store.dispatch('createReservation', reservationObject)
-              this.cancel()
-            }
+      if (this.$refs.form.validate()) {
+        const reservationObject = {
+          comments: this.comments,
+          created: moment().valueOf(),
+          duration: this.endTimeUnix - this.startTimeUnix,
+          endTime: this.endTimeUnix,
+          numberOfPersons: this.numberOfPersons,
+          reservationID: 0,
+          startTime: this.startTimeUnix,
+          tableID: this.selectedTable.tableID
+        }
+        this.$controller.reservations.newReservationNumber()
+          .then(reservations => {
+            reservations.forEach(reservation => {
+              reservation = reservation.data()
+              reservationObject.reservationID = reservation.reservationID + 1
+              if (this.guestUser.firstName !== '' || this.guestUser.lastName !== '') {
+                this.$controller.users.createGuestUser(this.guestUser)
+                  .then(guestID => {
+                    reservationObject.guestID = guestID
+                    reservationObject.uid = ''
+                    this.$store.dispatch('createReservation', reservationObject)
+                    this.cancel()
+                  })
+              }
+              else {
+                reservationObject.uid = this.$store.getters.user.uid
+                reservationObject.guestID = ''
+                this.$store.dispatch('createReservation', reservationObject)
+                this.cancel()
+              }
+            })
           })
-        })
+      }
     },
     mountAvailableTables () {
       this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
@@ -485,11 +510,18 @@ export default {
       this.selectedTable.tableID = 0
       this.confirmButton = false
       this.$store.commit('setLoading', true)
-      this.$store.dispatch('mountAvailableTables', { numberOfPersons: this.numberOfPersons, startTime: this.startTimeUnix, endTime: this.endTimeUnix })
+      this.$store.dispatch('mountAvailableTables', {
+        numberOfPersons: this.numberOfPersons,
+        startTime: this.startTimeUnix,
+        endTime: this.endTimeUnix
+      })
     },
     selectTable (table) {
       this.selectedTable = table
       this.confirmButton = true
+    },
+    updateEndTime () {
+      this.endTime = this.startTime
     }
   }
 }

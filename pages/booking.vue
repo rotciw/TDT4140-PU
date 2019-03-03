@@ -48,7 +48,7 @@
       >
         <div v-if="table">
           <v-btn
-            v-if="table.currentReservation"
+            v-if="table.currentReservation && table.currentReservation.endTime > now"
             my-2
             color="red"
             block
@@ -111,6 +111,7 @@
     </v-layout>
     <view-table
       :key="key"
+      :capacity="Number(selectedTable.capacity)"
       :dialog-visible="dialogVisible"
       :table="selectedTable"
       @dialogClosed="dialogVisible = false"
