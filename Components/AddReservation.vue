@@ -1,3 +1,4 @@
+<!-- Brukes for å legge til ny reservasjon-->
 <template>
   <v-layout
     row
@@ -12,6 +13,7 @@
         <v-card>
           <v-card-text>
             <v-container grid-list-md>
+              <!-- Fyller ut informasjon om reservasjonen-->
               <v-layout
                 row
                 wrap
@@ -175,6 +177,7 @@
                       <v-divider class="my-2" />
                     </v-flex>
                   </v-layout>
+                  <!-- Hvis den ikke loader -->
                   <v-layout
                     v-if="!loading"
                     row
@@ -193,6 +196,7 @@
                       wrap
                       justify-start
                     >
+                      <!-- Viser alle bord som er ledige for valgt tidspunkt og antall gjester-->
                       <v-flex
                         v-for="(availabeTable, index) in mountedAvailableTables"
                         :key="index"
@@ -200,6 +204,7 @@
                         md2
                       >
                         <div v-if="availabeTable && availabeTable.available">
+                          <!-- Hvis valgt bord er dette bordet, endrer den fargen til grønt for å vise hvilket bord man har valgt-->
                           <v-btn
                             v-if="index === selectedTable.tableID-1"
                             my-2
@@ -222,6 +227,7 @@
                               </div>
                             </div>
                           </v-btn>
+                          <!-- Bordene som ikke er valgt, men ledgie, er grå-->
                           <v-btn
                             v-else
                             my-2
@@ -247,6 +253,7 @@
                         </div>
                       </v-flex>
                     </v-layout>
+                    <!-- Hvis man har trykket på et bord får man valget og lagre informasjon om kunden og å opprette bord -->
                     <div v-if="confirmButton">
                       <v-flex
                         xs12
@@ -300,6 +307,7 @@
                         xs12
                         mt-3
                       >
+                        <!-- Lagrer info om kunden -->
                         <div class="text-xs-center">
                           <v-btn
                             color="green"
@@ -321,6 +329,7 @@
                       color="green"
                     />
                   </v-layout>
+                  <!-- TIlbakemelding hvis det ikke er noen ledige bord -->
                   <v-layout
                     v-else-if="!loading && mountedAvailableTables.length === 0"
                   >
@@ -328,7 +337,7 @@
                       style="text-align: center"
                       color="red"
                     >
-                      Fant ingen ledige bord for valgt gruppe
+                      Fant ingen ledige bord for dette antallet personer for valgt tid
                     </h4>
                   </v-layout>
                 </v-flex>
@@ -358,6 +367,7 @@ import moment from 'moment'
 
 export default {
   name: 'AddReservation',
+  // Props arves fra booking
   props: {
     dialogVisible: Boolean,
     table: {
@@ -374,26 +384,26 @@ export default {
   },
   data () {
     return {
-      availableTables: [],
-      confirmButton: false,
+      availableTables: [], // Holder alle ledige bord
+      confirmButton: false, // Brukes til å vise neste steg etter at bord er valgt
+      // Regler for antall personer man prøver å legge inn
       capacityRules: [
         v => !!v || 'Trenger antall',
         v => (v > 0 && v < 75) || 'Må være mellom 0 og 75'
       ],
-      comments: '',
-      date: new Date().toISOString().substr(0, 10),
-      dialog: this.dialogVisible,
-      endTime: moment().format('H:mm'),
-      endTimeUnix: '',
-      guestUser: {
+      comments: '', // Kommentarer
+      date: new Date().toISOString().substr(0, 10), // Dato
+      dialog: this.dialogVisible, // Dialog synlig eller ei
+      endTime: moment().format('H:mm'), // Sluttid
+      endTimeUnix: '', // SLutttid omregnet til unix med hensyn på valgt dato
+      guestUser: { // Gjestebruker
         firstName: '',
         lastName: '',
         mobile: '',
         email: ''
       },
-      interval: 0,
-      leavingTime: null,
-      newTable: {
+      interval: 0, // Brukes for å opppdatere timeren
+      newTable: { // Holder bordet som blir kopiert
         tableID: 0,
         capacity: '',
         currentReservation: null,
@@ -401,37 +411,40 @@ export default {
         occupied: false,
         reservations: []
       },
-      numberOfPersons: 1,
+      numberOfPersons: 1, // ANtall personer
+      // Styrer synligheten av dropdown menyene
       menu: false,
       menu2: false,
       menu3: false,
-      menu4: false,
-      now: 0,
-      remainingTime: 0,
-      selectedTable: {
+      now: 0, // Holder nå-tid
+      selectedTable: { // Valgt bord, brukes for å opprette reservasjon og for å vise valgt bord i grønn farge
         tableID: 0
       },
-      showTables: false,
-      startTime: moment().format('H:mm'),
-      startTimeUnix: '',
-      tomorrow: moment().endOf('day').format('H:mm'),
-      user: null,
-      valid: false,
-      value: 0
+      startTime: moment().format('H:mm'), // Starttid
+      startTimeUnix: '', // Starttid med hensyn på valgt dato i unix
+      tomorrow: moment().endOf('day').format('H:mm'), // I morgen brukes som maks verdi på tidsvalg
+      user: null, // Valgt bruker
+      valid: false // Styrer om input er gyldig eller ei
     }
   },
+  // Verdier hentet fra storen.
   computed: {
+    // bordene i restauranten
     tables () {
       return this.$store.getters.tables
     },
+    // Ledige bord for valgt søkeområde
     mountedAvailableTables () {
       return this.$store.getters.availableTables
     },
+    // loading
     loading () {
       return this.$store.getters.loading
     },
+    // Mimimumsvalg for tid og dato
     minStartTime () {
-      return moment().format('H:mm')
+      if (this.date === new Date().toISOString().substr(0, 10)) return moment().format('H:mm')
+      else return '8:00'
     },
     minEndTime () {
       return this.startTime
@@ -441,12 +454,14 @@ export default {
     }
   },
   watch: {
+    // Overvåker starttiden. Hvis den endres sjekker vi om bordet er ledig fortløpende. Hvis sluttiden er etter starttiden, oppdaterer vi sluttiden
     startTime () {
       this.mountAvailableTables()
       if (this.endTime < this.startTime) {
         this.updateEndTime()
       }
     },
+    // Overvåker feltene. Hvis noen av de endres oppdaterer vi ledige bord.
     endTime () {
       this.mountAvailableTables()
     },
@@ -461,6 +476,9 @@ export default {
     this.mountAvailableTables()
   },
   methods: {
+    /*
+    cancel() lukker dialogen
+     */
     cancel () {
       this.newTable = null
       this.confirmButton = true
@@ -468,6 +486,9 @@ export default {
       this.$emit('dialogClosed')
       this.$store.commit('clearAvailableTables')
     },
+    /*
+    confirmReservation () lagrer reservasjonen hvis input er gyldig
+     */
     confirmReservation () {
       if (this.$refs.form.validate()) {
         const reservationObject = {
@@ -480,6 +501,7 @@ export default {
           startTime: this.startTimeUnix,
           tableID: this.selectedTable.tableID
         }
+        // SJekker om vi oppretter for kunde eller bruker
         this.$controller.reservations.newReservationNumber()
           .then(reservations => {
             reservations.forEach(reservation => {
@@ -504,6 +526,7 @@ export default {
           })
       }
     },
+    // Mounter ledige bord for valgt tidsperiode igjennom storen
     mountAvailableTables () {
       this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
       this.endTimeUnix = moment(this.date + ' - ' + this.endTime, 'YYYY-MM-DD - H:mm').valueOf()
@@ -516,10 +539,12 @@ export default {
         endTime: this.endTimeUnix
       })
     },
+    // Velger bord
     selectTable (table) {
       this.selectedTable = table
       this.confirmButton = true
     },
+    // Kalles når starttid er større enn sluttid
     updateEndTime () {
       this.endTime = this.startTime
     }
