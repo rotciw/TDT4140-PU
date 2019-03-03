@@ -1,7 +1,7 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <v-card>
     <v-card-title>
-      <h2>Oversikt over kommende reservasjoner:</h2>
+      <h2>Oversikt over dagens og kommende reservasjoner:</h2>
       <v-spacer />
       <!-- Dialogen (popup) her er for endring av reservasjonen
       ENDRING AV RESERVASJON START -->
