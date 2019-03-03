@@ -117,6 +117,7 @@ export default {
     // Kaller på sotren for å logge oss inn
     onSignin () {
       this.$store.dispatch('signUserIn', { email: this.email, password: this.password })
+      this.$store.dispatch('mountReservations')
       // this.$store.dispatch('mountTables')
     }
   }
