@@ -591,35 +591,19 @@ export default {
   },
   watch: {
     endTime () {
-      if (this.counter > 3) {
-        this.checkTableAvailability()
-      }
-      this.counter++
+      this.checkTableAvailability()
     },
     numberOfPersons () {
-      if (this.counter > 3) {
-        this.checkTableAvailability()
-      }
-      this.counter++
+      this.checkTableAvailability()
     },
     date () {
-      if (this.counter > 3) {
-        this.checkTableAvailability()
-      }
-      this.counter++
+      this.checkTableAvailability()
     },
     startTime () {
-      let counter = 0
-      if (counter > 0) {
-        this.checkTableAvailability()
-      }
-      this.counter++
+      this.checkTableAvailability()
     },
     tableID () {
-      if (this.counter > 3) {
-        this.checkTableAvailability()
-      }
-      this.counter++
+      this.checkTableAvailability()
     }
   },
   // Når siden mounter(er lastet inn) skal den hente alle reservasjonene fra firestore
