@@ -407,7 +407,7 @@
                   flat
                   @click.stop="dialogNote = false"
                 >
-                  Close
+                  Lukk
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -652,9 +652,10 @@ export default {
     },
 
     deleteItem (item) {
-      confirm('Er du sikker på at du har lyst til å slette?')
-      // Kaller på removeReservation fra Vuex Store som sletter en reservasjon fra databasen
-      this.$store.dispatch('removeReservation', item)
+      if (confirm('Er du sikker på at du har lyst til å slette?')) {
+        // Kaller på removeReservation fra Vuex Store som sletter en reservasjon fra databasen
+        this.$store.dispatch('removeReservation', item)
+      }
     },
     checkTableAvailability () {
       this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - HH:mm').valueOf()
