@@ -18,6 +18,8 @@ Denne versjonen inneholder den ferdige brukerhistorien #7 (Issue #18):
 * FIkset feil hvor ViewTable ikke slo ut på alle tall i antall personer
 #### 03.03.2019:
 * Fikset feil som gjorde at functions mappen ikke ville bli deployet
+#### 04.03.2019:
+* Fikset feil som gjorde at det ikke alltid var allreservations oppdaterte til riktig tid ved enring. Fjernet counter som lå som hindring.
 
 # v1.1.8 26.02.2019
 Inneholder brukerhistoriene 4, 5, 6, 7 og 8 (Issues: #10, #15, #16, #18 og #19):
