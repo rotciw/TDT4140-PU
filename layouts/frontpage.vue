@@ -14,6 +14,14 @@
         </nuxt-link>
       </v-flex>
       <v-spacer />
+      <v-toolbar-items>
+        <v-btn
+          flat
+          @click="$router.push('/customer-change-reservation')"
+        >
+          Endre reservasjon
+        </v-btn>
+      </v-toolbar-items>
 
       <v-toolbar-items>
         <v-btn

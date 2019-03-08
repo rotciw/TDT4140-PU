@@ -12,6 +12,7 @@ export const state = () => ({
   employee: false, // SIer om brukeren er ansatt eller ikke
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
+  reservation: null,
   reservations: [], // Holder alle reservasjonene
   tables: [], // Holder alle bordene til restauranten
   tableAvailable: [], // Holder ledigheten for etterspurt bord
@@ -38,6 +39,7 @@ export const mutations = {
     state.employee = false
     state.error = null
     state.loading = false
+    state.reservation = null
     state.reservations = []
     state.tableAvailable = []
     state.tables = []
@@ -51,6 +53,9 @@ export const mutations = {
   // Fjerner valgt reservasjon fra staten
   removeReservation (state, payload) {
     Vue.set(state.reservations, payload.reservationID - 1, null)
+  },
+  setFetchedReservation (state, payload) {
+    state.reservation = payload
   },
   // Legger til bordet til staten
   setTable (state, payload) {
@@ -189,6 +194,23 @@ export const actions = {
       .catch(error => {
         console.log('Klarte ikke å lage ny reservasjon')
         console.log(error)
+      })
+  },
+  fetchReservation ({ commit }, payload) {
+    commit('setLoading', true)
+    firebase.firestore().collection('reservations').doc(payload.reservationID + '')
+      .get()
+      .then(reservation => {
+        reservation = reservation.data()
+        console.log(reservation)
+        commit('setFetchedReservation', reservation)
+        commit('setLoading', false)
+      })
+      .catch(error => {
+        console.log('Klarte ikke å hente reservasjon med ID: ' + payload.reservationID)
+        console.log(error)
+        commit('setError', error)
+        commit('setLoading', false)
       })
   },
   /* mountAvailableTables brukes av newReservation for å finne ledige bord til valgt tidspunkt og til riktig antall personer.
@@ -483,6 +505,9 @@ export const getters = {
   },
   loading (state) {
     return state.loading
+  },
+  reservation (state) {
+    return state.reservation
   },
   user (state) {
     return state.user
