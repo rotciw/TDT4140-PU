@@ -119,8 +119,8 @@ export const reservations = {
             })
         })
       }
-  }) */
-  ,
+  })
+  , */
   // newReservationNumber returnerer det største reservasjonsnummeret i datbasen. Kan brukes ved opprettelse av nye reservasjonsobjekter.
   newReservationNumber () {
     return fs.collection('reservations')
