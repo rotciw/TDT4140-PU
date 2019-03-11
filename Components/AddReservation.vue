@@ -494,6 +494,7 @@ export default {
         const reservationObject = {
           comments: this.comments,
           created: moment().valueOf(),
+          dropIn: true,
           duration: this.endTimeUnix - this.startTimeUnix,
           endTime: this.endTimeUnix,
           numberOfPersons: this.numberOfPersons,

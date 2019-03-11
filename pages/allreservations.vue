@@ -623,10 +623,10 @@ export default {
       this.selectedReservation.numberOfPersons = item.numberOfPersons
       this.selectedReservation.comments = item.comments
       this.selectedReservation.tableID = item.tableID
-      this.selectedReservation.created = moment(item.created).format('H:mm - dddd DD MMM')
+      this.selectedReservation.created = moment(item.created).format('H:mm - dddd DD MMM YYYY')
       this.selectedReservation.duration = item.duration
-      this.selectedReservation.startTime = moment(item.startTime).format('H:mm')
-      this.selectedReservation.endTime = moment(item.endTime).format('H:mm')
+      this.selectedReservation.startTime = moment(item.startTime).format('H:mm - DD MMMM YYYY')
+      this.selectedReservation.endTime = moment(item.endTime).format('H:mm - DD MMMM YYYY')
       this.selectedReservation.guestID = item.guestID
       this.selectedReservation.uid = item.uid
     },
