@@ -33,6 +33,8 @@ som er fra f.eks 12:00 til 13:59 vil regnes som ekstra besøk kl 12 og 13, men i
 exports.hourlyNumberOfReservations = functions.https.onRequest((request, response) => {
   let hourlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   console.log('/hourlyNumberOfReservations')
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   db.collection('reservations')
     .get()
     .then(reservations => {
@@ -61,6 +63,8 @@ som er fra f.eks 12:00 til 13:59 vil regnes som ekstra besøk kl 12 og 13, men i
  */
 exports.hourlyNumberOfPersons = functions.https.onRequest((request, response) => {
   let hourlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   console.log('/hourlyNumberOfPersons')
   db.collection('reservations')
     .get()
@@ -88,6 +92,8 @@ Cloud funksjon som regner ut hvor mange reservasjoner vi har hver ukedag
  */
 exports.dailyNumberOfReservations = functions.https.onRequest((request, response) => {
   let dailyStatistics = [0, 0, 0, 0, 0, 0, 0]
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   console.log('/dailyNumberOfReservations')
   db.collection('reservations')
     .get()
@@ -113,6 +119,8 @@ Cloud funksjon som regner ut hvor mange besøkende vi har hver ukedag
  */
 exports.dailyNumberOfPersons = functions.https.onRequest((request, response) => {
   let dailyStatistics = [0, 0, 0, 0, 0, 0, 0]
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   console.log('/dailyNumberOfPersons')
   db.collection('reservations')
     .get()
@@ -140,6 +148,8 @@ Cloud funksjon som regner ut hvor mange reservasjoner vi har hver måned
 
 exports.monthlyNumberOfReservations = functions.https.onRequest((request, response) => {
   let monthlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   console.log('/monthlyNumberOfReservations')
   db.collection('reservations')
     .get()
@@ -166,6 +176,8 @@ Cloud funksjon som regner ut hvor mange besøkende vi har hver måned
 
 exports.monthlyNumberOfPersons = functions.https.onRequest((request, response) => {
   let monthlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   console.log('/monthlyNumberOfPersons')
   db.collection('reservations')
     .get()
