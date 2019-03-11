@@ -89,8 +89,8 @@ function sendWelcomeEmail(email, displayName) {
   };
 
   // The user subscribed to the newsletter.
-  mailOptions.subject = `Welcome to ${APP_NAME}!`;
-  mailOptions.text = `Hey ${displayName || ''}! Welcome to ${APP_NAME}. I hope you will enjoy our service.`;
+  mailOptions.subject = `Din reservasjon hos ${APP_NAME}!`;
+  mailOptions.text = `Hei ${displayName || ''}! Welcome to ${APP_NAME}. I hope you will enjoy our service.`;
   return mailTransport.sendMail(mailOptions).then(() => {
     return console.log('New welcome email sent to:', email);
   });
