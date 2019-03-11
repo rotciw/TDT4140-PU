@@ -33,15 +33,16 @@ let transporter = nodemailer.createTransport({
   }
 });
 
-'use strict';
+// 'use strict';
 
 exports.sendWelcomeEmail = functions.https.onRequest((request, response) => {
   let reservationID = request.body.reservationID
-  let userEmail = request.body.email
+  let email = request.body.email
   let displayName = request.body.displayName
   let startTime = request.body.startTime
-  return sendWelcomeEmail(userEmail, displayName, reservationID, startTime)
-    .then(response.send('Mail sendt til ' + userEmail))
+  console.log(email)
+  return sendWelcomeEmail(email, displayName, reservationID, startTime)
+    .then(response.send('Mail sendt til ' + email))
   }
 )
 
@@ -49,6 +50,8 @@ const APP_NAME = 'Trippin Tacos'
 
 
 // Sends a welcome email to the given user.
+// TODO: Legge til dato og tidspunkt ved å bruke moment sin funksjon på starttime. Tips: moment(startTime).format('H:mm DD/MM/YYYY') f.eks.
+// TODO: Legge til link til reservasjonssiden hvor man kan endre reservasjonen
 function sendWelcomeEmail(email, displayName, reservationID, startTime) {
   const mailOptions = {
     from: `${APP_NAME} <noreply@firebase.com>`,
