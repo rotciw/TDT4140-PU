@@ -186,7 +186,14 @@ exports.monthlyNumberOfPersons = functions.https.onRequest((request, response) =
     })
 })
 
-exports.databaseChangeDropin = functions.https.onRequest((request, response) => {
+
+
+
+/*
+Funksjon som oppdaterer alle feltene i reservasjonsbasen til true. Ble utført 11.03 før kundesystemet ble satt i prod,
+ettersom alle reservasjoner fram til dette var gjort via systemet i restauranten.
+ */
+/*exports.databaseChangeDropin = functions.https.onRequest((request, response) => {
   console.log('/databaseChangeDropin')
   counter = 0
   db.collection('reservations').get()
@@ -209,4 +216,4 @@ exports.databaseChangeDropin = functions.https.onRequest((request, response) => 
       console.log(error)
     })
   response.send('Oppdaterte ' + counter)
-})
+})*/
