@@ -19,112 +19,86 @@
                 wrap
                 justify-center
               >
-                <v-flex xs12>
+                <!-- Hvis man har trykket på et bord får man valget og lagre informasjon om kunden og å opprette bord -->
+                <div v-if="confirmButton">
+                  <v-flex
+                    xs12
+                    class="my-2"
+                  >
+                    <h5 style="text-align: center">
+                      Fyll ut informasjon om deg selv under
+                    </h5>
+                  </v-flex>
+                  <v-layout
+                    xs12
+                  >
                     <v-layout
                       row
                       wrap
-                      justify-start
+                      justify-center
                     >
-                    <!-- Hvis man har trykket på et bord får man valget og lagre informasjon om kunden og å opprette bord -->
-                    <div v-if="confirmButton">
-                      <v-flex
-                        xs12
-                        class="my-2"
-                      >
-                        <h5 style="text-align: center">
-                          Fyll ut feltene under hvis du ønsker å lagre informasjon om kunden
-                        </h5>
+                      <v-flex xs6>
+                        <v-text-field
+                          v-model="guestUser.firstName"
+                          label="Fornavn"
+                        />
                       </v-flex>
-                      <v-layout
-                        xs12
-                      >
-                        <v-layout
-                          row
-                          wrap
-                          justify-center
-                        >
-                          <v-flex xs6>
-                            <v-text-field
-                              v-model="guestUser.firstName"
-                              label="Fornavn"
-                            />
-                          </v-flex>
-                          <v-flex xs6>
-                            <v-text-field
-                              v-model="guestUser.lastName"
-                              label="Etternavn"
-                            />
-                          </v-flex>
-                        </v-layout>
-                        <v-layout
-                          row
-                          wrap
-                          justify-center
-                        >
-                          <v-flex xs6>
-                            <v-text-field
-                              v-model="guestUser.email"
-                              label="E-post"
-                            />
-                          </v-flex>
-                          <v-flex xs6>
-                            <v-text-field
-                              v-model="guestUser.mobile"
-                              label="Mobil"
-                            />
-                          </v-flex>
-                        </v-layout>
-                        <v-layout
-                          row
-                          wrap
-                          justify-center
-                        >
-                          <v-flex xs12>
-                          <v-text-field
-                            v-model="comments"
-                            label="Kommentar"
-                            hint="Er det noe som bør merkes"
-                          />
-                        </v-flex>
-                      </v-layout>
-                      <v-flex
-                        xs12
-                        mt-3
-                      >
-                        <!-- Lagrer info om kunden -->
-                        <div class="text-xs-center">
-                          <v-btn
-                            color="green"
-                            class="button"
-                            large
-                            @click="confirmReservation"
-                          >
-                            Lagre reservasjon
-                          </v-btn>
-                        </div>
+                      <v-flex xs6>
+                        <v-text-field
+                          v-model="guestUser.lastName"
+                          label="Etternavn"
+                        />
                       </v-flex>
-                    </div>
-                  </v-layout>
-                  <v-layout
-                    v-else-if="loading"
-                  >
-                    <v-progress-circular
-                      indeterminate
-                      color="green"
-                    />
-                  </v-layout>
-                  <!-- TIlbakemelding hvis det ikke er noen ledige bord -->
-                  <v-layout
-                    v-else-if="!loading && mountedAvailableTables.length === 0"
-                  >
-                    <h4
-                      style="text-align: center"
-                      color="red"
+                    </v-layout>
+                    <v-layout
+                      row
+                      wrap
+                      justify-center
                     >
-                      Fant ingen ledige bord for dette antallet personer for valgt tid
-                    </h4>
+                      <v-flex xs6>
+                        <v-text-field
+                          v-model="guestUser.email"
+                          label="E-post"
+                        />
+                      </v-flex>
+                      <v-flex xs6>
+                        <v-text-field
+                          v-model="guestUser.mobile"
+                          label="Mobil"
+                        />
+                      </v-flex>
+                    </v-layout>
+                    <v-layout
+                      row
+                      wrap
+                      justify-center
+                    >
+                      <v-flex xs12>
+                        <v-text-field
+                          v-model="comments"
+                          label="Kommentar"
+                          hint="Er det noe som bør merkes"
+                        />
+                      </v-flex>
+                    </v-layout>
+                    <v-flex
+                      xs12
+                      mt-3
+                    >
+                      <!-- Lagrer info om kunden -->
+                      <div class="text-xs-center">
+                        <v-btn
+                          color="green"
+                          class="button"
+                          large
+                          @click="confirmReservation"
+                        >
+                          Lagre reservasjon
+                        </v-btn>
+                      </div>
+                    </v-flex>
                   </v-layout>
-                </v-flex>
+                </div>
               </v-layout>
             </v-container>
           </v-card-text>
@@ -151,17 +125,24 @@ import moment from 'moment'
 
 export default {
   name: 'NewReservation',
-  // Props arves fra booking
   props: {
     dialogVisible: Boolean,
-    table: {
+    reservation: {
       type: Object,
       default: function () {
+        // TODO: Legge inn alle feltene reservasjon skal ha
         return {
+          comments: '',
+          created: 0,
+          dropIn: false,
+          duration: 0,
+          endTime: 0,
+          guestID: '',
+          numberOfPersons: '',
+          reservationID: 0,
+          startTime: 0,
           tableID: 0,
-          capacity: '',
-          currently: 0,
-          occupied: false
+          uid: ''
         }
       }
     }
@@ -176,6 +157,7 @@ export default {
         v => (v > 0 && v < 75) || 'Må være mellom 0 og 75'
       ],
       comments: '', // Kommentarer
+      dialog: this.dialogVisible,
       guestUser: { // Gjestebruker
         firstName: '',
         lastName: '',

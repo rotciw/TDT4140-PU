@@ -5,106 +5,108 @@
       justify-center
       align-center
     >
-        <div class="loginbox">
-    <v-flex
-      xs12
-      sm10
-      md11
-    >
-      <v-menu
-        v-model="menu"
-        color="green"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        lazy
-        transition="scale-transition"
-        offset-y
-        full-width
-        min-width="290px"
-      >
-        <v-text-field
-          slot="activator"
-          v-model="date"
-          label="Dato"
-          color="green"
-          prepend-icon="event"
-          readonly
-        />
-        <v-date-picker
-          v-model="date"
-          color="green"
-          :min="minDate"
-          @input="menu = false"
-        />
-      </v-menu>
-    </v-flex>
-    <v-flex
-      xs12
-      sm10
-      md11
-    >
-      <v-menu
-        ref="startMenu"
-        v-model="menu2"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        :return-value.sync="startTime"
-        lazy
-        transition="scale-transition"
-        offset-y
-        full-width
-        max-width="290px"
-        min-width="290px"
-      >
-        <v-text-field
-          slot="activator"
-          v-model="startTime"
-          label="Starttid"
-          color="green"
-          prepend-icon="access_time"
-          readonly
-        />
-        <v-time-picker
-          v-if="menu2"
-          v-model="startTime"
-          :allowed-hours="allowedHours"
-          :allowed-minutes="allowedMinutes"
-          color="green"
-          format="24hr"
-          full-width
-          :min="minStartTime"
-          @click:minute="$refs.startMenu.save(startTime)"
-        />
-      </v-menu>
-    </v-flex>
-    <v-flex
-      xs12
-      sm12
-      md11
-    >
-      <v-text-field
-        v-model="numberOfPersons"
-        label="Antall gjester"
-        hint="Hvor mange gjester er det?"
-        prepend-icon="supervised_user_circle"
-        min="1"
-        :rules="capacityRules"
-        type="Number"
-      />
-    </v-flex>
-      <div class="text-xs-center">
-        <v-btn
-          large
-          color="#6BE096"
-          class="roundedCorners"
+      <div class="loginbox">
+        <v-flex
+          xs12
+          sm10
+          md11
         >
-          Søk
-        </v-btn>
-      </div>
+          <v-menu
+            v-model="menu"
+            color="green"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            lazy
+            transition="scale-transition"
+            offset-y
+            full-width
+            min-width="290px"
+          >
+            <v-text-field
+              slot="activator"
+              v-model="date"
+              label="Dato"
+              color="green"
+              prepend-icon="event"
+              readonly
+            />
+            <v-date-picker
+              v-model="date"
+              color="green"
+              :min="minDate"
+              @input="menu = false"
+            />
+          </v-menu>
+        </v-flex>
+        <v-flex
+          xs12
+          sm10
+          md11
+        >
+          <v-menu
+            ref="startMenu"
+            v-model="menu2"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            :return-value.sync="startTime"
+            lazy
+            transition="scale-transition"
+            offset-y
+            full-width
+            max-width="290px"
+            min-width="290px"
+          >
+            <v-text-field
+              slot="activator"
+              v-model="startTime"
+              label="Starttid"
+              color="green"
+              prepend-icon="access_time"
+              readonly
+            />
+            <v-time-picker
+              v-if="menu2"
+              v-model="startTime"
+              :allowed-hours="allowedHours"
+              :allowed-minutes="allowedMinutes"
+              color="green"
+              format="24hr"
+              full-width
+              :min="minStartTime"
+              @click:minute="$refs.startMenu.save(startTime)"
+            />
+          </v-menu>
+        </v-flex>
+        <v-flex
+          xs12
+          sm12
+          md11
+        >
+          <v-text-field
+            v-model="numberOfPersons"
+            label="Antall gjester"
+            hint="Hvor mange gjester er det?"
+            prepend-icon="supervised_user_circle"
+            min="1"
+            type="Number"
+          />
+        </v-flex>
+        <div class="text-xs-center">
+          <v-btn
+            large
+            color="#6BE096"
+            class="roundedCorners"
+          >
+            Søk
+          </v-btn>
         </div>
+      </div>
     </v-layout>
+    <v-btn @click="addReservation">
+      Reservasjon
+    </v-btn>
     <!-- Komponent for å legge til ny reservasjon -->
-    <add-reservation
+    <new-reservation
       :key="reservationKey"
       :dialog-visible="newReservationVisible"
       @dialogCLosed="newReservationVisibled = false"
@@ -114,10 +116,11 @@
 
 <script>
 import moment from 'moment'
+import NewReservation from '../Components/NewReservation'
 
 export default {
-  components: {NewReservation},
-  name: 'customerReservation',
+  name: 'CustomerReservation',
+  components: { NewReservation },
   layout: 'frontpage',
   data () {
     return {
@@ -125,6 +128,8 @@ export default {
       menu: false,
       menu2: false,
       now: moment().valueOf(),
+      numberOfPersons: 0,
+      reservationKey: 0,
       startTime: moment().format('H:mm'),
       newReservationVisible: false // Brukes for å vise/ikke vise add-reservation komponenten
     }
