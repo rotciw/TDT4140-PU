@@ -28,6 +28,28 @@ var db = admin.firestore();
 
 'use strict';
 
+/*exports.sendWelcomeEmail = functions.firestore.document('reservations').onWrite((change, context) => {
+  const newReservation = change.after.data()
+    .then( newReservation => {
+      if (context.authType === 'USER'){
+        console.log('sendt Welcome Email')
+        return sendWelcomeEmail(newReservation.email, newReservation.displayName)}
+      else {
+        console.log('on place reservation')
+        return sendWelcomeEmail('tacosbetrippin@gmail.com', 'Trippin Tacos')
+    }})
+    .then(() => {
+      return response.status(200).send(hourlyStatistics)
+    })
+    .catch(error => {
+      console.log('Klarte ikke å sende epost')
+      console.log(error)
+      response.send(error)
+    })
+})*/
+
+
+
 
 app.post('/sendReservationEmail', (request, response) => {
   console.log('sendt reservation confirmation email')
