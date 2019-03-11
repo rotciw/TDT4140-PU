@@ -185,3 +185,28 @@ exports.monthlyNumberOfPersons = functions.https.onRequest((request, response) =
       response.send(error)
     })
 })
+
+exports.databaseChangeDropin = functions.https.onRequest((request, response) => {
+  console.log('/databaseChangeDropin')
+  counter = 0
+  db.collection('reservations').get()
+    .then(reservations => {
+      reservations.forEach(reservation => {
+        reservation = reservation.data()
+        reservation.dropIn = true
+        db.collection('reservations').doc(reservation.reservationID + '').set(reservation)
+          .then(() => {
+            counter++
+          })
+          .catch(error => {
+            console.log('Klarte ikke å oppdatere reservasjon med ID ' + reservation.reservationID)
+            console.log(error)
+          })
+      })
+    })
+    .catch(error => {
+      console.log('Klarte ikke å hente reservasjoner')
+      console.log(error)
+    })
+  response.send('Oppdaterte ' + counter)
+})
