@@ -488,7 +488,8 @@ export const actions = {
         commit('setError', error)
         console.log(error)
       })
-  } }
+  }
+}
 // Getters returnerer de ulike attributtene våre fra staten. Beskrivelsen av attributten står på state objektet.
 export const getters = {
   availableTables (state) {

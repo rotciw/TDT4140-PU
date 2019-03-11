@@ -17,7 +17,7 @@
       <v-toolbar-items>
         <v-btn
           flat
-          @click="$router.push('/customer-change-reservation')"
+          @click="$router.push('/customerChangeReservation')"
         >
           Endre reservasjon
         </v-btn>
