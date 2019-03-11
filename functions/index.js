@@ -32,7 +32,7 @@ som er fra f.eks 12:00 til 13:59 vil regnes som ekstra besøk kl 12 og 13, men i
  */
 exports.hourlyNumberOfReservations = functions.https.onRequest((request, response) => {
   let hourlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
+  console.log('/hourlyNumberOfReservations')
   db.collection('reservations')
     .get()
     .then(reservations => {
@@ -61,7 +61,7 @@ som er fra f.eks 12:00 til 13:59 vil regnes som ekstra besøk kl 12 og 13, men i
  */
 exports.hourlyNumberOfPersons = functions.https.onRequest((request, response) => {
   let hourlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
+  console.log('/hourlyNumberOfPersons')
   db.collection('reservations')
     .get()
     .then(reservations => {
@@ -88,7 +88,7 @@ Cloud funksjon som regner ut hvor mange reservasjoner vi har hver ukedag
  */
 exports.dailyNumberOfReservations = functions.https.onRequest((request, response) => {
   let dailyStatistics = [0, 0, 0, 0, 0, 0, 0]
-
+  console.log('/dailyNumberOfReservations')
   db.collection('reservations')
     .get()
     .then(reservations => {
@@ -113,7 +113,7 @@ Cloud funksjon som regner ut hvor mange besøkende vi har hver ukedag
  */
 exports.dailyNumberOfPersons = functions.https.onRequest((request, response) => {
   let dailyStatistics = [0, 0, 0, 0, 0, 0, 0]
-
+  console.log('/dailyNumberOfPersons')
   db.collection('reservations')
     .get()
     .then(reservations => {
@@ -140,7 +140,7 @@ Cloud funksjon som regner ut hvor mange reservasjoner vi har hver måned
 
 exports.monthlyNumberOfReservations = functions.https.onRequest((request, response) => {
   let monthlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
+  console.log('/monthlyNumberOfReservations')
   db.collection('reservations')
     .get()
     .then(reservations => {
@@ -162,19 +162,18 @@ exports.monthlyNumberOfReservations = functions.https.onRequest((request, respon
 
 /*
 Cloud funksjon som regner ut hvor mange besøkende vi har hver måned
-TODO: Fikse denne
  */
 
 exports.monthlyNumberOfPersons = functions.https.onRequest((request, response) => {
   let monthlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
+  console.log('/monthlyNumberOfPersons')
   db.collection('reservations')
     .get()
     .then(reservations => {
       return reservations.forEach(reservation => {
         reservation = reservation.data()
         const month = Number(moment(reservation.startTime).month())
-        monthlyStatistics[month - 1] = monthlyStatistics[month - 1] + reservation.numberOfPersons
+        monthlyStatistics[month - 1] = monthlyStatistics[month - 1] + Number(reservation.numberOfPersons)
       })
     })
     .then(() => {
