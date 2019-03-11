@@ -24,20 +24,26 @@ app.use(cors({origin: true }))
 
 admin.initializeApp(functions.config().firebase);
 
-var db = admin.firestore();
+let db = admin.firestore();
+
+let transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'youremail@address.com',
+    pass: 'yourpassword'
+  }
+});
 
 'use strict';
 
-/*exports.sendWelcomeEmail = functions.firestore.document('reservations').onWrite((change, context) => {
-  const newReservation = change.after.data()
+exports.sendWelcomeEmail = functions.firestore.document('reservations').onCreate((snap, context) => {
+  const newReservation = snap.data()
     .then( newReservation => {
-      if (context.authType === 'USER'){
+      if (snap.uid !== 'dJSnjP4jPbXGZZ6E2oMq9ghkC3m2' && snap.uid !== 'vwTDv1gkOsci0mUHvc81NKKFKs73'){
         console.log('sendt Welcome Email')
         return sendWelcomeEmail(newReservation.email, newReservation.displayName)}
-      else {
-        console.log('on place reservation')
-        return sendWelcomeEmail('tacosbetrippin@gmail.com', 'Trippin Tacos')
-    }})
+
+    })
     .then(() => {
       return response.status(200).send(hourlyStatistics)
     })
@@ -46,7 +52,7 @@ var db = admin.firestore();
       console.log(error)
       response.send(error)
     })
-})*/
+})
 
 
 
@@ -87,21 +93,6 @@ exports.sendWelcomeEmail = functions.auth.user().onCreate((user) => {
 
   return sendWelcomeEmail(email, displayName);
 });
-// [END sendWelcomeEmail]
-
-// [START sendByeEmail]
-/**
- * Send an account deleted email confirmation to users who delete their accounts.
- */
-// [START onDeleteTrigger]
-exports.sendByeEmail = functions.auth.user().onDelete((user) => {
-// [END onDeleteTrigger]
-  const email = user.email;
-  const displayName = user.displayName;
-
-  return sendGoodbyeEmail(email, displayName);
-});
-// [END sendByeEmail]
 
 // Sends a welcome email to the given user.
 function sendWelcomeEmail(email, displayName) {
@@ -113,23 +104,9 @@ function sendWelcomeEmail(email, displayName) {
   // The user subscribed to the newsletter.
   mailOptions.subject = `Din reservasjon hos ${APP_NAME}!`;
   mailOptions.text = `Hei ${displayName || ''}! Welcome to ${APP_NAME}. I hope you will enjoy our service.`;
-  return mailTransport.sendMail(mailOptions).then(() => {
+  return transporter.sendMail(mailOptions).then(() => {
     return console.log('New welcome email sent to:', email);
   });
 }
 
-// Sends a goodbye email to the given user.
-function sendGoodbyeEmail(email, displayName) {
-  const mailOptions = {
-    from: `${APP_NAME} <noreply@firebase.com>`,
-    to: email,
-  };
-
-  // The user unsubscribed to the newsletter.
-  mailOptions.subject = `Bye!`;
-  mailOptions.text = `Hey ${displayName || ''}!, We confirm that we have deleted your ${APP_NAME} account.`;
-  return mailTransport.sendMail(mailOptions).then(() => {
-    return console.log('Account deletion confirmation email sent to:', email);
-  });
-}
 
