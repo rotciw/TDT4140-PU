@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import Vue from 'vue'
 import moment from 'moment'
+import axios from 'axios'
 // import { cloneDeep } from 'lodash'
 
 export const strict = false
