@@ -14,92 +14,89 @@
           <v-card-text>
             <v-container grid-list-md>
               <!-- Fyller ut informasjon om reservasjonen-->
-              <v-layout
-                row
-                wrap
-                justify-center
-              >
-                <!-- Hvis man har trykket på et bord får man valget og lagre informasjon om kunden og å opprette bord -->
-                <div v-if="confirmButton">
-                  <v-flex
-                    xs12
-                    class="my-2"
-                  >
-                    <h5 style="text-align: center">
-                      Fyll ut informasjon om deg selv under
-                    </h5>
+              <!-- Hvis man har trykket på et bord får man valget og lagre informasjon om kunden og å opprette bord -->
+              <div>
+                <v-flex
+                  xs12
+                  class="my-2"
+                >
+                  <v-flex xs12>
+                    <h2
+                      style="text-align: center; color: green"
+                    >
+                      Bordet er ledig for valgt tidspunkt
+                    </h2>
                   </v-flex>
-                  <v-layout
-                    xs12
-                  >
-                    <v-layout
-                      row
-                      wrap
-                      justify-center
+                  <h3 style="text-align: center">
+                    Fyll ut informasjon om deg selv under
+                  </h3>
+                </v-flex>
+                <v-layout
+                  row
+                  wrap
+                  justify-center
+                >
+                  <v-flex xs6>
+                    <v-text-field
+                      v-model="guestUser.firstName"
+                      label="Fornavn"
+                    />
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field
+                      v-model="guestUser.lastName"
+                      label="Etternavn"
+                    />
+                  </v-flex>
+                </v-layout>
+                <v-layout
+                  row
+                  wrap
+                  justify-center
+                >
+                  <v-flex xs6>
+                    <v-text-field
+                      v-model="guestUser.email"
+                      label="E-post"
+                    />
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field
+                      v-model="guestUser.mobile"
+                      label="Mobil"
+                    />
+                  </v-flex>
+                </v-layout>
+                <v-layout
+                  row
+                  wrap
+                  justify-center
+                >
+                  <v-flex xs12>
+                    <v-text-field
+                      v-model="comments"
+                      label="Kommentar"
+                      hint="Er det noe som bør merkes"
+                    />
+                  </v-flex>
+                </v-layout>
+                <v-flex
+                  xs12
+                  mt-3
+                >
+                  <!-- Lagrer info om kunden -->
+                  <div class="text-xs-center">
+                    <v-btn
+                      color="green"
+                      class="button"
+                      large
+                      @click="confirmReservation"
                     >
-                      <v-flex xs6>
-                        <v-text-field
-                          v-model="guestUser.firstName"
-                          label="Fornavn"
-                        />
-                      </v-flex>
-                      <v-flex xs6>
-                        <v-text-field
-                          v-model="guestUser.lastName"
-                          label="Etternavn"
-                        />
-                      </v-flex>
-                    </v-layout>
-                    <v-layout
-                      row
-                      wrap
-                      justify-center
-                    >
-                      <v-flex xs6>
-                        <v-text-field
-                          v-model="guestUser.email"
-                          label="E-post"
-                        />
-                      </v-flex>
-                      <v-flex xs6>
-                        <v-text-field
-                          v-model="guestUser.mobile"
-                          label="Mobil"
-                        />
-                      </v-flex>
-                    </v-layout>
-                    <v-layout
-                      row
-                      wrap
-                      justify-center
-                    >
-                      <v-flex xs12>
-                        <v-text-field
-                          v-model="comments"
-                          label="Kommentar"
-                          hint="Er det noe som bør merkes"
-                        />
-                      </v-flex>
-                    </v-layout>
-                    <v-flex
-                      xs12
-                      mt-3
-                    >
-                      <!-- Lagrer info om kunden -->
-                      <div class="text-xs-center">
-                        <v-btn
-                          color="green"
-                          class="button"
-                          large
-                          @click="confirmReservation"
-                        >
-                          Lagre reservasjon
-                        </v-btn>
-                      </div>
-                    </v-flex>
-                  </v-layout>
-                </div>
-              </v-layout>
+                      Lagre reservasjon
+                    </v-btn>
+                  </div>
+                </v-flex>
+              </div>
             </v-container>
           </v-card-text>
           <v-card-actions>
@@ -150,12 +147,7 @@ export default {
   data () {
     return {
       availableTables: [], // Holder alle ledige bord
-      confirmButton: false, // Brukes til å vise neste steg etter at bord er valgt
       // Regler for antall personer man prøver å legge inn
-      capacityRules: [
-        v => !!v || 'Trenger antall',
-        v => (v > 0 && v < 75) || 'Må være mellom 0 og 75'
-      ],
       comments: '', // Kommentarer
       dialog: this.dialogVisible,
       guestUser: { // Gjestebruker
@@ -173,7 +165,7 @@ export default {
         occupied: false,
         reservations: []
       },
-      numberOfPersons: 1, // ANtall personer
+      numberOfPersons: 1, // Antall personer
       // Styrer synligheten av dropdown menyene
       menu: false,
       menu2: false,
@@ -202,17 +194,6 @@ export default {
     // loading
     loading () {
       return this.$store.getters.loading
-    },
-    // Mimimumsvalg for tid og dato
-    minStartTime () {
-      if (this.date === new Date().toISOString().substr(0, 10)) return moment().format('H:mm')
-      else return '8:00'
-    },
-    minEndTime () {
-      return this.startTime
-    },
-    minDate () {
-      return new Date().toISOString().substr(0, 10)
     }
   },
   watch: {
@@ -222,25 +203,12 @@ export default {
       if (this.endTime < this.startTime) {
         this.updateEndTime()
       }
-    },
-    // Overvåker feltene. Hvis noen av de endres oppdaterer vi ledige bord.
-    endTime () {
-      this.mountAvailableTables()
-    },
-    numberOfPersons () {
-      this.mountAvailableTables()
-    },
-    date () {
-      this.mountAvailableTables()
     }
-  },
-  beforeDestroy () {
-    this.mountAvailableTables()
   },
   methods: {
     /*
-     cancel() lukker dialogen
-      */
+      cancel() lukker dialogen
+       */
     cancel () {
       this.newTable = null
       this.confirmButton = true
@@ -249,8 +217,8 @@ export default {
       this.$store.commit('clearAvailableTables')
     },
     /*
-     confirmReservation () lagrer reservasjonen hvis input er gyldig
-      */
+      confirmReservation () lagrer reservasjonen hvis input er gyldig
+       */
     confirmReservation () {
       if (this.$refs.form.validate()) {
         const reservationObject = {
@@ -287,28 +255,6 @@ export default {
             })
           })
       }
-    },
-    // Mounter ledige bord for valgt tidsperiode igjennom storen
-    mountAvailableTables () {
-      this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
-      this.endTimeUnix = moment(this.date + ' - ' + this.endTime, 'YYYY-MM-DD - H:mm').valueOf()
-      this.selectedTable.tableID = 0
-      this.confirmButton = false
-      this.$store.commit('setLoading', true)
-      this.$store.dispatch('mountAvailableTables', {
-        numberOfPersons: this.numberOfPersons,
-        startTime: this.startTimeUnix,
-        endTime: this.endTimeUnix
-      })
-    },
-    // Velger bord
-    selectTable (table) {
-      this.selectedTable = table
-      this.confirmButton = true
-    },
-    // Kalles når starttid er større enn sluttid
-    updateEndTime () {
-      this.endTime = this.startTime
     }
   }
 }
@@ -317,17 +263,5 @@ export default {
 <style scoped>
   .button {
     border-radius: 0px 18px 0px 18px;
-  }
-  .table {
-    height:90px;
-    width:90px;
-    border-radius: 0px 18px 0px 18px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  }
-  .table-text {
-    word-wrap: break-word;
-    overflow: hidden;
-    height: 100%;
-    white-space:normal;
   }
 </style>
