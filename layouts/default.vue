@@ -76,6 +76,19 @@
             <v-list-tile-title v-text="'Alle Reservasjoner'" />
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile
+          v-if="admin"
+          class="tile"
+          active-class="background-color: green"
+          to="/statistics"
+        >
+          <v-list-tile-action>
+            <v-icon>trending_up</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="'Statistikk'" />
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
