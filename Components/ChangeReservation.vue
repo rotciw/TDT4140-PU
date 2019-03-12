@@ -11,7 +11,7 @@
         <span class="headline">Endre reservasjonen din her:</span>
       </v-card-title>
       <v-card-text>
-        <v-container grid-list-md>
+        <v-container grid-list-md v-if="reservation && reservation.user">
           <v-layout wrap>
             <!-- .user. på de man skal hente fra users databasen -->
             <v-flex
@@ -197,6 +197,12 @@
         >
           Bordet er ikke ledig for valgt tidspunkt
         </h3>
+        <v-btn
+          color="red"
+          @click="cancelReservation"
+        >
+          Avbestill bord
+        </v-btn>
         <v-spacer />
         <v-btn
           color="red darken-1"
@@ -263,8 +269,9 @@ export default {
       tomorrow: moment().endOf('day').format('H:mm'),
       dialog: this.dialogVisible,
       selectedReservation: this.reservation,
+      editedSelectedReservation: this.reservation
       // For endring av entries skal det opprettes et nytt object også sendes til databasen gjennom denne
-      editedSelectedReservation: {
+      /* editedSelectedReservation: {
         reservationID: '',
         tableID: '',
         userID: '',
@@ -281,7 +288,7 @@ export default {
           mobile: '',
           email: ''
         }
-      }
+      } */
     }
   },
   computed: {
@@ -296,6 +303,7 @@ export default {
     }
   },
   watch: {
+    // Hvis verdien ikke er null så kommer dialog
     reservation (val) {
       if (val !== null) {
         this.dialog = true
@@ -305,6 +313,7 @@ export default {
   methods: {
     close () {
       this.dialog = false
+      // Nytt reservasjonsobjekt for å ikke overskride elementet vi henter inn
       this.editedSelectedReservation = {
         reservationID: '',
         tableID: '',
@@ -331,9 +340,14 @@ export default {
       this.$emit('dialogClosed')
     },
     save () {
+      // Lagre nye endringer til reservasjonen
       this.close()
     },
+    cancelReservation () {
+      // Avbestille reservasjon
+    },
     updateMinEndTime () {
+      // Del av funksjonen som skal finne ut av sluttid ikke er før starttid
       this.minEndTime = this.startTime
       if (this.startTime > this.endTime) {
         this.endTime = this.startTime
