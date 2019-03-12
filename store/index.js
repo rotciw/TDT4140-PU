@@ -29,7 +29,7 @@ export const mutations = {
     state.tableAvailable = []
   },
   // Fjerner error melding
-  clearError (state, payload) {
+  clearError (state) {
     state.error = null
   },
   // Setter storen til en ren state
@@ -202,14 +202,31 @@ export const actions = {
       .get()
       .then(reservation => {
         reservation = reservation.data()
-        console.log(reservation)
-        commit('setFetchedReservation', reservation)
-        commit('setLoading', false)
+        if (reservation.uid.length > 0) {
+          firebase.firestore().collection('users')
+            .doc(reservation.uid + '')
+            .get()
+            .then(user => {
+              user = user.data()
+              if (user.email === payload.email) {
+                reservation.user = user
+                commit('setFetchedReservation', reservation)
+                commit('setLoading', false)
+              }
+              else {
+                commit('setError', 'Fant ikke reservasjonen. Prøv igjen.')
+                commit('setLoading', false)
+              }
+            })
+        }
+        else if (reservation.guestID.length > 0) {
+          firebase.firestore().collection('guestUsers').where('')
+        }
       })
       .catch(error => {
         console.log('Klarte ikke å hente reservasjon med ID: ' + payload.reservationID)
+        commit('setError', 'Fant ikke reservasjonen. Prøv igjen.')
         console.log(error)
-        commit('setError', error)
         commit('setLoading', false)
       })
   },
