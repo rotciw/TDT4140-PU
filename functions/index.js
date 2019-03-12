@@ -74,7 +74,7 @@ exports.hourlyNumberOfPersons = functions.https.onRequest((request, response) =>
         const startTime = moment(reservation.startTime).format('H')
         const endTime = moment(reservation.endTime).format('H')
         for (let i = Number(startTime); i < Number(endTime) + 1; i++) {
-          hourlyStatistics[i - 1] = hourlyStatistics[i - 1] + reservation.numberOfPersons
+          hourlyStatistics[i - 1] = hourlyStatistics[i - 1] + Number(reservation.numberOfPersons)
         }
       })
     })
