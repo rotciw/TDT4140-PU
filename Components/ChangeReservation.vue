@@ -11,7 +11,7 @@
         <span class="headline">Endre reservasjonen din her:</span>
       </v-card-title>
       <v-card-text>
-        <v-container grid-list-md v-if="reservation && reservation.user">
+        <v-container grid-list-md v-if="editedSelectedReservation && editedSelectedReservation.user">
           <v-layout wrap>
             <!-- .user. på de man skal hente fra users databasen -->
             <v-flex
@@ -113,44 +113,6 @@
                   :min="minStartTime"
                   :max="tomorrow"
                   @click:minute="$refs.startMenu.save(startTime); updateMinEndTime()"
-                />
-              </v-menu>
-            </v-flex>
-            <v-flex
-              xs12
-              sm6
-              md4
-            >
-              <v-menu
-                ref="leavingMenu"
-                v-model="menu1"
-                :close-on-content-click="false"
-                :nudge-right="40"
-                :return-value.sync="endTime"
-                lazy
-                transition="scale-transition"
-                offset-x
-                full-width
-                max-width="250px"
-                min-width="250px"
-              >
-                <v-text-field
-                  slot="activator"
-                  v-model="endTime"
-                  color="green"
-                  prepend-icon="directions_walk"
-                  label="Sluttid"
-                  readonly
-                />
-                <v-time-picker
-                  v-if="menu1"
-                  v-model="endTime"
-                  color="green"
-                  format="24hr"
-                  :min="minEndTime"
-                  :max="tomorrow"
-                  full-width
-                  @click:minute="$refs.leavingMenu.save(endTime)"
                 />
               </v-menu>
             </v-flex>
@@ -269,7 +231,8 @@ export default {
       tomorrow: moment().endOf('day').format('H:mm'),
       dialog: this.dialogVisible,
       selectedReservation: this.reservation,
-      editedSelectedReservation: this.reservation
+      editedSelectedReservation: this.reservation,
+      now: moment().valueOf()
       // For endring av entries skal det opprettes et nytt object også sendes til databasen gjennom denne
       /* editedSelectedReservation: {
         reservationID: '',
@@ -293,10 +256,13 @@ export default {
   },
   computed: {
     minStartTime () {
-      return moment().format('H:mm')
+      if (this.date === moment().add(1, 'day').toISOString().substr(0, 10)) {
+        return moment(this.now + 86400000).format('H:mm')
+      }
+      else return '12:00'
     },
     minDate () {
-      return new Date().toISOString().substr(0, 10)
+      return moment().endOf('day').toISOString()
     },
     tableAvailable () {
       return !this.$store.getters.tableAvailable.includes(false)
@@ -307,8 +273,13 @@ export default {
     reservation (val) {
       if (val !== null) {
         this.dialog = true
+        this.editedSelectedReservation = this.reservation
+        this.startTime = moment(this.reservation.startTime).format('H:mm')
       }
     }
+  },
+  mounted () {
+    console.log(this.editedSelectedReservation, this.reservation)
   },
   methods: {
     close () {
@@ -341,10 +312,21 @@ export default {
     },
     save () {
       // Lagre nye endringer til reservasjonen
-      this.close()
+      this.editedSelectedReservation.startTime = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - HH:mm').valueOf()
+      this.editedSelectedReservation.endTime = moment(this.editedSelectedReservation.startTime).add(4, 'hours').valueOf()
+      this.checkTableAvailability()
+      if (this.tableAvailable) {
+        this.$store.dispatch('updateReservation', this.editedSelectedReservation)
+        this.close()
+      }
+      // TODO: Husk å legge inn snackbar her
     },
     cancelReservation () {
       // Avbestille reservasjon
+      if (confirm('Er du sikker på at du vil avbestille reservasjonen?')) {
+        this.$store.dispatch('removeReservation', this.editedSelectedReservation)
+        this.close()
+      }
     },
     updateMinEndTime () {
       // Del av funksjonen som skal finne ut av sluttid ikke er før starttid
@@ -352,6 +334,11 @@ export default {
       if (this.startTime > this.endTime) {
         this.endTime = this.startTime
       }
+    },
+    checkTableAvailability () {
+      this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - HH:mm').valueOf()
+      this.endTimeUnix = moment(this.startTimeUnix).add(4, 'hours').valueOf()
+      this.$store.dispatch('checkAvailabilityWithReservation', { tableID: this.editedSelectedReservation.tableID, numberOfPersons: this.editedSelectedReservation.numberOfPersons, startTime: this.startTimeUnix, endTime: this.endTimeUnix, reservationID: this.editedSelectedReservation.reservationID })
     },
     updateTable (table) {
       this.tableID = table

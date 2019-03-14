@@ -316,32 +316,61 @@ export const actions = {
     })
       .then(() => {
         commit('setReservation', payload)
-        if (payload.uid > 0) {
-          firebase.firestore().collection('users').doc(payload.uid + '').set({
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            mobile: payload.mobile,
-            email: payload.email,
-            admin: payload.admin,
-            employee: payload.employee,
-            uid: payload.uid,
-            username: payload.username
-          }).catch(error => {
-            console.log('Klarte ikke å oppdatere bruker med id ' + payload.uid)
-            console.log(error)
-          })
+        if (payload.user) {
+          if (payload.uid.length > 0) {
+            firebase.firestore().collection('users').doc(payload.uid + '').set({
+              firstName: payload.user.firstName,
+              lastName: payload.user.lastName,
+              mobile: payload.user.mobile,
+              email: payload.user.email,
+              admin: payload.user.admin,
+              employee: payload.user.employee,
+              uid: payload.user.uid
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere bruker med id ' + payload.uid)
+              console.log(error)
+            })
+          }
+          else if (payload.guestID > 0) {
+            firebase.firestore().collection('guestUsers').doc(payload.guestID + '').set({
+              firstName: payload.user.firstName,
+              lastName: payload.user.lastName,
+              mobile: payload.user.mobile,
+              email: payload.user.email,
+              guestID: payload.user.guestID
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere gjest med id ' + payload.guestID)
+              console.log(error)
+            })
+          }
         }
-        else if (payload.guestID > 0) {
-          firebase.firestore().collection('guestUsers').doc(payload.guestID + '').set({
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            mobile: payload.mobile,
-            email: payload.email,
-            guestID: payload.guestID
-          }).catch(error => {
-            console.log('Klarte ikke å oppdatere gjest med id ' + payload.guestID)
-            console.log(error)
-          })
+        else {
+          if (payload.uid > 0) {
+            firebase.firestore().collection('users').doc(payload.uid + '').set({
+              firstName: payload.firstName,
+              lastName: payload.lastName,
+              mobile: payload.mobile,
+              email: payload.email,
+              admin: payload.admin,
+              employee: payload.employee,
+              uid: payload.uid
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere bruker med id ' + payload.uid)
+              console.log(error)
+            })
+          }
+          else if (payload.guestID > 0) {
+            firebase.firestore().collection('guestUsers').doc(payload.guestID + '').set({
+              firstName: payload.firstName,
+              lastName: payload.lastName,
+              mobile: payload.mobile,
+              email: payload.email,
+              guestID: payload.guestID
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere gjest med id ' + payload.guestID)
+              console.log(error)
+            })
+          }
         }
       })
       .catch(error => {
