@@ -13,19 +13,41 @@
           justify-space-around
           fill-height
         >
+          <h1 style="text-align: center">
+            Statistikk
+          </h1>
           <div class="button">
             <v-btn
+              v-if="statisticsType==='monthlyCostumers'"
               dark
               large
               class="button"
               color="green darken-4"
-              :class="{activeButton: statisticsType === 'monthlyCostumers'}"
+            >
+              Månedlige kundebesøk
+            </v-btn>
+            <v-btn
+              v-else
+              dark
+              large
+              class="button"
+              color=#707070
               @click="fillData('monthlyCostumers')"
             >
               Månedlige kundebesøk
             </v-btn>
             <v-btn
+              v-if="statisticsType==='monthlyReservations'"
+              dark
+              large
+              class="button"
               color="green darken-4"
+            >
+              Månedlige reservasjoner
+            </v-btn>
+            <v-btn
+              v-else
+              color=#707070
               dark
               large
               class="button"
@@ -34,25 +56,55 @@
               Månedlige reservasjoner
             </v-btn>
             <v-btn
+              v-if="statisticsType==='dailyCostumers'"
+              dark
+              large
+              class="button"
               color="green darken-4"
+            >
+              Daglige kundebesøk
+            </v-btn>
+            <v-btn
+              v-else
+              color=#707070
               dark
               large
               class="button"
               @click="fillData('dailyCostumers')"
             >
-              Ukedager kundebesøk
+              Daglige kundebesøk
             </v-btn>
             <v-btn
+              v-if="statisticsType==='dailyReservations'"
+              dark
+              large
+              class="button"
               color="green darken-4"
+            >
+              Daglige reservasjoner
+            </v-btn>
+            <v-btn
+              v-else
+              color=#707070
               dark
               large
               class="button"
               @click="fillData('dailyReservations')"
             >
-              Ukedager reservasjoner
+              Daglige reservasjoner
             </v-btn>
             <v-btn
+              v-if="statisticsType==='hourlyCostumers'"
+              dark
+              large
+              class="button"
               color="green darken-4"
+            >
+              Tidspunkt kundebesøk
+            </v-btn>
+            <v-btn
+              v-else
+              color=#707070
               dark
               large
               class="button"
@@ -61,7 +113,17 @@
               Tidspunkt kundebesøk
             </v-btn>
             <v-btn
+              v-if="statisticsType==='hourlyReservations'"
+              dark
+              large
+              class="button"
               color="green darken-4"
+            >
+              Tidspunkt reservasjoner
+            </v-btn>
+            <v-btn
+              v-else
+              color=#707070
               dark
               large
               class="button"
@@ -114,6 +176,8 @@ export default {
   }),
   methods: {
     fillData (statisticsType) {
+      this.statisticsType = statisticsType
+      console.log(this.statisticsType)
       if (statisticsType === 'monthlyCostumers') {
         this.showData('https://us-central1-pu30-5b0f9.cloudfunctions.net/monthlyNumberOfPersons')
           .then(() => {
@@ -121,7 +185,7 @@ export default {
               labels: ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'],
               datasets: [
                 {
-                  label: 'Kunder pr mnd',
+                  label: 'Gjennomsnittlig antall kunder pr mnd',
                   backgroundColor: '#6BE096',
                   data: this.datacollection
                 }
@@ -137,7 +201,7 @@ export default {
               labels: ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'],
               datasets: [
                 {
-                  label: 'Reservasjoner pr mnd',
+                  label: 'Gjennomsnittlig antall reservasjoner pr mnd',
                   backgroundColor: '#6BE096',
                   data: this.datacollection
                 }
@@ -153,7 +217,7 @@ export default {
               labels: ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'],
               datasets: [
                 {
-                  label: 'Kunder pr dag',
+                  label: 'Gjennomsnittlig antall kunder pr dag',
                   backgroundColor: '#6BE096',
                   data: this.datacollection
                 }
@@ -169,7 +233,7 @@ export default {
               labels: ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'],
               datasets: [
                 {
-                  label: 'Reservasjoner pr dag',
+                  label: 'Gjennomsnittlig antall reservasjoner pr dag',
                   backgroundColor: '#6BE096',
                   data: this.datacollection
                 }
@@ -185,9 +249,9 @@ export default {
               labels: ['12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
               datasets: [
                 {
-                  label: 'Kunder pr klokkeslett',
+                  label: 'Gjennomsnittlig antall kunder pr klokkeslett',
                   backgroundColor: '#6BE096',
-                  data: this.datacollection // Splice array
+                  data: this.datacollection // TODO: Splice array
                 }
               ]
             }
@@ -198,11 +262,11 @@ export default {
         this.showData('https://us-central1-pu30-5b0f9.cloudfunctions.net/hourlyNumberOfReservations')
           .then(() => {
             this.datacollection = {
-              labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11',
-                '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+              labels: ['00', '', '02', '', '04', '', '06', '', '08', '', '10', '',
+                '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''],
               datasets: [
                 {
-                  label: 'Reservasjoner pr klokkeslett',
+                  label: 'Gjennomsnittlig antall reservasjoner pr klokkeslett',
                   backgroundColor: '#6BE096',
                   data: this.datacollection
                 }
@@ -237,11 +301,11 @@ export default {
   .button {
     border-radius: 0px 18px 0px 18px;
     width: 300px;
-    color: orangered;
   }
 
   .activeButton {
-    background-color: darkblue;
+    border-radius: 0px 18px 0px 18px;
+    width: 300px;
   }
 
   .loading {
