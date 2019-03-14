@@ -189,7 +189,6 @@ export const actions = {
   Brukes av customer-reservation til å finne ut om det er ledige bord for etterspurte tidspunkt og mengde
    */
   checkCustomerRequestedTable ({ commit, state }, payload) {
-    commit('')
     commit('setLoading', true)
     commit('clearCustomerRequestedTable')
     console.log(payload)
