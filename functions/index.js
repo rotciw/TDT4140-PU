@@ -60,6 +60,24 @@ exports.sendWelcomeEmail = functions.https.onRequest((request, response) => {
   }
 );
 
+exports.sendCancellationEmail = functions.https.onRequest((request, response) => {
+    response.set('Access-Control-Allow-Origin', "*")
+    response.set('Access-Control-Allow-Methods', 'GET, POST')
+    let reservationID = request.body.reservationID;
+    let email = request.body.email;
+    let displayName = request.body.displayName;
+    let startTime = request.body.startTime;
+    console.log(email);
+    return sendCancellationEmail(email, displayName, reservationID, startTime)
+      .then(response.send('Mail forsøkt sendt til ' + email))
+      .catch(error => {
+        console.log('Klarte ikke å sende epost')
+        console.log(error)
+        response.send(error)
+      })
+  }
+);
+
 const APP_NAME = 'Trippin Tacos';
 
 /*
@@ -79,6 +97,21 @@ function sendWelcomeEmail(email, displayName, reservationID, startTime, reservat
     .then( () => {
     return console.log('New welcome email sent to:', email);
   })
+}
+
+function sendCancellationEmail(email, displayName, reservationID, startTime, reservationLink) {
+  const mailOptions = {
+    from: `${APP_NAME} <noreply@firebase.com>`,
+    to: email,
+  };
+  const startDate = moment(Number(startTime)).format('DD.MM.YYYY');
+  startTime = moment(Number(startTime)).format('h:mm');
+  mailOptions.subject = `Avbestilling av reservasjon hos ${APP_NAME}`;
+  mailOptions.text = `Hei, ${displayName || ''}! \n\nDette er en bekreftelse på din avbestilling hos ${APP_NAME}.\nAvbestillingen gjelder følgende reservasjon:\n\n${startDate || ''} klokken ${startTime || ''}.\nReservasjonsID: ${reservationID || ''}\n\nØnsker du å lage en ny reservasjonen, kan du følge denne linken: https://pu30-5b0f9.firebaseapp.com/customer-reservation\n\nHåper vi ser deg en annen gang!`;
+  return transporter.sendMail(mailOptions)
+    .then( () => {
+      return console.log('Cancellation email sent to:', email);
+    })
 }
 
 /*
