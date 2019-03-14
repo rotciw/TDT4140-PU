@@ -186,7 +186,8 @@ export const actions = {
     commit('setLoading', false)
   },
   /*
-  Brukes av customer-reservation til å finne ut om det er ledige bord for etterspurte tidspunkt og mengde
+  Brukes av customer-reservation til å finne ut om det er ledige bord for etterspurte tidspunkt og mengde.
+  Sjekker hvilke bord som har stor nok kapasitet, og hvilke bord som ikke har overlappende reservasjonsstider
    */
   checkCustomerRequestedTable ({ commit, state }, payload) {
     commit('setLoading', true)

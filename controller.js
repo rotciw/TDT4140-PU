@@ -151,7 +151,9 @@ export const reservations = {
       }
   })
   , */
-  // newReservationNumber returnerer det største reservasjonsnummeret i datbasen. Kan brukes ved opprettelse av nye reservasjonsobjekter.
+  /*
+  * createReservation oppretter en ny reservasjon, og sender så mail til brukeren.
+  * */
   createReservation (reservationObject) {
     console.log(reservationObject)
     fs.collection('reservations').doc(reservationObject.reservationID + '').set(reservationObject)
@@ -163,6 +165,7 @@ export const reservations = {
         console.log('Klarte ikke å opprette reservasjon')
       })
   },
+  // newReservationNumber returnerer det største reservasjonsnummeret i datbasen. Kan brukes ved opprettelse av nye reservasjonsobjekter.
   newReservationNumber () {
     return fs.collection('reservations')
       .orderBy('reservationID', 'desc')

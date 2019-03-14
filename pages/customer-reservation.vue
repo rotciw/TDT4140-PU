@@ -1,3 +1,4 @@
+<!--Denne siden gjør det mulig for kunder å legge inn reservasjon-->
 <template>
   <v-container>
     <v-layout
@@ -5,12 +6,14 @@
       justify-center
       align-center
     >
+      <!--Her legger kunden inn tidspunkt, dato og antall personer-->
       <div class="loginbox">
         <v-flex
           xs12
           sm10
           md11
         >
+          <!--Meny for dato-->
           <v-menu
             v-model="menu"
             color="green"
@@ -43,6 +46,7 @@
           sm10
           md11
         >
+          <!--Meny for starttid-->
           <v-menu
             ref="startMenu"
             v-model="menu2"
@@ -82,6 +86,7 @@
           sm12
           md11
         >
+          <!--Meny for antall personer-->
           <v-text-field
             v-model="numberOfPersons"
             label="Antall gjester"
@@ -125,14 +130,13 @@ export default {
   layout: 'frontpage',
   data () {
     return {
-      date: moment().add(1, 'day').toISOString().substr(0, 10),
-      disabled: false,
-      menu: false,
-      menu2: false,
-      now: moment().valueOf(),
-      numberOfPersons: 1,
-      reservationKey: 0,
-      reservation: {
+      date: moment().add(1, 'day').toISOString().substr(0, 10), // Dagens dato
+      menu: false, // Styrer synligheten til dato menyen
+      menu2: false, // Styrer synligheten til tidsvelgeren
+      now: moment().valueOf(), // Nåværende tidspunkt
+      numberOfPersons: 1, // Antall personer som legges inn
+      reservationKey: 0, // Reservasjonssnøkkel for å tvinge vue til å lage NewReservation komponenten på ny hver gang
+      reservation: { // Reservasjonsobjektet
         comments: '',
         created: 0,
         dropIn: false,
@@ -145,21 +149,21 @@ export default {
         tableID: 0,
         uid: ''
       },
-      startTime: moment().format('H:mm'),
-      startTimeUnix: moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf(),
+      startTime: moment().format('H:mm'), // Starttid
+      startTimeUnix: moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf(), // Starttid i Unix
       newReservationVisible: false // Brukes for å vise/ikke vise add-reservation komponenten
     }
   },
   computed: {
-    error () {
-      return this.$store.getters.error
-    },
+    // Henter loading fra storen
     loading () {
       return this.$store.getters.loading
     },
+    // Setter minimumsdatoen til i morgen
     minDate () {
       return moment().endOf('day').toISOString()
     },
+    // Setter minimum starttid til å 24 timer fram i tid hvis reservasjonen er for i morgen, evt til kl 12 hvis det er mer enn 24 timer fram i tid
     minStartTime () {
       if (this.date === moment().add(1, 'day').toISOString().substr(0, 10)) {
         return moment(this.now + 86400000).format('H:mm')
@@ -167,15 +171,11 @@ export default {
       else return '12:00'
     }
   },
-  watch: {
-    error () {
-      this.disabled = false
-    }
-  },
   mounted () {
     this.$store.dispatch('mountTables')
   },
   methods: {
+    /* Regner ut lovlige valg for timer og minutter */
     allowedHours: v => (v >= 12 && v < 22),
     allowedMinutes: v => (v % 15 === 0),
     // Metode for å legge til reservasjon
@@ -183,6 +183,11 @@ export default {
       this.newReservationVisible = true
       this.reservationKey++
     },
+    /*
+    * checkCustomerTables henter tilgjengelige bord fra storen, henter et nytt reservasjonssnummer fra kontrolleren,
+    * går igjennom de ledige bordene og finner det bordet med minst, men nok, kapasitet.
+    * Hvis det er et ledig bord oppretter den reservasjonen. Hvis det ikke er noe ledig kommer feilmelding.
+    * */
     checkCustomerTables () {
       this.$store.commit('setLoading', true)
       this.$controller.reservations.newReservationNumber()
@@ -215,6 +220,7 @@ export default {
         this.$store.commit('setLoading', false)
       }
     },
+    // Legger inn kravene fra kunden (dato, antall personer og starttid) i en spørring til storen, som finner alle bordene som matcher kravene.
     requestTables () {
       this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
       this.$store.dispatch('checkCustomerRequestedTable', { numberOfPersons: this.numberOfPersons, startTime: this.startTimeUnix, endTime: moment(this.startTimeUnix).add(4, 'hours').valueOf() })

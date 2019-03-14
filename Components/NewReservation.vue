@@ -329,6 +329,9 @@ import moment from 'moment'
 
 export default {
   name: 'NewReservation',
+  /*
+  * Props som vi arver fra customer-reservation
+  * */
   props: {
     dialogVisible: Boolean,
     reservation: {
@@ -354,9 +357,9 @@ export default {
     return {
       // Regler for antall personer man prøver å legge inn
       comments: '', // Kommentarer
-      dateAndTime: moment(this.reservation.startTime).format('H:mm - DD-MM-YYYY'),
-      dialog: this.dialogVisible,
-      emailRules: [
+      dateAndTime: moment(this.reservation.startTime).format('H:mm - DD-MM-YYYY'), // Lesbart format på tidspunkt for reservasjonen
+      dialog: this.dialogVisible, // Styrer synligheten til dialogen
+      emailRules: [ // Regler for mail
         v => !!v || 'E-mail is required',
         v => /.+@.+/.test(v) || 'E-mail must be valid'
       ],
@@ -367,16 +370,20 @@ export default {
         email: '',
         uid: ''
       },
-      // Styrer synligheten av dropdown menyene
+      // Regler for mobil
       mobileRules: [
         v => !!v || 'Mobile is required',
         v => (v.length === 8 && v > 0) || 'Mobilenumber should be 8 digits'
       ],
+      // Regler for fornavn og etternavn
       nameRules: [
         v => !!v || 'Name is required'
       ],
-      step: 1,
+      step: 1, // Styrer hvilket steg i komponenten som skal vises
       user: false, // Om det er bruker eller gjest vi henter
+      /*
+      * De neste tre brukes av formene til å sjekke om det er gyldig input
+      * */
       validEmail: false,
       validMobile: false,
       validReservation: false
@@ -406,6 +413,11 @@ export default {
       this.dialog = false
       this.user = false
     },
+    /*
+    * Kalles på når email er bekreftet. Sjekker så om det finnes en bruker i databasen med denne emailen.
+    * Hvis det finnes en bruker med denne emailen hentes den.
+    * Hvis denne brukeren i tillegg har lagret mobilen sin, hopper vi to steg videre.
+    * */
     confirmEmail () {
       if (this.$refs.emailForm.validate()) {
         this.email = this.guestUser.email
@@ -437,6 +449,9 @@ export default {
           })
       }
     },
+    /*
+    * Kalles på når mobil er bekreftet. Sjekker så om det finnes noe bruker på dette mobilnummeret i databasen, enten som bruker eller gjest.
+    * */
     confirmMobile () {
       if (this.$refs.mobileForm.validate()) {
         this.$store.commit('setLoading', true)
@@ -482,7 +497,7 @@ export default {
           startTime: this.reservation.startTime,
           tableID: this.reservation.tableID
         }
-        // SJekker om vi oppretter for kunde eller bruker
+        // SJekker om vi oppretter for kunde eller bruker, kaller så på kontrolleren
         if (this.user) {
           reservationObject.guestID = ''
           reservationObject.uid = this.guestUser.uid
