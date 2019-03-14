@@ -8,6 +8,12 @@ const admin       = require('firebase-admin'),
       request     = require('request'),
       // ses         = require('node-ses'),
       app         = express()
+      // Dato for åpningsdato
+      openingDay = moment('2019-02-17', 'YYYY-MM-DD').valueOf()
+      // Dager siden åpningsdag
+      days = moment().diff(openingDay, 'days')
+      // Uker siden åpningsdag
+      weeks = moment().diff(openingDay, 'weeks')
 
 app.use(bodyParser.json())
 // admin.initializeApp()
@@ -48,7 +54,13 @@ exports.hourlyNumberOfReservations = functions.https.onRequest((request, respons
       })
     })
     .then(() => {
-      return response.status(200).send(hourlyStatistics)
+      let returnStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      for (let i = 0; i < hourlyStatistics.length; i++) {
+        if (i > 11 && i < 24) {
+          returnStatistics[i - 12] = hourlyStatistics[i] / days
+        }
+      }
+      return response.status(200).send(returnStatistics)
     })
     .catch(error => {
       console.log('Klarte ikke å mounte timestatistikk for antall reservasjoner')
@@ -71,15 +83,21 @@ exports.hourlyNumberOfPersons = functions.https.onRequest((request, response) =>
     .then(reservations => {
       return reservations.forEach(reservation => {
         reservation = reservation.data()
-        const startTime = moment(reservation.startTime).format('H')
-        const endTime = moment(reservation.endTime).format('H')
+        const startTime = Number(moment(reservation.startTime).format('H'))
+        const endTime = Number(moment(reservation.endTime).format('H'))
         for (let i = Number(startTime); i < Number(endTime) + 1; i++) {
           hourlyStatistics[i - 1] = hourlyStatistics[i - 1] + Number(reservation.numberOfPersons)
         }
       })
     })
     .then(() => {
-      return response.status(200).send(hourlyStatistics)
+      let returnStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      for (let i = 0; i < hourlyStatistics.length; i++) {
+        if (i > 11 && i < 25) {
+          returnStatistics[i - 12] = hourlyStatistics[i] / days
+        }
+      }
+      return response.status(200).send(returnStatistics)
     })
     .catch(error => {
       console.log('Klarte ikke å mounte timestatistikk for antall besøkende')
@@ -101,10 +119,14 @@ exports.dailyNumberOfReservations = functions.https.onRequest((request, response
       return reservations.forEach(reservation => {
         reservation = reservation.data()
         const weekday = Number(moment(reservation.startTime).day())
-        dailyStatistics[weekday - 1] = dailyStatistics[weekday - 1] + 1
+        dailyStatistics[weekday] = dailyStatistics[weekday] + 1
       })
     })
     .then(() => {
+      for (let i = 0; i < dailyStatistics.length; i++) {
+        dailyStatistics[i] = dailyStatistics[i] / weeks
+      }
+      console.log(dailyStatistics)
       return response.status(200).send(dailyStatistics)
     })
     .catch(error => {
@@ -128,10 +150,14 @@ exports.dailyNumberOfPersons = functions.https.onRequest((request, response) => 
       return reservations.forEach(reservation => {
         reservation = reservation.data()
         const weekday = Number(moment(reservation.startTime).day())
-        dailyStatistics[weekday - 1] = dailyStatistics[weekday - 1] + Number(reservation.numberOfPersons)
+        dailyStatistics[weekday] = dailyStatistics[weekday] + Number(reservation.numberOfPersons)
       })
     })
     .then(() => {
+      for (let i = 0; i < dailyStatistics.length; i++) {
+        dailyStatistics[i] = dailyStatistics[i] / weeks
+      }
+      console.log(dailyStatistics)
       return response.status(200).send(dailyStatistics)
     })
     .catch(error => {
