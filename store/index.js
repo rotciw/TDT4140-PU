@@ -191,7 +191,6 @@ export const actions = {
   checkCustomerRequestedTable ({ commit, state }, payload) {
     commit('setLoading', true)
     commit('clearCustomerRequestedTable')
-    console.log(payload)
     commit('setCustomerRequestedTables', payload.numberOfPersons)
     let now = moment().valueOf()
     firebase.firestore().collection('reservations')
@@ -200,7 +199,6 @@ export const actions = {
       .then(reservations => {
         reservations.forEach(reservation => {
           reservation = reservation.data()
-          console.log(moment(payload.endTime).format('H:mm'))
           if ((reservation.startTime > payload.startTime && reservation.startTime < payload.endTime) ||
             (reservation.endTime > payload.startTime && reservation.endTime < payload.endTime) ||
             (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {

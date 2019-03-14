@@ -430,7 +430,6 @@ export default {
             }
             else {
               this.guestUser = guestUser.docs[0].data()
-              console.log(this.guestUser)
               this.$store.commit('setLoading', false)
               if (this.guestUser.mobile) this.step = this.step + 2
               else this.step++
@@ -485,14 +484,12 @@ export default {
         }
         // SJekker om vi oppretter for kunde eller bruker
         if (this.user) {
-          console.log('bruker')
           reservationObject.guestID = ''
           reservationObject.uid = this.guestUser.uid
           this.$controller.reservations.createReservation(reservationObject)
         }
         else {
           if (this.guestUser.guestID.length > 0) {
-            console.log(this.guestUser.guestID)
             reservationObject.guestID = this.guestUser.guestID
             reservationObject.uid = ''
             this.$controller.reservations.createReservation(reservationObject)
