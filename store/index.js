@@ -12,6 +12,7 @@ export const state = () => ({
   employee: false, // SIer om brukeren er ansatt eller ikke
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
+  reservation: null,
   reservations: [], // Holder alle reservasjonene
   tables: [], // Holder alle bordene til restauranten
   tableAvailable: [], // Holder ledigheten for etterspurt bord
@@ -28,7 +29,7 @@ export const mutations = {
     state.tableAvailable = []
   },
   // Fjerner error melding
-  clearError (state, payload) {
+  clearError (state) {
     state.error = null
   },
   // Setter storen til en ren state
@@ -38,6 +39,7 @@ export const mutations = {
     state.employee = false
     state.error = null
     state.loading = false
+    state.reservation = null
     state.reservations = []
     state.tableAvailable = []
     state.tables = []
@@ -51,6 +53,9 @@ export const mutations = {
   // Fjerner valgt reservasjon fra staten
   removeReservation (state, payload) {
     Vue.set(state.reservations, payload.reservationID - 1, null)
+  },
+  setFetchedReservation (state, payload) {
+    state.reservation = payload
   },
   // Legger til bordet til staten
   setTable (state, payload) {
@@ -191,6 +196,40 @@ export const actions = {
         console.log(error)
       })
   },
+  fetchReservation ({ commit }, payload) {
+    commit('setLoading', true)
+    firebase.firestore().collection('reservations').doc(payload.reservationID + '')
+      .get()
+      .then(reservation => {
+        reservation = reservation.data()
+        if (reservation.uid.length > 0) {
+          firebase.firestore().collection('users')
+            .doc(reservation.uid + '')
+            .get()
+            .then(user => {
+              user = user.data()
+              if (user.email === payload.email) {
+                reservation.user = user
+                commit('setFetchedReservation', reservation)
+                commit('setLoading', false)
+              }
+              else {
+                commit('setError', 'Fant ikke reservasjonen. Prøv igjen.')
+                commit('setLoading', false)
+              }
+            })
+        }
+        else if (reservation.guestID.length > 0) {
+          firebase.firestore().collection('guestUsers').where('')
+        }
+      })
+      .catch(error => {
+        console.log('Klarte ikke å hente reservasjon med ID: ' + payload.reservationID)
+        commit('setError', 'Fant ikke reservasjonen. Prøv igjen.')
+        console.log(error)
+        commit('setLoading', false)
+      })
+  },
   /* mountAvailableTables brukes av newReservation for å finne ledige bord til valgt tidspunkt og til riktig antall personer.
   *  Dette skjer i følgende steg:
   *  1. Slett alle bordene som er tilgjengelig fra forrige søk
@@ -277,32 +316,61 @@ export const actions = {
     })
       .then(() => {
         commit('setReservation', payload)
-        if (payload.uid > 0) {
-          firebase.firestore().collection('users').doc(payload.uid + '').set({
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            mobile: payload.mobile,
-            email: payload.email,
-            admin: payload.admin,
-            employee: payload.employee,
-            uid: payload.uid,
-            username: payload.username
-          }).catch(error => {
-            console.log('Klarte ikke å oppdatere bruker med id ' + payload.uid)
-            console.log(error)
-          })
+        if (payload.user) {
+          if (payload.uid.length > 0) {
+            firebase.firestore().collection('users').doc(payload.uid + '').set({
+              firstName: payload.user.firstName,
+              lastName: payload.user.lastName,
+              mobile: payload.user.mobile,
+              email: payload.user.email,
+              admin: payload.user.admin,
+              employee: payload.user.employee,
+              uid: payload.user.uid
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere bruker med id ' + payload.uid)
+              console.log(error)
+            })
+          }
+          else if (payload.guestID > 0) {
+            firebase.firestore().collection('guestUsers').doc(payload.guestID + '').set({
+              firstName: payload.user.firstName,
+              lastName: payload.user.lastName,
+              mobile: payload.user.mobile,
+              email: payload.user.email,
+              guestID: payload.user.guestID
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere gjest med id ' + payload.guestID)
+              console.log(error)
+            })
+          }
         }
-        else if (payload.guestID > 0) {
-          firebase.firestore().collection('guestUsers').doc(payload.guestID + '').set({
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            mobile: payload.mobile,
-            email: payload.email,
-            guestID: payload.guestID
-          }).catch(error => {
-            console.log('Klarte ikke å oppdatere gjest med id ' + payload.guestID)
-            console.log(error)
-          })
+        else {
+          if (payload.uid > 0) {
+            firebase.firestore().collection('users').doc(payload.uid + '').set({
+              firstName: payload.firstName,
+              lastName: payload.lastName,
+              mobile: payload.mobile,
+              email: payload.email,
+              admin: payload.admin,
+              employee: payload.employee,
+              uid: payload.uid
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere bruker med id ' + payload.uid)
+              console.log(error)
+            })
+          }
+          else if (payload.guestID > 0) {
+            firebase.firestore().collection('guestUsers').doc(payload.guestID + '').set({
+              firstName: payload.firstName,
+              lastName: payload.lastName,
+              mobile: payload.mobile,
+              email: payload.email,
+              guestID: payload.guestID
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere gjest med id ' + payload.guestID)
+              console.log(error)
+            })
+          }
         }
       })
       .catch(error => {
@@ -466,7 +534,8 @@ export const actions = {
         commit('setError', error)
         console.log(error)
       })
-  } }
+  }
+}
 // Getters returnerer de ulike attributtene våre fra staten. Beskrivelsen av attributten står på state objektet.
 export const getters = {
   availableTables (state) {
@@ -483,6 +552,9 @@ export const getters = {
   },
   loading (state) {
     return state.loading
+  },
+  reservation (state) {
+    return state.reservation
   },
   user (state) {
     return state.user
