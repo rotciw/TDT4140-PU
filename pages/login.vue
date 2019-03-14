@@ -59,7 +59,7 @@
       </v-flex>
     </v-layout>
     <v-layout>
-      <v-snackbar
+      <!--<v-snackbar
         v-model="snackbar"
         top
       >
@@ -71,7 +71,7 @@
         >
           Lukk
         </v-btn>
-      </v-snackbar>
+      </v-snackbar>-->
     </v-layout>
   </v-container>
 </template>

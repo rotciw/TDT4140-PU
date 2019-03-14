@@ -2,7 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import Vue from 'vue'
 import moment from 'moment'
-import axios from 'axios'
+// import axios from 'axios'
 // import { cloneDeep } from 'lodash'
 
 export const strict = false
@@ -189,19 +189,23 @@ export const actions = {
   Brukes av customer-reservation til å finne ut om det er ledige bord for etterspurte tidspunkt og mengde
    */
   checkCustomerRequestedTable ({ commit, state }, payload) {
+    commit('')
     commit('setLoading', true)
     commit('clearCustomerRequestedTable')
-    commit('setCustomerReuqestedTables', payload.numberOfPersons)
+    console.log(payload)
+    commit('setCustomerRequestedTables', payload.numberOfPersons)
     let now = moment().valueOf()
     firebase.firestore().collection('reservations')
       .where('endTime', '>', now)
-      .onSnapshot(reservations => {
+      .get()
+      .then(reservations => {
         reservations.forEach(reservation => {
           reservation = reservation.data()
+          console.log(moment(payload.endTime).format('H:mm'))
           if ((reservation.startTime > payload.startTime && reservation.startTime < payload.endTime) ||
             (reservation.endTime > payload.startTime && reservation.endTime < payload.endTime) ||
             (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {
-            commit('setCustomerRequestedTable', { tableID: reservation.tableID, available: false, currently: reservation.numberOfPersons })
+            commit('setCustomerRequestedTable', { tableID: reservation.tableID, available: false })
             commit('setLoading', false)
           }
         })
@@ -514,6 +518,9 @@ export const getters = {
   },
   admin (state) {
     return state.admin
+  },
+  customerRequestedTables (state) {
+    return state.customerRequestedTables
   },
   employee (state) {
     return state.employee

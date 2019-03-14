@@ -9,7 +9,7 @@
       persistent
       max-width="800px"
     >
-      <div>
+      <div v-if="step === 1">
         <v-card>
           <v-card-text>
             <v-container grid-list-md>
@@ -24,11 +24,11 @@
                     <h2
                       style="text-align: center; color: green"
                     >
-                      Bordet er ledig for valgt tidspunkt
+                      Reservasjonen er bekreftet
                     </h2>
                   </v-flex>
                   <h3 style="text-align: center">
-                    Fyll ut informasjon om deg selv under
+                    Hva er eposten din?
                   </h3>
                 </v-flex>
                 <v-layout
@@ -36,48 +36,20 @@
                   wrap
                   justify-center
                 >
-                  <v-flex xs6>
-                    <v-text-field
-                      v-model="guestUser.firstName"
-                      label="Fornavn"
-                    />
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-text-field
-                      v-model="guestUser.lastName"
-                      label="Etternavn"
-                    />
-                  </v-flex>
-                </v-layout>
-                <v-layout
-                  row
-                  wrap
-                  justify-center
-                >
-                  <v-flex xs6>
-                    <v-text-field
-                      v-model="guestUser.email"
-                      label="E-post"
-                    />
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-text-field
-                      v-model="guestUser.mobile"
-                      label="Mobil"
-                    />
-                  </v-flex>
-                </v-layout>
-                <v-layout
-                  row
-                  wrap
-                  justify-center
-                >
-                  <v-flex xs12>
-                    <v-text-field
-                      v-model="comments"
-                      label="Kommentar"
-                      hint="Er det noe som bør merkes"
-                    />
+                  <v-flex
+                    xs6
+                  >
+                    <v-form
+                      ref="emailForm"
+                      v-model="validEmail"
+                    >
+                      <v-text-field
+                        v-model="guestUser.email"
+                        prepend-icon="mail"
+                        :rules="emailRules"
+                        label="E-post"
+                      />
+                    </v-form>
                   </v-flex>
                 </v-layout>
                 <v-flex
@@ -90,27 +62,262 @@
                       color="green"
                       class="button"
                       large
-                      @click="confirmReservation"
+                      :loading="loading"
+                      @click="confirmEmail"
                     >
-                      Lagre reservasjon
+                      Neste
                     </v-btn>
                   </div>
                 </v-flex>
               </div>
             </v-container>
           </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              color="blue darken-1"
-              dark
-              round
-              flat
-              @click="cancel"
-            >
-              Lukk
-            </v-btn>
-          </v-card-actions>
+        </v-card>
+      </div>
+      <div v-if="step === 2">
+        <v-card>
+          <v-card-text>
+            <v-container grid-list-md>
+              <!-- Fyller ut informasjon om reservasjonen-->
+              <!-- Hvis man har trykket på et bord får man valget og lagre informasjon om kunden og å opprette bord -->
+              <div>
+                <v-flex
+                  xs12
+                  class="my-2"
+                >
+                  <v-flex xs12>
+                    <h2
+                      style="text-align: center; color: green"
+                    >
+                      Reservasjonen er bekreftet
+                    </h2>
+                  </v-flex>
+                  <h3 style="text-align: center">
+                    Hva er mobilnummeret ditt?
+                  </h3>
+                </v-flex>
+                <v-layout
+                  row
+                  wrap
+                  justify-center
+                >
+                  <v-flex
+                    xs6
+                  >
+                    <v-form
+                      ref="mobileForm"
+                      v-model="validMobile"
+                    >
+                      <v-text-field
+                        v-model="guestUser.mobile"
+                        prepend-icon="phone"
+                        :rules="mobileRules"
+                        label="Mobil"
+                      />
+                    </v-form>
+                  </v-flex>
+                </v-layout>
+                <v-flex
+                  xs12
+                  mt-3
+                >
+                  <!-- Lagrer info om kunden -->
+                  <div class="text-xs-center">
+                    <v-btn
+                      color="green"
+                      class="button"
+                      large
+                      :loading="loading"
+                      @click="confirmMobile"
+                    >
+                      Neste
+                    </v-btn>
+                  </div>
+                </v-flex>
+              </div>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </div>
+      <div v-if="step === 3">
+        <v-card>
+          <v-card-text>
+            <v-container grid-list-md>
+              <!-- Fyller ut informasjon om reservasjonen-->
+              <!-- Hvis man har trykket på et bord får man valget og lagre informasjon om kunden og å opprette bord -->
+              <div>
+                <v-flex
+                  xs12
+                  class="my-2"
+                >
+                  <v-flex xs12>
+                    <h2
+                      style="text-align: center; color: green"
+                    >
+                      Nå trenger vi litt informasjon fra deg
+                    </h2>
+                  </v-flex>
+                  <h3 style="text-align: center">
+                    Fyll ut informasjon om deg selv under
+                  </h3>
+                </v-flex>
+                <v-form
+                  ref="reservationForm"
+                  v-model="validReservation"
+                >
+                  <v-layout
+                    row
+                    wrap
+                    justify-center
+                  >
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="guestUser.firstName"
+                        label="Fornavn"
+                        :rules="nameRules"
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="guestUser.lastName"
+                        label="Etternavn"
+                        :rules="nameRules"
+                      />
+                    </v-flex>
+                  </v-layout>
+                  <v-layout
+                    row
+                    wrap
+                    justify-center
+                  >
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="guestUser.email"
+                        label="E-post"
+                        :rules="emailRules"
+                      />
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-text-field
+                        v-model="guestUser.mobile"
+                        label="Mobil"
+                        :rules="mobileRules"
+                      />
+                    </v-flex>
+                  </v-layout>
+                  <v-layout
+                    row
+                    wrap
+                    justify-center
+                  >
+                    <v-flex xs12>
+                      <v-text-field
+                        v-model="comments"
+                        label="Kommentar"
+                        hint="Er det noe som bør merkes"
+                      />
+                    </v-flex>
+                  </v-layout>
+                </v-form>
+                <v-flex
+                  xs12
+                  mt-3
+                >
+                  <!-- Lagrer info om kunden -->
+                  <div class="text-xs-center">
+                    <v-btn
+                      color="green"
+                      class="button"
+                      large
+                      @click="confirmReservation"
+                    >
+                      Lagre informasjon
+                    </v-btn>
+                  </div>
+                </v-flex>
+              </div>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </div>
+      <div v-if="step === 4">
+        <v-card>
+          <v-card-text>
+            <v-container grid-list-md>
+              <!-- Fyller ut informasjon om reservasjonen-->
+              <!-- Hvis man har trykket på et bord får man valget og lagre informasjon om kunden og å opprette bord -->
+              <div>
+                <v-flex
+                  xs12
+                  class="my-2"
+                >
+                  <v-flex xs12>
+                    <h2
+                      style="text-align: center; color: green"
+                    >
+                      Reservasjonen er bekreftet
+                    </h2>
+                  </v-flex>
+                  <h3 style="text-align: center">
+                    Vi gleder oss til å se deg {{ guestUser.firstName }}!
+                  </h3>
+                </v-flex>
+                <v-layout
+                  row
+                  wrap
+                  justify-center
+                >
+                  <v-flex xs12>
+                    <h4 style="text-align: center">
+                      Reservasjonssnummer: {{ reservation.reservationID }}
+                    </h4>
+                  </v-flex>
+                </v-layout>
+                <v-layout
+                  row
+                  wrap
+                  justify-center
+                >
+                  <v-flex xs12>
+                    <h4 style="text-align: center">
+                      Tidspunkt: {{ dateAndTime }}. Antall personer: {{ reservation.numberOfPersons }}
+                    </h4>
+                  </v-flex>
+                </v-layout>
+                <v-layout
+                  row
+                  wrap
+                  justify-center
+                >
+                  <v-flex xs8>
+                    <p style="text-align: center">
+                      Vi har sendt en mail til {{ guestUser.email }}. Hvis du ønsker å endre reservasjonen kan du
+                      følge linken i mailen eller ta kontakt med oss.
+                    </p>
+                    <v-img
+                      src="Logo.png"
+                      contain
+                      height="70px"
+                    />
+                    <p style="text-align: center">
+                      Hilsen oss i Trippin Tacos
+                    </p>
+                  </v-flex>
+                </v-layout>
+                <!-- Lagrer info om kunden -->
+                <div class="text-xs-center">
+                  <v-btn
+                    color="green"
+                    class="button"
+                    large
+                    @click="cancel"
+                  >
+                    Avslutt
+                  </v-btn>
+                </div>
+              </div>
+            </v-container>
+          </v-card-text>
         </v-card>
       </div>
     </v-dialog>
@@ -127,7 +334,6 @@ export default {
     reservation: {
       type: Object,
       default: function () {
-        // TODO: Legge inn alle feltene reservasjon skal ha
         return {
           comments: '',
           created: 0,
@@ -146,39 +352,34 @@ export default {
   },
   data () {
     return {
-      availableTables: [], // Holder alle ledige bord
       // Regler for antall personer man prøver å legge inn
       comments: '', // Kommentarer
+      dateAndTime: moment(this.reservation.startTime).format('H:mm - DD-MM-YYYY'),
       dialog: this.dialogVisible,
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /.+@.+/.test(v) || 'E-mail must be valid'
+      ],
       guestUser: { // Gjestebruker
         firstName: '',
         lastName: '',
         mobile: '',
-        email: ''
+        email: '',
+        uid: ''
       },
-      interval: 0, // Brukes for å opppdatere timeren
-      newTable: { // Holder bordet som blir kopiert
-        tableID: 0,
-        capacity: '',
-        currentReservation: null,
-        currently: 0,
-        occupied: false,
-        reservations: []
-      },
-      numberOfPersons: 1, // Antall personer
       // Styrer synligheten av dropdown menyene
-      menu: false,
-      menu2: false,
-      menu3: false,
-      now: 0, // Holder nå-tid
-      selectedTable: { // Valgt bord, brukes for å opprette reservasjon og for å vise valgt bord i grønn farge
-        tableID: 0
-      },
-      startTime: moment().format('H:mm'), // Starttid
-      startTimeUnix: '', // Starttid med hensyn på valgt dato i unix
-      tomorrow: moment().endOf('day').format('H:mm'), // I morgen brukes som maks verdi på tidsvalg
-      user: null, // Valgt bruker
-      valid: false // Styrer om input er gyldig eller ei
+      mobileRules: [
+        v => !!v || 'Mobile is required',
+        v => (v.length === 8 && v > 0) || 'Mobilenumber should be 8 digits'
+      ],
+      nameRules: [
+        v => !!v || 'Name is required'
+      ],
+      step: 1,
+      user: false, // Om det er bruker eller gjest vi henter
+      validEmail: false,
+      validMobile: false,
+      validReservation: false
     }
   },
   // Verdier hentet fra storen.
@@ -196,65 +397,117 @@ export default {
       return this.$store.getters.loading
     }
   },
-  watch: {
-    // Overvåker starttiden. Hvis den endres sjekker vi om bordet er ledig fortløpende. Hvis sluttiden er etter starttiden, oppdaterer vi sluttiden
-    startTime () {
-      this.mountAvailableTables()
-      if (this.endTime < this.startTime) {
-        this.updateEndTime()
-      }
-    }
-  },
   methods: {
     /*
       cancel() lukker dialogen
        */
     cancel () {
-      this.newTable = null
-      this.confirmButton = true
-      this.dialog = false
       this.$emit('dialogClosed')
-      this.$store.commit('clearAvailableTables')
+      this.dialog = false
+      this.user = false
+    },
+    confirmEmail () {
+      if (this.$refs.emailForm.validate()) {
+        this.email = this.guestUser.email
+        this.$store.commit('setLoading', true)
+        this.$fs.collection('guestUsers').where('email', '==', this.guestUser.email)
+          .limit(1)
+          .get()
+          .then(guestUser => {
+            if (guestUser.docs.length === 0) {
+              this.$fs.collection('users').where('email', '==', this.guestUser.email)
+                .limit(1)
+                .get()
+                .then(user => {
+                  if (user.docs.length > 0) {
+                    this.guestUser = user.docs[0].data()
+                    this.user = true
+                  }
+                  this.$store.commit('setLoading', false)
+                  if (this.guestUser.mobile) this.step = this.step + 2
+                  else this.step++
+                })
+            }
+            else {
+              this.guestUser = guestUser.docs[0].data()
+              console.log(this.guestUser)
+              this.$store.commit('setLoading', false)
+              if (this.guestUser.mobile) this.step = this.step + 2
+              else this.step++
+            }
+          })
+      }
+    },
+    confirmMobile () {
+      if (this.$refs.mobileForm.validate()) {
+        this.$store.commit('setLoading', true)
+        this.$fs.collection('guestUsers').where('mobile', '==', this.guestUser.mobile)
+          .limit(1)
+          .get()
+          .then(guestUser => {
+            if (guestUser.docs.length === 0) {
+              this.$fs.collection('users').where('mobile', '==', this.guestUser.mobile)
+                .limit(1)
+                .get()
+                .then(user => {
+                  if (user.docs.length > 0) {
+                    this.guestUser = user.docs[0].data()
+                    this.user = true
+                  }
+                  this.$store.commit('setLoading', false)
+                  this.step++
+                })
+            }
+            else {
+              this.guestUser = guestUser.docs[0].data()
+              if (!this.guestUser.email) this.guestUser.email = this.email
+              this.$store.commit('setLoading', false)
+              this.step++
+            }
+          })
+      }
     },
     /*
       confirmReservation () lagrer reservasjonen hvis input er gyldig
        */
     confirmReservation () {
-      if (this.$refs.form.validate()) {
+      if (this.$refs.reservationForm.validate()) {
         const reservationObject = {
           comments: this.comments,
           created: moment().valueOf(),
-          duration: this.endTimeUnix - this.startTimeUnix,
-          endTime: this.endTimeUnix,
-          numberOfPersons: this.numberOfPersons,
-          reservationID: 0,
-          startTime: this.startTimeUnix,
-          tableID: this.selectedTable.tableID
+          duration: this.reservation.endTime - this.reservation.startTime,
+          dropIn: false,
+          endTime: this.reservation.endTime,
+          numberOfPersons: this.reservation.numberOfPersons,
+          reservationID: this.reservation.reservationID,
+          startTime: this.reservation.startTime,
+          tableID: this.reservation.tableID
         }
         // SJekker om vi oppretter for kunde eller bruker
-        this.$controller.reservations.newReservationNumber()
-          .then(reservations => {
-            reservations.forEach(reservation => {
-              reservation = reservation.data()
-              reservationObject.reservationID = reservation.reservationID + 1
-              if (this.guestUser.firstName !== '' || this.guestUser.lastName !== '') {
-                this.$controller.users.createGuestUser(this.guestUser)
-                  .then(guestID => {
-                    reservationObject.guestID = guestID
-                    reservationObject.uid = ''
-                    this.$store.dispatch('createReservation', reservationObject)
-                    this.cancel()
-                  })
-              }
-              else {
-                reservationObject.uid = this.$store.getters.user.uid
-                reservationObject.guestID = ''
-                this.$store.dispatch('createReservation', reservationObject)
-                this.cancel()
-              }
-            })
-          })
+        if (this.user) {
+          console.log('bruker')
+          reservationObject.guestID = ''
+          reservationObject.uid = this.guestUser.uid
+          this.$controller.reservations.createReservation(reservationObject)
+        }
+        else {
+          if (this.guestUser.guestID.length > 0) {
+            console.log(this.guestUser.guestID)
+            reservationObject.guestID = this.guestUser.guestID
+            reservationObject.uid = ''
+            this.$controller.reservations.createReservation(reservationObject)
+          }
+          else {
+            this.$controller.users.createGuestUser(this.guestUser)
+              .then(guestID => {
+                reservationObject.guestID = guestID
+                reservationObject.uid = ''
+                this.$controller.reservations.createReservation(reservationObject)
+              })
+          }
+        }
       }
+      this.step++
     }
   }
 }
@@ -262,6 +515,6 @@ export default {
 
 <style scoped>
   .button {
-    border-radius: 0px 18px 0px 18px;
+    border-radius: 0 18px 0 18px;
   }
 </style>

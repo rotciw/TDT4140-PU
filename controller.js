@@ -1,7 +1,8 @@
 import * as firebase from 'firebase/app'
 import 'firebase/firestore'
-import moment from 'moment'
 // import moment from 'moment'
+// import moment from 'moment'
+import axios from 'axios'
 
 let fs = firebase.firestore()
 
@@ -46,6 +47,35 @@ export const users = {
         console.log('Klarte ikke å lage gjestebruker')
         console.log(error)
       })
+  },
+  // Oppdaterer gjestebrukere
+  updateGuestUser (payload) {
+    const userObject = {
+      firstName: payload.firstName || '',
+      guestID: payload.guestID || '',
+      lastName: payload.lastName || '',
+      email: payload.email || '',
+      mobile: payload.mobile || ''
+    }
+    fs.collection('guestUsers').doc(userObject.guestID + '').set(userObject)
+      .catch(error => {
+        console.log('Klarte ikke å oppdatere gjestebruker ' + payload.guestID)
+        console.log(error)
+      })
+  },
+  // Kan brukes til å rense i guestUsers databasen.
+  removeOtherGuestUsers (payload) {
+    if (payload.guestID) {
+      if (payload.email) {
+        fs.collection('guestUsers').where('email', '==', payload.email).delete()
+      }
+      else if (payload.mobile) {
+        fs.collection('guestUsers').where('mobile', '==', payload.mobile).delete()
+      }
+      fs.collection('guestUsers')
+        .doc(payload.guestID + '')
+        .set(payload)
+    }
   }
 }
 // Reservations inneholder alle reservasjonsrelaterte kall.
@@ -122,6 +152,17 @@ export const reservations = {
   })
   , */
   // newReservationNumber returnerer det største reservasjonsnummeret i datbasen. Kan brukes ved opprettelse av nye reservasjonsobjekter.
+  createReservation (reservationObject) {
+    console.log(reservationObject)
+    fs.collection('reservations').doc(reservationObject.reservationID + '').set(reservationObject)
+      .then(() => {
+        axios.post('https://us-central1-pu30-5b0f9.cloudfunctions.net/sendWelcomeEmail', reservationObject)
+      })
+      .catch(error => {
+        console.log(error)
+        console.log('Klarte ikke å opprette reservasjon')
+      })
+  },
   newReservationNumber () {
     return fs.collection('reservations')
       .orderBy('reservationID', 'desc')

@@ -96,20 +96,21 @@
             large
             color="#6BE096"
             class="roundedCorners"
+            :loading="loading"
+            @keydown.enter.prevent="requestTables"
+            @click="requestTables"
           >
-            Søk
+            Bekreft
           </v-btn>
         </div>
       </div>
     </v-layout>
-    <v-btn @click="addReservation">
-      Reservasjon
-    </v-btn>
     <!-- Komponent for å legge til ny reservasjon -->
     <new-reservation
       :key="reservationKey"
       :dialog-visible="newReservationVisible"
-      @dialogCLosed="newReservationVisibled = false"
+      :reservation="reservation"
+      @dialogCLosed="newReservationVisibled = false; disabled = false"
     />
   </v-container>
 </template>
@@ -125,16 +126,37 @@ export default {
   data () {
     return {
       date: moment().add(1, 'day').toISOString().substr(0, 10),
+      disabled: false,
       menu: false,
       menu2: false,
       now: moment().valueOf(),
-      numberOfPersons: 0,
+      numberOfPersons: 1,
       reservationKey: 0,
+      reservation: {
+        comments: '',
+        created: 0,
+        dropIn: false,
+        duration: 0,
+        endTime: 0,
+        guestID: '',
+        numberOfPersons: '',
+        reservationID: 0,
+        startTime: 0,
+        tableID: 0,
+        uid: ''
+      },
       startTime: moment().format('H:mm'),
+      startTimeUnix: moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf(),
       newReservationVisible: false // Brukes for å vise/ikke vise add-reservation komponenten
     }
   },
   computed: {
+    error () {
+      return this.$store.getters.error
+    },
+    loading () {
+      return this.$store.getters.loading
+    },
     minDate () {
       return moment().endOf('day').toISOString()
     },
@@ -145,6 +167,14 @@ export default {
       else return '12:00'
     }
   },
+  watch: {
+    error () {
+      this.disabled = false
+    }
+  },
+  mounted () {
+    this.$store.dispatch('mountTables')
+  },
   methods: {
     allowedHours: v => (v >= 12 && v < 22),
     allowedMinutes: v => (v % 15 === 0),
@@ -152,6 +182,43 @@ export default {
     addReservation () {
       this.newReservationVisible = true
       this.reservationKey++
+    },
+    checkCustomerTables () {
+      this.$store.commit('setLoading', true)
+      this.$controller.reservations.newReservationNumber()
+        .then(reservationID => {
+          this.reservation.reservationID = Number(reservationID.docs[0].id) + 1
+        })
+      const customerTables = this.$store.getters.customerRequestedTables
+      let availableTable
+      let mimimum = 999999
+      for (let i = 0; i < customerTables.length; i++) {
+        const table = customerTables[i]
+        if (table) {
+          if (Number(table.capacity) < mimimum && table.available === true) {
+            availableTable = table
+            mimimum = table.capacity
+          }
+        }
+      }
+      if (availableTable) {
+        this.reservation.tableID = availableTable.tableID
+        this.reservation.startTime = this.startTimeUnix
+        this.reservation.endTime = moment(this.startTimeUnix).add(4, 'hours').valueOf()
+        this.reservation.numberOfPersons = this.numberOfPersons
+        this.$store.dispatch('createReservation', this.reservation)
+        this.$store.commit('setLoading', false)
+        this.addReservation()
+      }
+      else {
+        this.$store.commit('setError', 'Prøv et annet tidspunkt eller for en mindre gruppe')
+        this.$store.commit('setLoading', false)
+      }
+    },
+    requestTables () {
+      this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
+      this.$store.dispatch('checkCustomerRequestedTable', { numberOfPersons: this.numberOfPersons, startTime: this.startTimeUnix, endTime: moment(this.startTimeUnix).add(4, 'hours').valueOf() })
+      this.checkCustomerTables()
     }
   }
 }
