@@ -52,7 +52,7 @@ blir brukt til å generere en bekreftelsesepost til kunden.
 exports.sendWelcomeEmail = functions.https.onRequest((request, response) => {
   response.set('Access-Control-Allow-Origin', "*")
   response.set('Access-Control-Allow-Methods', 'GET, POST')
-  let reservationID = request.body.reservationID;
+  let reservationID = request.body.reservationID; //henter brukerens reservasjonsID, epost, navn og tid for reservasjonen
   let email = request.body.email;
   let displayName = request.body.displayName;
   let startTime = request.body.startTime;
@@ -93,14 +93,14 @@ link til siden for å endre reservasjonen.
  */
 function sendWelcomeEmail(email, displayName, reservationID, startTime, reservationLink) {
   const mailOptions = {
-    from: `${APP_NAME} <noreply@firebase.com>`,
-    to: email,
+    from: `${APP_NAME} <noreply@firebase.com>`, //Avsender
+    to: email, //Mottaker
   };
   const startDate = moment(Number(startTime)).format('DD.MM.YYYY');
   startTime = moment(Number(startTime)).format('h:mm');
-  mailOptions.subject = `Din reservasjon hos ${APP_NAME} - ${startDate}`;
-  mailOptions.text = `Hei, ${displayName || ''}! \n\nDette er en bekreftelse på din reservasjon hos ${APP_NAME}.\nDu har reservert bord hos oss ${startDate || ''} klokken ${startTime || ''}.\nDin reservasjonsID: ${reservationID || ''}\nØnsker du å endre reservasjonen, kan du følge denne linken: https://pu30-5b0f9.firebaseapp.com/customerChangeReservation\n\nVi ses!`;
-  return transporter.sendMail(mailOptions)
+  mailOptions.subject = `Din reservasjon hos ${APP_NAME} - ${startDate}`;//Emne
+  mailOptions.text = `Hei, ${displayName || ''}! \n\nDette er en bekreftelse på din reservasjon hos ${APP_NAME}.\nDu har reservert bord hos oss ${startDate || ''} klokken ${startTime || ''}.\nDin reservasjonsID: ${reservationID || ''}\nØnsker du å endre reservasjonen, kan du følge denne linken: https://pu30-5b0f9.firebaseapp.com/customerChangeReservation\n\nVi ses!`;//Innmat
+  return transporter.sendMail(mailOptions) //Sender eposten
     .then( () => {
     return console.log('New welcome email sent to:', email);
   })
