@@ -22,6 +22,11 @@
           Bordbestilling
         </v-btn>
       </v-toolbar-items>
+          @click="$router.push('/customerChangeReservation')"
+        >
+          Endre reservasjon
+        </v-btn>
+      </v-toolbar-items>
       <v-toolbar-items>
         <v-btn
           flat
