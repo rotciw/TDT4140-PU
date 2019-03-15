@@ -5,8 +5,15 @@ const  admin       = require('firebase-admin'),
       functions   = require('firebase-functions'),
       moment      = require('moment'),
       request     = require('request'),
+      // ses         = require('node-ses'),
       app         = express(),
-      nodemailer = require('nodemailer');
+      // Dato for åpningsdato
+      openingDay = moment('2019-02-17', 'YYYY-MM-DD').valueOf(),
+      // Dager siden åpningsdag
+      days = moment().diff(openingDay, 'days'),
+      // Uker siden åpningsdag
+      weeks = moment().diff(openingDay, 'weeks'),
+      nodemailer = require('nodemailer')
 
 
 app.use(bodyParser.json())
@@ -123,6 +130,8 @@ exports.hourlyNumberOfReservations = functions.https.onRequest((request, respons
   response.set('Access-Control-Allow-Methods', 'GET, POST')
   let hourlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   console.log('/hourlyNumberOfReservations')
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   db.collection('reservations')
     .get()
     .then(reservations => {
@@ -136,7 +145,13 @@ exports.hourlyNumberOfReservations = functions.https.onRequest((request, respons
       })
     })
     .then(() => {
-      return response.status(200).send(hourlyStatistics)
+      let returnStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      for (let i = 0; i < hourlyStatistics.length; i++) {
+        if (i > 11 && i < 24) {
+          returnStatistics[i - 12] = hourlyStatistics[i] / days
+        }
+      }
+      return response.status(200).send(returnStatistics)
     })
     .catch(error => {
       console.log('Klarte ikke å mounte timestatistikk for antall reservasjoner')
@@ -153,21 +168,29 @@ exports.hourlyNumberOfPersons = functions.https.onRequest((request, response) =>
   response.set('Access-Control-Allow-Origin', "*")
   response.set('Access-Control-Allow-Methods', 'GET, POST')
   let hourlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   console.log('/hourlyNumberOfPersons')
   db.collection('reservations')
     .get()
     .then(reservations => {
       return reservations.forEach(reservation => {
         reservation = reservation.data()
-        const startTime = moment(reservation.startTime).format('H')
-        const endTime = moment(reservation.endTime).format('H')
+        const startTime = Number(moment(reservation.startTime).format('H'))
+        const endTime = Number(moment(reservation.endTime).format('H'))
         for (let i = Number(startTime); i < Number(endTime) + 1; i++) {
           hourlyStatistics[i - 1] = hourlyStatistics[i - 1] + Number(reservation.numberOfPersons)
         }
       })
     })
     .then(() => {
-      return response.status(200).send(hourlyStatistics)
+      let returnStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      for (let i = 0; i < hourlyStatistics.length; i++) {
+        if (i > 11 && i < 25) {
+          returnStatistics[i - 12] = hourlyStatistics[i] / days
+        }
+      }
+      return response.status(200).send(returnStatistics)
     })
     .catch(error => {
       console.log('Klarte ikke å mounte timestatistikk for antall besøkende')
@@ -182,6 +205,8 @@ exports.dailyNumberOfReservations = functions.https.onRequest((request, response
   response.set('Access-Control-Allow-Origin', "*")
   response.set('Access-Control-Allow-Methods', 'GET, POST')
   let dailyStatistics = [0, 0, 0, 0, 0, 0, 0]
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   console.log('/dailyNumberOfReservations')
   db.collection('reservations')
     .get()
@@ -189,10 +214,14 @@ exports.dailyNumberOfReservations = functions.https.onRequest((request, response
       return reservations.forEach(reservation => {
         reservation = reservation.data()
         const weekday = Number(moment(reservation.startTime).day())
-        dailyStatistics[weekday - 1] = dailyStatistics[weekday - 1] + 1
+        dailyStatistics[weekday] = dailyStatistics[weekday] + 1
       })
     })
     .then(() => {
+      for (let i = 0; i < dailyStatistics.length; i++) {
+        dailyStatistics[i] = dailyStatistics[i] / weeks
+      }
+      console.log(dailyStatistics)
       return response.status(200).send(dailyStatistics)
     })
     .catch(error => {
@@ -209,6 +238,8 @@ exports.dailyNumberOfPersons = functions.https.onRequest((request, response) => 
   response.set('Access-Control-Allow-Origin', "*")
   response.set('Access-Control-Allow-Methods', 'GET, POST')
   let dailyStatistics = [0, 0, 0, 0, 0, 0, 0]
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   console.log('/dailyNumberOfPersons')
   db.collection('reservations')
     .get()
@@ -216,10 +247,14 @@ exports.dailyNumberOfPersons = functions.https.onRequest((request, response) => 
       return reservations.forEach(reservation => {
         reservation = reservation.data()
         const weekday = Number(moment(reservation.startTime).day())
-        dailyStatistics[weekday - 1] = dailyStatistics[weekday - 1] + Number(reservation.numberOfPersons)
+        dailyStatistics[weekday] = dailyStatistics[weekday] + Number(reservation.numberOfPersons)
       })
     })
     .then(() => {
+      for (let i = 0; i < dailyStatistics.length; i++) {
+        dailyStatistics[i] = dailyStatistics[i] / weeks
+      }
+      console.log(dailyStatistics)
       return response.status(200).send(dailyStatistics)
     })
     .catch(error => {
@@ -238,6 +273,8 @@ exports.monthlyNumberOfReservations = functions.https.onRequest((request, respon
   response.set('Access-Control-Allow-Origin', "*")
   response.set('Access-Control-Allow-Methods', 'GET, POST')
   let monthlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   console.log('/monthlyNumberOfReservations')
   db.collection('reservations')
     .get()
@@ -266,6 +303,8 @@ exports.monthlyNumberOfPersons = functions.https.onRequest((request, response) =
   response.set('Access-Control-Allow-Origin', "*")
   response.set('Access-Control-Allow-Methods', 'GET, POST')
   let monthlyStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  response.set('Access-Control-Allow-Origin', "*")
+  response.set('Access-Control-Allow-Methods', 'GET, POST')
   console.log('/monthlyNumberOfPersons')
   db.collection('reservations')
     .get()
