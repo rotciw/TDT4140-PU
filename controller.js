@@ -1,6 +1,8 @@
 import * as firebase from 'firebase/app'
 import 'firebase/firestore'
 // import moment from 'moment'
+// import moment from 'moment'
+import axios from 'axios'
 
 let fs = firebase.firestore()
 
@@ -45,6 +47,35 @@ export const users = {
         console.log('Klarte ikke å lage gjestebruker')
         console.log(error)
       })
+  },
+  // Oppdaterer gjestebrukere
+  updateGuestUser (payload) {
+    const userObject = {
+      firstName: payload.firstName || '',
+      guestID: payload.guestID || '',
+      lastName: payload.lastName || '',
+      email: payload.email || '',
+      mobile: payload.mobile || ''
+    }
+    fs.collection('guestUsers').doc(userObject.guestID + '').set(userObject)
+      .catch(error => {
+        console.log('Klarte ikke å oppdatere gjestebruker ' + payload.guestID)
+        console.log(error)
+      })
+  },
+  // Kan brukes til å rense i guestUsers databasen.
+  removeOtherGuestUsers (payload) {
+    if (payload.guestID) {
+      if (payload.email) {
+        fs.collection('guestUsers').where('email', '==', payload.email).delete()
+      }
+      else if (payload.mobile) {
+        fs.collection('guestUsers').where('mobile', '==', payload.mobile).delete()
+      }
+      fs.collection('guestUsers')
+        .doc(payload.guestID + '')
+        .set(payload)
+    }
   }
 }
 // Reservations inneholder alle reservasjonsrelaterte kall.
@@ -82,6 +113,58 @@ export const reservations = {
       })
     return availableTables
   }, */
+  /*
+  Tenkte først å lage en controller som sjekket ledige bord for kunder, men dette ble for komplisert. Gikk derfor over til å kun burke storen
+   */
+  /* checkCustomerRequest (startTime, endTime, numberOfPersons) {
+    /!* const availableSlots =
+      ['12:00', '12:15', '12:30', '12:45',
+      '13:00', '13:15', '13:30', '13:45',
+      '14:00', '14:15', '14:30', '14:45',
+      '15:00', '15:15', '15:30', '15:45',
+      '16:00', '16:15', '16:30', '16:45',
+      '17:00', '17:15', '17:30', '17:45',
+      '18:00', '18:15', '18:30', '18:45',
+      '19:00', '19:15', '19:30', '19:45',
+      '20:00', '20:15', '20:30', '20:45',
+      '21:00', '21:15', '21:30', '21:45',
+      '22:00'] *!/
+    let oneDayAhed = moment().add(1, 'day').valueOf()
+    const tomorrowFormated = moment().add(1, 'day').format('YYYY/MM/DD')
+    fs.collection('tables')
+      .where('capacaity', '>=', numberOfPersons)
+      .get()
+      .then(tables => {
+        tables.forEach(table => {
+          table = table.data()
+          fs.collection('reservations')
+            .where('tableID', '==', table.tableID)
+            .where('endTime', '>', oneDayAhed)
+            .get()
+            .then(reservations => {
+              reservations.forEach(reservation => {
+                reservation = reservation.data()
+                if (reservation.startTime )
+              })
+            })
+        })
+      }
+  })
+  , */
+  /*
+  * createReservation oppretter en ny reservasjon, og sender så mail til brukeren.
+  * */
+  createReservation (reservationObject) {
+    console.log(reservationObject)
+    fs.collection('reservations').doc(reservationObject.reservationID + '').set(reservationObject)
+      .then(() => {
+        axios.post('https://us-central1-pu30-5b0f9.cloudfunctions.net/sendWelcomeEmail', reservationObject)
+      })
+      .catch(error => {
+        console.log(error)
+        console.log('Klarte ikke å opprette reservasjon')
+      })
+  },
   // newReservationNumber returnerer det største reservasjonsnummeret i datbasen. Kan brukes ved opprettelse av nye reservasjonsobjekter.
   newReservationNumber () {
     return fs.collection('reservations')

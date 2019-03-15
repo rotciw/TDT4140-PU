@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import Vue from 'vue'
 import moment from 'moment'
+// import axios from 'axios'
 // import { cloneDeep } from 'lodash'
 
 export const strict = false
@@ -9,6 +10,7 @@ export const strict = false
 export const state = () => ({
   admin: false, // Sier om brukeren er admin eller ikke
   availableTables: [], // Holder alle bordene som er ledige og etterspurt for antall gjester og tidspunkt
+  customerRequestedTables: [], // Inneholder ledige bord etterspurt av kunde
   employee: false, // SIer om brukeren er ansatt eller ikke
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
@@ -27,6 +29,10 @@ export const mutations = {
   },
   clearAvailability (state) {
     state.tableAvailable = []
+  },
+  // Fjerner bordene som ligger fra forrige etterspørsel.
+  clearCustomerRequestedTable (state) {
+    state.customerRequestedTable = []
   },
   // Fjerner error melding
   clearError (state) {
@@ -53,6 +59,17 @@ export const mutations = {
   // Fjerner valgt reservasjon fra staten
   removeReservation (state, payload) {
     Vue.set(state.reservations, payload.reservationID - 1, null)
+  },
+  // Endrer tilgjengeligheten til et bord
+  setCustomerRequestedTable (state, payload) {
+    Vue.set(state.customerRequestedTables, state.customerRequestedTables.length, payload)
+  },
+  // Legger inn alle bord som har kapasitet nok til reservasjonen
+  setCustomerRequestedTables (state, payload) {
+    state.tables.forEach(table => {
+      if (Number(payload) > Number(table.capacity)) Vue.set(state.customerRequestedTables, table.tableID - 1, { available: false, tableID: table.tableID, capacity: table.capacity })
+      else Vue.set(state.customerRequestedTables, table.tableID - 1, { available: true, tableID: table.tableID, capacity: table.capacity })
+    })
   },
   setFetchedReservation (state, payload) {
     state.reservation = payload
@@ -168,6 +185,31 @@ export const actions = {
               (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {
               commit('setTableAvailability', false)
             }
+          }
+        })
+      })
+    commit('setLoading', false)
+  },
+  /*
+  Brukes av customer-reservation til å finne ut om det er ledige bord for etterspurte tidspunkt og mengde.
+  Sjekker hvilke bord som har stor nok kapasitet, og hvilke bord som ikke har overlappende reservasjonsstider
+   */
+  checkCustomerRequestedTable ({ commit, state }, payload) {
+    commit('setLoading', true)
+    commit('clearCustomerRequestedTable')
+    commit('setCustomerRequestedTables', payload.numberOfPersons)
+    let now = moment().valueOf()
+    firebase.firestore().collection('reservations')
+      .where('endTime', '>', now)
+      .get()
+      .then(reservations => {
+        reservations.forEach(reservation => {
+          reservation = reservation.data()
+          if ((reservation.startTime > payload.startTime && reservation.startTime < payload.endTime) ||
+            (reservation.endTime > payload.startTime && reservation.endTime < payload.endTime) ||
+            (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {
+            commit('setCustomerRequestedTable', { tableID: reservation.tableID, available: false })
+            commit('setLoading', false)
           }
         })
       })
@@ -543,6 +585,9 @@ export const getters = {
   },
   admin (state) {
     return state.admin
+  },
+  customerRequestedTables (state) {
+    return state.customerRequestedTables
   },
   employee (state) {
     return state.employee
