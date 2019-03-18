@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import Vue from 'vue'
 import moment from 'moment'
+// import axios from 'axios'
 // import { cloneDeep } from 'lodash'
 
 export const strict = false
@@ -9,9 +10,11 @@ export const strict = false
 export const state = () => ({
   admin: false, // Sier om brukeren er admin eller ikke
   availableTables: [], // Holder alle bordene som er ledige og etterspurt for antall gjester og tidspunkt
+  customerRequestedTables: [], // Inneholder ledige bord etterspurt av kunde
   employee: false, // SIer om brukeren er ansatt eller ikke
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
+  reservation: null,
   reservations: [], // Holder alle reservasjonene
   tables: [], // Holder alle bordene til restauranten
   tableAvailable: [], // Holder ledigheten for etterspurt bord
@@ -27,8 +30,12 @@ export const mutations = {
   clearAvailability (state) {
     state.tableAvailable = []
   },
+  // Fjerner bordene som ligger fra forrige etterspørsel.
+  clearCustomerRequestedTable (state) {
+    state.customerRequestedTable = []
+  },
   // Fjerner error melding
-  clearError (state, payload) {
+  clearError (state) {
     state.error = null
   },
   // Setter storen til en ren state
@@ -38,6 +45,7 @@ export const mutations = {
     state.employee = false
     state.error = null
     state.loading = false
+    state.reservation = null
     state.reservations = []
     state.tableAvailable = []
     state.tables = []
@@ -51,6 +59,20 @@ export const mutations = {
   // Fjerner valgt reservasjon fra staten
   removeReservation (state, payload) {
     Vue.set(state.reservations, payload.reservationID - 1, null)
+  },
+  // Endrer tilgjengeligheten til et bord
+  setCustomerRequestedTable (state, payload) {
+    Vue.set(state.customerRequestedTables, state.customerRequestedTables.length, payload)
+  },
+  // Legger inn alle bord som har kapasitet nok til reservasjonen
+  setCustomerRequestedTables (state, payload) {
+    state.tables.forEach(table => {
+      if (Number(payload) > Number(table.capacity)) Vue.set(state.customerRequestedTables, table.tableID - 1, { available: false, tableID: table.tableID, capacity: table.capacity })
+      else Vue.set(state.customerRequestedTables, table.tableID - 1, { available: true, tableID: table.tableID, capacity: table.capacity })
+    })
+  },
+  setFetchedReservation (state, payload) {
+    state.reservation = payload
   },
   // Legger til bordet til staten
   setTable (state, payload) {
@@ -168,6 +190,31 @@ export const actions = {
       })
     commit('setLoading', false)
   },
+  /*
+  Brukes av customer-reservation til å finne ut om det er ledige bord for etterspurte tidspunkt og mengde.
+  Sjekker hvilke bord som har stor nok kapasitet, og hvilke bord som ikke har overlappende reservasjonsstider
+   */
+  checkCustomerRequestedTable ({ commit, state }, payload) {
+    commit('setLoading', true)
+    commit('clearCustomerRequestedTable')
+    commit('setCustomerRequestedTables', payload.numberOfPersons)
+    let now = moment().valueOf()
+    firebase.firestore().collection('reservations')
+      .where('endTime', '>', now)
+      .get()
+      .then(reservations => {
+        reservations.forEach(reservation => {
+          reservation = reservation.data()
+          if ((reservation.startTime > payload.startTime && reservation.startTime < payload.endTime) ||
+            (reservation.endTime > payload.startTime && reservation.endTime < payload.endTime) ||
+            (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {
+            commit('setCustomerRequestedTable', { tableID: reservation.tableID, available: false })
+            commit('setLoading', false)
+          }
+        })
+      })
+    commit('setLoading', false)
+  },
   // FJerner feilmeldingen
   clearError ({ commit }) {
     commit('clearError')
@@ -189,6 +236,53 @@ export const actions = {
       .catch(error => {
         console.log('Klarte ikke å lage ny reservasjon')
         console.log(error)
+      })
+  },
+  fetchReservation ({ commit }, payload) {
+    commit('setLoading', true)
+    firebase.firestore().collection('reservations').doc(payload.reservationID + '')
+      .get()
+      .then(reservation => {
+        reservation = reservation.data()
+        if (reservation.uid.length > 0) {
+          firebase.firestore().collection('users')
+            .doc(reservation.uid + '')
+            .get()
+            .then(user => {
+              user = user.data()
+              if (user.email === payload.email) {
+                reservation.user = user
+                commit('setFetchedReservation', reservation)
+                commit('setLoading', false)
+              }
+              else {
+                commit('setError', 'Fant ikke reservasjonen. Prøv igjen.')
+                commit('setLoading', false)
+              }
+            })
+        }
+        else if (reservation.guestID.length > 0) {
+          firebase.firestore().collection('guestUsers').doc(reservation.guestID + '')
+            .get()
+            .then(user => {
+              user = user.data()
+              if (user.email === payload.email) {
+                reservation.user = user
+                commit('setFetchedReservation', reservation)
+                commit('setLoading', false)
+              }
+              else {
+                commit('setError', 'Fant ikke reservasjonen. Prøv igjen.')
+                commit('setLoading', false)
+              }
+            })
+        }
+      })
+      .catch(error => {
+        console.log('Klarte ikke å hente reservasjon med ID: ' + payload.reservationID)
+        commit('setError', 'Fant ikke reservasjonen. Prøv igjen.')
+        console.log(error)
+        commit('setLoading', false)
       })
   },
   /* mountAvailableTables brukes av newReservation for å finne ledige bord til valgt tidspunkt og til riktig antall personer.
@@ -277,32 +371,61 @@ export const actions = {
     })
       .then(() => {
         commit('setReservation', payload)
-        if (payload.uid > 0) {
-          firebase.firestore().collection('users').doc(payload.uid + '').set({
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            mobile: payload.mobile,
-            email: payload.email,
-            admin: payload.admin,
-            employee: payload.employee,
-            uid: payload.uid,
-            username: payload.username
-          }).catch(error => {
-            console.log('Klarte ikke å oppdatere bruker med id ' + payload.uid)
-            console.log(error)
-          })
+        if (payload.user) {
+          if (payload.uid.length > 0) {
+            firebase.firestore().collection('users').doc(payload.uid + '').set({
+              firstName: payload.user.firstName,
+              lastName: payload.user.lastName,
+              mobile: payload.user.mobile,
+              email: payload.user.email,
+              admin: payload.user.admin,
+              employee: payload.user.employee,
+              uid: payload.user.uid
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere bruker med id ' + payload.uid)
+              console.log(error)
+            })
+          }
+          else if (payload.guestID > 0) {
+            firebase.firestore().collection('guestUsers').doc(payload.guestID + '').set({
+              firstName: payload.user.firstName,
+              lastName: payload.user.lastName,
+              mobile: payload.user.mobile,
+              email: payload.user.email,
+              guestID: payload.user.guestID
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere gjest med id ' + payload.guestID)
+              console.log(error)
+            })
+          }
         }
-        else if (payload.guestID > 0) {
-          firebase.firestore().collection('guestUsers').doc(payload.guestID + '').set({
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            mobile: payload.mobile,
-            email: payload.email,
-            guestID: payload.guestID
-          }).catch(error => {
-            console.log('Klarte ikke å oppdatere gjest med id ' + payload.guestID)
-            console.log(error)
-          })
+        else {
+          if (payload.uid > 0) {
+            firebase.firestore().collection('users').doc(payload.uid + '').set({
+              firstName: payload.firstName,
+              lastName: payload.lastName,
+              mobile: payload.mobile,
+              email: payload.email,
+              admin: payload.admin,
+              employee: payload.employee,
+              uid: payload.uid
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere bruker med id ' + payload.uid)
+              console.log(error)
+            })
+          }
+          else if (payload.guestID > 0) {
+            firebase.firestore().collection('guestUsers').doc(payload.guestID + '').set({
+              firstName: payload.firstName,
+              lastName: payload.lastName,
+              mobile: payload.mobile,
+              email: payload.email,
+              guestID: payload.guestID
+            }).catch(error => {
+              console.log('Klarte ikke å oppdatere gjest med id ' + payload.guestID)
+              console.log(error)
+            })
+          }
         }
       })
       .catch(error => {
@@ -466,7 +589,8 @@ export const actions = {
         commit('setError', error)
         console.log(error)
       })
-  } }
+  }
+}
 // Getters returnerer de ulike attributtene våre fra staten. Beskrivelsen av attributten står på state objektet.
 export const getters = {
   availableTables (state) {
@@ -474,6 +598,9 @@ export const getters = {
   },
   admin (state) {
     return state.admin
+  },
+  customerRequestedTables (state) {
+    return state.customerRequestedTables
   },
   employee (state) {
     return state.employee
@@ -483,6 +610,9 @@ export const getters = {
   },
   loading (state) {
     return state.loading
+  },
+  reservation (state) {
+    return state.reservation
   },
   user (state) {
     return state.user

@@ -126,6 +126,21 @@
     </v-toolbar>
     <v-content class="bgColor">
       <v-container>
+        <v-layout>
+          <v-snackbar
+            v-model="snackbar"
+            top
+          >
+            {{ error }}
+            <v-btn
+              color="green"
+              flat
+              @click="onDismissed"
+            >
+              Lukk
+            </v-btn>
+          </v-snackbar>
+        </v-layout>
         <nuxt />
       </v-container>
     </v-content>
@@ -163,6 +178,7 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
+      snackbar: false,
       test: false,
       title: 'Trippin Tacos'
     }
@@ -181,9 +197,21 @@ export default {
     },
     employee () {
       return this.$store.getters.employee
+    },
+    error () {
+      return this.$store.getters.error
+    }
+  },
+  watch: {
+    error () {
+      this.snackbar = true
     }
   },
   methods: {
+    onDismissed () {
+      this.$store.dispatch('clearError')
+      this.snackbar = false
+    },
     signOut () {
       this.$store.dispatch('signUserOut')
       this.$router.push('/login')

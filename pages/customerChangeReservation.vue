@@ -1,24 +1,36 @@
 <template>
   <v-container>
     <v-layout
-      column
+      row
       justify-center
       align-center
     >
-      <img
-        src="logo-long.png"
-        height="150px"
-        contain
-        style="margin-bottom:50px"
+      <v-flex
+        xs12
+        sm12
+        md12
       >
+        <h1 style="text-align: center">
+          Endre/avbestille reservasjon
+        </h1>
+        <h3 style="text-align: center">
+          Skriv inn din email og reservasjonsnummer for reservasjonen du vil endre/avbestille.
+        </h3>
+        <br>
+      </v-flex>
+    </v-layout>
+    <v-layout
+      row
+      justify-center
+      align-center
+    >
       <v-flex
         xs12
         sm5
         md5
       >
-        <!-- Kommentar -->
         <div class="loginbox">
-          <form @submit.prevent="onSignin">
+          <form @submit.prevent="onFetch">
             <v-card-text>
               <v-text-field
                 id="username"
@@ -31,19 +43,19 @@
                 required
               />
               <v-text-field
-                id="password"
-                v-model="password"
+                id="reservationnumber"
+                v-model="reservationID"
                 class="roundedCorners"
-                prepend-inner-icon="lock"
-                name="password"
-                label="Passord"
-                type="password"
+                prepend-inner-icon="restaurant"
+                name="reservationnumber"
+                label="Reservasjonsnummer"
+                type="reservationnumber"
                 required
               />
             </v-card-text>
             <div class="text-xs-center">
               <v-btn
-                id="loginBtn"
+                id="searchBtn"
                 type="submit"
                 :disabled="loading"
                 :loading="loading"
@@ -51,7 +63,7 @@
                 color="#6BE096"
                 class="roundedCorners"
               >
-                Logg inn
+                Søk
               </v-btn>
             </div>
           </form>
@@ -59,7 +71,7 @@
       </v-flex>
     </v-layout>
     <v-layout>
-      <!--<v-snackbar
+      <v-snackbar
         v-model="snackbar"
         top
       >
@@ -71,25 +83,42 @@
         >
           Lukk
         </v-btn>
-      </v-snackbar>-->
+      </v-snackbar>
     </v-layout>
+    <change-reservation
+      :dialog-visible="dialog"
+      :reservation="reservation"
+      @dialogClosed="dialog = false"
+    />
   </v-container>
 </template>
 
 <script>
+// Hente gettere fra vuex store
+import { mapGetters } from 'vuex'
+// import moment from 'moment'
+import ChangeReservation from '../Components/ChangeReservation'
+
 export default {
+  components: { ChangeReservation },
   layout: 'frontpage',
   data () {
     return {
-      email: '', // Email til brukeren
-      password: '', // Passord til brukeren
-      snackbar: false // Om snackbaren skal være synlig eller ei. TODO: FLytte denne over til en global snackbar
+      email: '', // email til kunden
+      reservationID: '', // reservasjonsnummeret til reservasjonen som skal endres
+      snackbar: false,
+      dialog: false
     }
   },
-  // Henter vaiabler fra storen
+  // Getter for reservasjoner fra Vuex Store. Henter reservations og users fra firestore
   computed: {
-    user () {
-      return this.$store.getters.user
+    ...mapGetters({
+      reservations: 'reservations',
+      users: 'users',
+      tables: 'tables'
+    }),
+    reservation () {
+      return this.$store.getters.reservation
     },
     error () {
       return this.$store.getters.error
@@ -98,15 +127,10 @@ export default {
       return this.$store.getters.loading
     }
   },
-  // Følger med på å om vi skal logge inn eller ikke
   watch: {
-    user (val) {
-      if (val !== null && val !== undefined) {
-        this.$router.push('/dashboard')
-      }
-    },
     error () {
       this.snackbar = true
+      console.log(this.error)
     }
   },
   methods: {
@@ -115,11 +139,9 @@ export default {
       this.$store.dispatch('clearError')
       this.snackbar = false
     },
-    // Kaller på sotren for å logge oss inn
-    onSignin () {
-      this.$store.dispatch('signUserIn', { email: this.email, password: this.password })
-      this.$store.dispatch('mountReservations')
-      // this.$store.dispatch('mountTables')
+    // Kaller på storen for å logge oss inn
+    onFetch () {
+      this.$store.dispatch('fetchReservation', { email: this.email, reservationID: this.reservationID, user: this.user })
     }
   }
 }
@@ -137,4 +159,5 @@ export default {
   .roundedCorners {
     border-radius: 0px 18px 0px 18px;
   }
+
 </style>
