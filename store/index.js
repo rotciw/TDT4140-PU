@@ -262,7 +262,20 @@ export const actions = {
             })
         }
         else if (reservation.guestID.length > 0) {
-          firebase.firestore().collection('guestUsers').where('')
+          firebase.firestore().collection('guestUsers').doc(reservation.guestID + '')
+            .get()
+            .then(user => {
+              user = user.data()
+              if (user.email === payload.email) {
+                reservation.user = user
+                commit('setFetchedReservation', reservation)
+                commit('setLoading', false)
+              }
+              else {
+                commit('setError', 'Fant ikke reservasjonen. Prøv igjen.')
+                commit('setLoading', false)
+              }
+            })
         }
       })
       .catch(error => {
