@@ -319,7 +319,10 @@ export default {
         this.$store.dispatch('updateReservation', this.editedSelectedReservation)
         this.close()
       }
-      // TODO: Husk å legge inn snackbar her
+      else {
+        // Snackbar for når man velger et bord som er opptatt, kommuniserer med Vuex Store
+        this.$store.commit('setError', 'Ingen ledige bord for det valgte tidspunktet.')
+      }
     },
     cancelReservation () {
       // Avbestille reservasjon
