@@ -11,7 +11,10 @@
         <span class="headline">Endre reservasjonen din her:</span>
       </v-card-title>
       <v-card-text>
-        <v-container grid-list-md v-if="editedSelectedReservation && editedSelectedReservation.user">
+        <v-container
+          v-if="editedSelectedReservation && editedSelectedReservation.user"
+          grid-list-md
+        >
           <v-layout wrap>
             <!-- .user. på de man skal hente fra users databasen -->
             <v-flex
@@ -62,7 +65,7 @@
               md4
             >
               <v-text-field
-                v-model="numberOfPersons"
+                v-model="editedSelectedReservation.numberOfPersons"
                 label="Antall Personer"
                 min="1"
                 type="number"
@@ -227,7 +230,7 @@ export default {
       minEndTime: moment().format('H:mm'),
       endTime: '',
       startTime: '',
-      numberOfPersons: 1,
+      numberOfPersons: '',
       tomorrow: moment().endOf('day').format('H:mm'),
       dialog: this.dialogVisible,
       selectedReservation: this.reservation,
