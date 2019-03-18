@@ -264,8 +264,7 @@ export default {
         this.showData('https://us-central1-pu30-5b0f9.cloudfunctions.net/hourlyNumberOfReservations')
           .then(() => {
             this.datacollection = {
-              labels: ['00', '', '02', '', '04', '', '06', '', '08', '', '10', '',
-                '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''],
+              labels: ['12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
               datasets: [
                 {
                   label: 'Gjennomsnittlig antall reservasjoner pr klokkeslett',

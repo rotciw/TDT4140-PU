@@ -326,6 +326,7 @@
 
 <script>
 import moment from 'moment'
+import axios from 'axios'
 
 export default {
   name: 'NewReservation',
@@ -486,6 +487,7 @@ export default {
        */
     confirmReservation () {
       if (this.$refs.reservationForm.validate()) {
+        console.log('hallo')
         const reservationObject = {
           comments: this.comments,
           created: moment().valueOf(),
@@ -502,12 +504,20 @@ export default {
           reservationObject.guestID = ''
           reservationObject.uid = this.guestUser.uid
           this.$controller.reservations.createReservation(reservationObject)
+            .then(answer => {
+              console.log(answer)
+              if (answer === true) axios.post('https://us-central1-pu30-5b0f9.cloudfunctions.net/sendWelcomeEmail', { 'reservationID': this.reservation.reservationID, 'email': this.guestUser.email, 'displayName': this.guestUser.firstName, 'startTime': reservationObject.startTime })
+            })
         }
         else {
-          if (this.guestUser.guestID.length > 0) {
+          if (this.guestUser && this.guestUser.guestID && this.guestUser.guestID.length > 0) {
             reservationObject.guestID = this.guestUser.guestID
             reservationObject.uid = ''
             this.$controller.reservations.createReservation(reservationObject)
+              .then(answer => {
+                console.log(answer)
+                if (answer === true) axios.post('https://us-central1-pu30-5b0f9.cloudfunctions.net/sendWelcomeEmail', { 'reservationID': this.reservation.reservationID, 'email': this.guestUser.email, 'displayName': this.guestUser.firstName, 'startTime': reservationObject.startTime })
+              })
           }
           else {
             this.$controller.users.createGuestUser(this.guestUser)
@@ -515,11 +525,18 @@ export default {
                 reservationObject.guestID = guestID
                 reservationObject.uid = ''
                 this.$controller.reservations.createReservation(reservationObject)
+                  .then(answer => {
+                    console.log(answer)
+                    if (answer === true) axios.post('https://us-central1-pu30-5b0f9.cloudfunctions.net/sendWelcomeEmail', { 'reservationID': this.reservation.reservationID, 'email': this.guestUser.email, 'displayName': this.guestUser.firstName, 'startTime': reservationObject.startTime })
+                  })
               })
           }
         }
+        this.step++
       }
-      this.step++
+      else {
+        this.$store.commit('setError', 'Fyll ut feltene')
+      }
     }
   }
 }

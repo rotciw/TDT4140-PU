@@ -2,7 +2,6 @@ import * as firebase from 'firebase/app'
 import 'firebase/firestore'
 // import moment from 'moment'
 // import moment from 'moment'
-import axios from 'axios'
 
 let fs = firebase.firestore()
 
@@ -156,13 +155,14 @@ export const reservations = {
   * */
   createReservation (reservationObject) {
     console.log(reservationObject)
-    fs.collection('reservations').doc(reservationObject.reservationID + '').set(reservationObject)
+    return fs.collection('reservations').doc(reservationObject.reservationID + '').set(reservationObject)
       .then(() => {
-        axios.post('https://us-central1-pu30-5b0f9.cloudfunctions.net/sendWelcomeEmail', reservationObject)
+        return true
       })
       .catch(error => {
         console.log(error)
         console.log('Klarte ikke å opprette reservasjon')
+        return false
       })
   },
   // newReservationNumber returnerer det største reservasjonsnummeret i datbasen. Kan brukes ved opprettelse av nye reservasjonsobjekter.
