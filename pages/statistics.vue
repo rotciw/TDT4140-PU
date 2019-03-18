@@ -31,7 +31,7 @@
               dark
               large
               class="button"
-              color=#707070
+              color="#707070"
               @click="fillData('monthlyCostumers')"
             >
               Månedlige kundebesøk
@@ -47,7 +47,7 @@
             </v-btn>
             <v-btn
               v-else
-              color=#707070
+              color="#707070"
               dark
               large
               class="button"
@@ -66,7 +66,7 @@
             </v-btn>
             <v-btn
               v-else
-              color=#707070
+              color="#707070"
               dark
               large
               class="button"
@@ -85,7 +85,7 @@
             </v-btn>
             <v-btn
               v-else
-              color=#707070
+              color="#707070"
               dark
               large
               class="button"
@@ -104,7 +104,7 @@
             </v-btn>
             <v-btn
               v-else
-              color=#707070
+              color="#707070"
               dark
               large
               class="button"
@@ -123,7 +123,7 @@
             </v-btn>
             <v-btn
               v-else
-              color=#707070
+              color="#707070"
               dark
               large
               class="button"
@@ -143,12 +143,11 @@
             justify-center
           >
             <v-btn
-              :loading="!loaded"
               v-if="!loaded"
+              :loading="!loaded"
               depressed
               class="loading"
-            >
-            </v-btn>
+            />
           </v-layout>
           <bar-chart
             v-if="loaded"
@@ -174,6 +173,9 @@ export default {
     statisticsType: 'monthlyCostumers',
     loaded: false
   }),
+  mounted () {
+    this.fillData('monthlyCostumers')
+  },
   methods: {
     fillData (statisticsType) {
       this.statisticsType = statisticsType
@@ -262,8 +264,7 @@ export default {
         this.showData('https://us-central1-pu30-5b0f9.cloudfunctions.net/hourlyNumberOfReservations')
           .then(() => {
             this.datacollection = {
-              labels: ['00', '', '02', '', '04', '', '06', '', '08', '', '10', '',
-                '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''],
+              labels: ['12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
               datasets: [
                 {
                   label: 'Gjennomsnittlig antall reservasjoner pr klokkeslett',
@@ -290,9 +291,6 @@ export default {
           console.error(e)
         })
     }
-  },
-  mounted () {
-    this.fillData('monthlyCostumers')
   }
 }
 </script>
