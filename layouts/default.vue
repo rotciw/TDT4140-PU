@@ -76,6 +76,19 @@
             <v-list-tile-title v-text="'Alle Reservasjoner'" />
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile
+          v-if="admin"
+          class="tile"
+          active-class="background-color: green"
+          to="/statistics"
+        >
+          <v-list-tile-action>
+            <v-icon>trending_up</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="'Statistikk'" />
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
@@ -113,6 +126,21 @@
     </v-toolbar>
     <v-content class="bgColor">
       <v-container>
+        <v-layout>
+          <v-snackbar
+            v-model="snackbar"
+            top
+          >
+            {{ error }}
+            <v-btn
+              color="green"
+              flat
+              @click="onDismissed"
+            >
+              Lukk
+            </v-btn>
+          </v-snackbar>
+        </v-layout>
         <nuxt />
       </v-container>
     </v-content>
@@ -150,6 +178,7 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
+      snackbar: false,
       test: false,
       title: 'Trippin Tacos'
     }
@@ -168,9 +197,21 @@ export default {
     },
     employee () {
       return this.$store.getters.employee
+    },
+    error () {
+      return this.$store.getters.error
+    }
+  },
+  watch: {
+    error () {
+      this.snackbar = true
     }
   },
   methods: {
+    onDismissed () {
+      this.$store.dispatch('clearError')
+      this.snackbar = false
+    },
     signOut () {
       this.$store.dispatch('signUserOut')
       this.$router.push('/login')

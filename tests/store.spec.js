@@ -62,6 +62,7 @@ test('Clear states when user is logged out', () => {
   const emptyState = {
     admin: false,
     availableTables: [],
+    customerRequestedTables: [],
     employee: false,
     error: null,
     loading: false,
@@ -69,7 +70,8 @@ test('Clear states when user is logged out', () => {
     tables: [],
     todaysTables: [],
     user: null,
-    reservations: []
+    reservations: [],
+    reservation: null
   }
   expect(store.state).toEqual(emptyState)
 })
