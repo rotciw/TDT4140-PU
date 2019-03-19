@@ -1,6 +1,8 @@
 <template>
   <v-app>
-    <v-toolbar>
+    <v-toolbar
+      tabs
+    >
       <v-flex xs2>
         <nuxt-link
           to="/"
@@ -17,7 +19,26 @@
       <v-toolbar-items>
         <v-btn
           flat
-          @click="$router.push('/customer-reservation')"
+          to="/"
+          exact
+        >
+          Hjem
+        </v-btn>
+      </v-toolbar-items>
+      <v-toolbar-items>
+        <v-btn
+          flat
+          to="/meny"
+          exact
+        >
+          Meny
+        </v-btn>
+      </v-toolbar-items>
+      <v-toolbar-items>
+        <v-btn
+          flat
+          to="/customer-reservation"
+          exact
         >
           Bordbestilling
         </v-btn>
@@ -25,15 +46,8 @@
       <v-toolbar-items>
         <v-btn
           flat
-          @click="$router.push('/customerChangeReservation')"
-        >
-          Endre reservasjon
-        </v-btn>
-      </v-toolbar-items>
-      <v-toolbar-items>
-        <v-btn
-          flat
-          @click="$router.push('/login')"
+          to="/login"
+          exact
         >
           Logg inn
         </v-btn>
