@@ -11,7 +11,10 @@
         <span class="headline">Endre reservasjonen din her:</span>
       </v-card-title>
       <v-card-text>
-        <v-container grid-list-md v-if="editedSelectedReservation && editedSelectedReservation.user">
+        <v-container
+          v-if="editedSelectedReservation && editedSelectedReservation.user"
+          grid-list-md
+        >
           <v-layout wrap>
             <!-- .user. på de man skal hente fra users databasen -->
             <v-flex
@@ -62,7 +65,7 @@
               md4
             >
               <v-text-field
-                v-model="numberOfPersons"
+                v-model="editedSelectedReservation.numberOfPersons"
                 label="Antall Personer"
                 min="1"
                 type="number"
@@ -78,6 +81,7 @@
                 label="Kommentarer"
               />
             </v-flex>
+            <!-- Starttid -->
             <v-flex
               xs12
               sm6
@@ -107,6 +111,8 @@
                 <v-time-picker
                   v-if="menu2"
                   v-model="startTime"
+                  :allowed-hours="allowedHours"
+                  :allowed-minutes="allowedMinutes"
                   color="green"
                   format="24hr"
                   full-width
@@ -227,7 +233,7 @@ export default {
       minEndTime: moment().format('H:mm'),
       endTime: '',
       startTime: '',
-      numberOfPersons: 1,
+      numberOfPersons: '',
       tomorrow: moment().endOf('day').format('H:mm'),
       dialog: this.dialogVisible,
       selectedReservation: this.reservation,
@@ -282,6 +288,9 @@ export default {
     console.log(this.editedSelectedReservation, this.reservation)
   },
   methods: {
+    /* Regner ut lovlige valg for timer og minutter */
+    allowedHours: v => (v >= 12 && v < 22),
+    allowedMinutes: v => (v % 15 === 0),
     close () {
       this.dialog = false
       // Nytt reservasjonsobjekt for å ikke overskride elementet vi henter inn

@@ -17,7 +17,6 @@ const  admin       = require('firebase-admin'),
 
 
 app.use(bodyParser.json())
-app.use(cors( { origin: true } ))
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
@@ -35,6 +34,7 @@ let db = admin.firestore();
 /*
 Setter opp en mailtransporter med autentifisering gjennom gmail-kontoen til selskapet.
  */
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 let transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -50,14 +50,17 @@ Cloud-funksjon som henter informasjon om en nyopprettet reservasjon. Brukerens e
 blir brukt til å generere en bekreftelsesepost til kunden.
  */
 exports.sendWelcomeEmail = functions.https.onRequest((request, response) => {
+  response.header('Access-Control-Allow-Origin', '*')
+  response.header('Access-Control-Allow-Headers', 'Content-Type')
   response.set('Access-Control-Allow-Origin', "*")
   response.set('Access-Control-Allow-Methods', 'GET, POST')
+  // ;
   let reservationID = request.body.reservationID; //henter brukerens reservasjonsID, epost, navn og tid for reservasjonen
   let email = request.body.email;
   let displayName = request.body.displayName;
   let startTime = request.body.startTime;
-  console.log(email);
-  return sendWelcomeEmail(email, displayName, reservationID, startTime)
+  console.log(email, displayName, reservationID, startTime);
+  sendWelcomeEmail(email, displayName, reservationID, startTime)
     .then(response.send('Mail forsøkt sendt til ' + email))
     .catch(error => {
       console.log('Klarte ikke å sende epost')
@@ -70,6 +73,8 @@ exports.sendWelcomeEmail = functions.https.onRequest((request, response) => {
 exports.sendCancellationEmail = functions.https.onRequest((request, response) => {
     response.set('Access-Control-Allow-Origin', "*")
     response.set('Access-Control-Allow-Methods', 'GET, POST')
+    response.header('Access-Control-Allow-Origin', '*');
+    response.header('Access-Control-Allow-Headers', 'Content-Type');
     let reservationID = request.body.reservationID;
     let email = request.body.email;
     let displayName = request.body.displayName;
@@ -91,19 +96,23 @@ const APP_NAME = 'Trippin Tacos';
 Funksjon som genererer og sender bekreftelsesepost til kunde. Formatterer tiden for reservasjonen, reservasjonsIDen og en
 link til siden for å endre reservasjonen.
  */
-function sendWelcomeEmail(email, displayName, reservationID, startTime, reservationLink) {
+function sendWelcomeEmail(email, displayName, reservationID, startTime) {
+  console.log(email)
   const mailOptions = {
     from: `${APP_NAME} <noreply@firebase.com>`, //Avsender
     to: email, //Mottaker
   };
   const startDate = moment(Number(startTime)).format('DD.MM.YYYY');
-  startTime = moment(Number(startTime)).format('h:mm');
+  startTime = moment(Number(startTime)).format('H:mm');
   mailOptions.subject = `Din reservasjon hos ${APP_NAME} - ${startDate}`;//Emne
   mailOptions.text = `Hei, ${displayName || ''}! \n\nDette er en bekreftelse på din reservasjon hos ${APP_NAME}.\nDu har reservert bord hos oss ${startDate || ''} klokken ${startTime || ''}.\nDin reservasjonsID: ${reservationID || ''}\nØnsker du å endre reservasjonen, kan du følge denne linken: https://pu30-5b0f9.firebaseapp.com/customerChangeReservation\n\nVi ses!`;//Innmat
   return transporter.sendMail(mailOptions) //Sender eposten
-    .then( () => {
-    return console.log('New welcome email sent to:', email);
-  })
+    .then(() => {
+      return console.log('New welcome email sent to:', email);
+    })
+    .catch(error => {
+      console.log(error)
+    })
 }
 
 function sendCancellationEmail(email, displayName, reservationID, startTime, reservationLink) {
@@ -118,6 +127,9 @@ function sendCancellationEmail(email, displayName, reservationID, startTime, res
   return transporter.sendMail(mailOptions)
     .then( () => {
       return console.log('Cancellation email sent to:', email);
+    })
+    .catch(error => {
+      console.log(error)
     })
 }
 
@@ -282,7 +294,7 @@ exports.monthlyNumberOfReservations = functions.https.onRequest((request, respon
       return reservations.forEach(reservation => {
         reservation = reservation.data()
         const month = Number(moment(reservation.startTime).month())
-        monthlyStatistics[month - 1] = monthlyStatistics[month - 1] + 1
+        monthlyStatistics[month] = monthlyStatistics[month] + 1
       })
     })
     .then(() => {
@@ -312,7 +324,7 @@ exports.monthlyNumberOfPersons = functions.https.onRequest((request, response) =
       return reservations.forEach(reservation => {
         reservation = reservation.data()
         const month = Number(moment(reservation.startTime).month())
-        monthlyStatistics[month - 1] = monthlyStatistics[month - 1] + Number(reservation.numberOfPersons)
+        monthlyStatistics[month] = monthlyStatistics[month] + Number(reservation.numberOfPersons)
       })
     })
     .then(() => {
