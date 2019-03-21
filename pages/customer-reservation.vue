@@ -6,6 +6,22 @@
       justify-center
       align-center
     >
+      <v-layout
+        row
+        justify-center
+        align-center
+      >
+        <v-flex
+          xs12
+          sm12
+          md12
+        >
+          <h1 style="text-align: center">Bordbestilling</h1>
+          Ved å trykke bekreft, aksepterer du våre <a target="_blank" href="/termsAndConditions">vilkår og betingelser.</a>
+          <br>
+          <br>
+        </v-flex>
+      </v-layout>
       <!--Her legger kunden inn tidspunkt, dato og antall personer-->
       <div class="loginbox">
         <v-flex
@@ -91,7 +107,7 @@
             v-model="numberOfPersons"
             label="Antall gjester"
             hint="Hvor mange gjester er det?"
-            prepend-icon="superv<ised_user_circle"
+            prepend-icon="supervised_user_circle"
             min="1"
             type="Number"
           />
@@ -109,6 +125,15 @@
           </v-btn>
         </div>
       </div>
+      <br>
+      <h3> Har du en reservasjon?</h3>
+      <v-btn
+      large
+      class="roundedCorners"
+      @click="$router.push('/customerChangeReservation')"
+      >
+        Endre/avbestill reservasjon
+      </v-btn>
     </v-layout>
     <!-- Komponent for å legge til ny reservasjon -->
     <new-reservation
@@ -151,7 +176,8 @@ export default {
       },
       startTime: moment().format('H:mm'), // Starttid
       startTimeUnix: moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf(), // Starttid i Unix
-      newReservationVisible: false // Brukes for å vise/ikke vise add-reservation komponenten
+      newReservationVisible: false, // Brukes for å vise/ikke vise add-reservation komponenten
+      termsdialog: false
     }
   },
   computed: {
