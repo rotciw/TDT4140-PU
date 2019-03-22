@@ -91,7 +91,7 @@
             v-model="numberOfPersons"
             label="Antall gjester"
             hint="Hvor mange gjester er det?"
-            prepend-icon="superv<ised_user_circle"
+            prepend-icon="supervised_user_circle"
             min="1"
             type="Number"
           />
