@@ -194,6 +194,7 @@
 
 <script>
 import moment from 'moment'
+import axios from 'axios'
 
 export default {
   name: 'ChangeReservation',
@@ -328,14 +329,16 @@ export default {
         this.$store.dispatch('updateReservation', this.editedSelectedReservation)
         this.close()
       }
-      else {
+      else {sta
         // Snackbar for når man velger et bord som er opptatt, kommuniserer med Vuex Store
         this.$store.commit('setError', 'Ingen ledige bord for det valgte tidspunktet.')
       }
     },
     cancelReservation () {
       // Avbestille reservasjon
+      console.log(this.editedSelectedReservation)
       if (confirm('Er du sikker på at du vil avbestille reservasjonen?')) {
+        axios.post('https://us-central1-pu30-5b0f9.cloudfunctions.net/sendCancellationEmail', { 'reservationID': this.editedSelectedReservation.reservationID, 'email': this.editedSelectedReservation.user.email, 'displayName': this.editedSelectedReservation.user.firstName, 'startTime': this.editedSelectedReservation.startTime })
         this.$store.dispatch('removeReservation', this.editedSelectedReservation)
         this.close()
       }
