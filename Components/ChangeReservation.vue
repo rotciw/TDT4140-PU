@@ -270,9 +270,6 @@ export default {
     },
     minDate () {
       return moment().endOf('day').toISOString()
-    },
-    tableAvailable () {
-      return !this.$store.getters.tableAvailable.includes(false)
     }
   },
   watch: {
@@ -282,6 +279,7 @@ export default {
         this.dialog = true
         this.editedSelectedReservation = this.reservation
         this.startTime = moment(this.reservation.startTime).format('H:mm')
+        this.date = moment(this.editedSelectedReservation.startTime).toISOString().substr(0, 10)
       }
     }
   },
@@ -322,17 +320,8 @@ export default {
     },
     save () {
       // Lagre nye endringer til reservasjonen
-      this.editedSelectedReservation.startTime = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - HH:mm').valueOf()
-      this.editedSelectedReservation.endTime = moment(this.editedSelectedReservation.startTime).add(4, 'hours').valueOf()
-      this.checkTableAvailability()
-      if (this.tableAvailable) {
-        this.$store.dispatch('updateReservation', this.editedSelectedReservation)
-        this.close()
-      }
-      else {
-        // Snackbar for når man velger et bord som er opptatt, kommuniserer med Vuex Store
-        this.$store.commit('setError', 'Ingen ledige bord for det valgte tidspunktet.')
-      }
+      this.requestTables()
+      this.checkCustomerTables()
     },
     cancelReservation () {
       // Avbestille reservasjon
@@ -354,6 +343,48 @@ export default {
       this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - HH:mm').valueOf()
       this.endTimeUnix = moment(this.startTimeUnix).add(4, 'hours').valueOf()
       this.$store.dispatch('checkAvailabilityWithReservation', { tableID: this.editedSelectedReservation.tableID, numberOfPersons: this.editedSelectedReservation.numberOfPersons, startTime: this.startTimeUnix, endTime: this.endTimeUnix, reservationID: this.editedSelectedReservation.reservationID })
+    },
+    /*
+    * checkCustomerTables henter tilgjengelige bord fra storen,
+    * går igjennom de ledige bordene og finner det bordet med minst, men nok, kapasitet.
+    * Hvis det er et ledig bord oppretter den reservasjonen. Hvis det ikke er noe ledig kommer feilmelding.
+    * */
+    checkCustomerTables () {
+      this.$store.commit('setLoading', true)
+      const customerTables = this.$store.getters.customerRequestedTables
+      let availableTable
+      let mimimum = 999999
+      for (let i = 0; i < customerTables.length; i++) {
+        const table = customerTables[i]
+        if (table) {
+          if (Number(table.capacity) < mimimum && table.available === true) {
+            availableTable = table
+            mimimum = table.capacity
+          }
+        }
+        if (availableTable) {
+          this.reservation.tableID = availableTable.tableID
+          this.reservation.startTime = this.startTimeUnix
+          this.reservation.endTime = moment(this.startTimeUnix).add(4, 'hours').valueOf()
+          this.reservation.numberOfPersons = this.editedSelectedReservation.numberOfPersons
+          this.$store.dispatch('updateReservation', this.editedSelectedReservation)
+          this.$store.commit('setLoading', false)
+          this.addReservation()
+        }
+        else {
+          this.$store.commit('setError', 'Prøv et annet tidspunkt eller for en mindre gruppe')
+          this.$store.commit('setLoading', false)
+        }
+      }
+    },
+    // Legger inn kravene fra kunden (dato, antall personer og starttid) i en spørring til storen, som finner alle bordene som matcher kravene.
+    requestTables () {
+      if (this.editedSelectedReservation.numberOfPersons > 0) {
+        this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
+        this.$store.dispatch('checkCustomerRequestedTable', { numberOfPersons: this.editedSelectedReservation.numberOfPersons, startTime: this.startTimeUnix, endTime: moment(this.startTimeUnix).add(4, 'hours').valueOf() })
+        this.checkCustomerTables()
+      }
+      else this.$store.commit('setError', 'Velg gyldig antall personer')
     },
     updateTable (table) {
       this.tableID = table

@@ -548,6 +548,7 @@ export default {
           if (this.guestUser && this.guestUser.guestID && this.guestUser.guestID.length > 0) {
             reservationObject.guestID = this.guestUser.guestID
             reservationObject.uid = ''
+            this.$controller.users.updateGuestUser(this.guestUser)
             this.$controller.reservations.createReservation(reservationObject)
               .then(answer => {
                 console.log(answer)

@@ -34,6 +34,10 @@ export const mutations = {
   clearCustomerRequestedTable (state) {
     state.customerRequestedTable = []
   },
+  // Fjerner bordene som ligger fra forrige etterspørsel.
+  clearCustomerRequestedTables (state) {
+    state.customerRequestedTables = []
+  },
   // Fjerner error melding
   clearError (state) {
     state.error = null
@@ -62,7 +66,7 @@ export const mutations = {
   },
   // Endrer tilgjengeligheten til et bord
   setCustomerRequestedTable (state, payload) {
-    Vue.set(state.customerRequestedTables, state.customerRequestedTables.length, payload)
+    Vue.set(state.customerRequestedTables, payload.tableID - 1, payload)
   },
   // Legger inn alle bord som har kapasitet nok til reservasjonen
   setCustomerRequestedTables (state, payload) {
@@ -196,7 +200,7 @@ export const actions = {
    */
   checkCustomerRequestedTable ({ commit, state }, payload) {
     commit('setLoading', true)
-    commit('clearCustomerRequestedTable')
+    commit('clearCustomerRequestedTables')
     commit('setCustomerRequestedTables', payload.numberOfPersons)
     let now = moment().valueOf()
     firebase.firestore().collection('reservations')
@@ -209,7 +213,6 @@ export const actions = {
             (reservation.endTime > payload.startTime && reservation.endTime < payload.endTime) ||
             (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {
             commit('setCustomerRequestedTable', { tableID: reservation.tableID, available: false })
-            commit('setLoading', false)
           }
         })
       })
