@@ -103,7 +103,7 @@ function sendWelcomeEmail(email, displayName, reservationID, startTime) {
     to: email, //Mottaker
   };
   const startDate = moment(Number(startTime)).format('DD.MM.YYYY');
-  startTime = moment(Number(startTime)).format('H:mm').add(1, 'hours');
+  startTime = moment(Number(startTime)).add(1, 'hours').format('H:mm');
   mailOptions.subject = `Din reservasjon hos ${APP_NAME} - ${startDate}`;//Emne
   mailOptions.text = `Hei, ${displayName || ''}! \n\nDette er en bekreftelse på din reservasjon hos ${APP_NAME}.\nDu har reservert bord hos oss ${startDate || ''} klokken ${startTime || ''}.\nDitt reservasjonsnummer: ${reservationID || ''}\nØnsker du å endre reservasjonen, kan du følge denne linken: https://pu30-5b0f9.firebaseapp.com/customerChangeReservation\n\nVi ses!`;//Innmat
   return transporter.sendMail(mailOptions) //Sender eposten
@@ -121,7 +121,7 @@ function sendCancellationEmail(email, displayName, reservationID, startTime) {
     to: email,
   };
   const startDate = moment(Number(startTime)).format('DD.MM.YYYY');
-  startTime = moment(Number(startTime)).format('h:mm').add(1, 'hours');
+  startTime = moment(Number(startTime)).add(1, 'hours').format('h:mm');
   mailOptions.subject = `Avbestilling av reservasjon hos ${APP_NAME}`;
   mailOptions.text = `Hei, ${displayName || ''}! \n\nDette er en bekreftelse på din avbestilling hos ${APP_NAME}.\nAvbestillingen gjelder følgende reservasjon:\n\n${startDate || ''} klokken ${startTime || ''}.\nReservasjonsnummer: ${reservationID || ''}\n\nØnsker du å lage en ny reservasjonen, kan du følge denne linken: https://pu30-5b0f9.firebaseapp.com/customer-reservation\n\nHåper vi ser deg en annen gang!`;
   return transporter.sendMail(mailOptions)
