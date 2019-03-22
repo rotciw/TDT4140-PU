@@ -71,10 +71,10 @@ exports.sendWelcomeEmail = functions.https.onRequest((request, response) => {
 );
 
 exports.sendCancellationEmail = functions.https.onRequest((request, response) => {
+    response.header('Access-Control-Allow-Origin', '*')
+    response.header('Access-Control-Allow-Headers', 'Content-Type')
     response.set('Access-Control-Allow-Origin', "*")
     response.set('Access-Control-Allow-Methods', 'GET, POST')
-    response.header('Access-Control-Allow-Origin', '*');
-    response.header('Access-Control-Allow-Headers', 'Content-Type');
     let reservationID = request.body.reservationID;
     let email = request.body.email;
     let displayName = request.body.displayName;
@@ -105,7 +105,7 @@ function sendWelcomeEmail(email, displayName, reservationID, startTime) {
   const startDate = moment(Number(startTime)).format('DD.MM.YYYY');
   startTime = moment(Number(startTime)).format('H:mm');
   mailOptions.subject = `Din reservasjon hos ${APP_NAME} - ${startDate}`;//Emne
-  mailOptions.text = `Hei, ${displayName || ''}! \n\nDette er en bekreftelse på din reservasjon hos ${APP_NAME}.\nDu har reservert bord hos oss ${startDate || ''} klokken ${startTime || ''}.\nDin reservasjonsID: ${reservationID || ''}\nØnsker du å endre reservasjonen, kan du følge denne linken: https://pu30-5b0f9.firebaseapp.com/customerChangeReservation\n\nVi ses!`;//Innmat
+  mailOptions.text = `Hei, ${displayName || ''}! \n\nDette er en bekreftelse på din reservasjon hos ${APP_NAME}.\nDu har reservert bord hos oss ${startDate || ''} klokken ${startTime || ''}.\nDitt reservasjonsnummer: ${reservationID || ''}\nØnsker du å endre reservasjonen, kan du følge denne linken: https://pu30-5b0f9.firebaseapp.com/customerChangeReservation\n\nVi ses!`;//Innmat
   return transporter.sendMail(mailOptions) //Sender eposten
     .then(() => {
       return console.log('New welcome email sent to:', email);
@@ -115,7 +115,7 @@ function sendWelcomeEmail(email, displayName, reservationID, startTime) {
     })
 }
 
-function sendCancellationEmail(email, displayName, reservationID, startTime, reservationLink) {
+function sendCancellationEmail(email, displayName, reservationID, startTime) {
   const mailOptions = {
     from: `${APP_NAME} <noreply@firebase.com>`,
     to: email,
@@ -123,7 +123,7 @@ function sendCancellationEmail(email, displayName, reservationID, startTime, res
   const startDate = moment(Number(startTime)).format('DD.MM.YYYY');
   startTime = moment(Number(startTime)).format('h:mm');
   mailOptions.subject = `Avbestilling av reservasjon hos ${APP_NAME}`;
-  mailOptions.text = `Hei, ${displayName || ''}! \n\nDette er en bekreftelse på din avbestilling hos ${APP_NAME}.\nAvbestillingen gjelder følgende reservasjon:\n\n${startDate || ''} klokken ${startTime || ''}.\nReservasjonsID: ${reservationID || ''}\n\nØnsker du å lage en ny reservasjonen, kan du følge denne linken: https://pu30-5b0f9.firebaseapp.com/customer-reservation\n\nHåper vi ser deg en annen gang!`;
+  mailOptions.text = `Hei, ${displayName || ''}! \n\nDette er en bekreftelse på din avbestilling hos ${APP_NAME}.\nAvbestillingen gjelder følgende reservasjon:\n\n${startDate || ''} klokken ${startTime || ''}.\nReservasjonsnummer: ${reservationID || ''}\n\nØnsker du å lage en ny reservasjonen, kan du følge denne linken: https://pu30-5b0f9.firebaseapp.com/customer-reservation\n\nHåper vi ser deg en annen gang!`;
   return transporter.sendMail(mailOptions)
     .then( () => {
       return console.log('Cancellation email sent to:', email);

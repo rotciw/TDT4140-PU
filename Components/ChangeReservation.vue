@@ -194,6 +194,7 @@
 
 <script>
 import moment from 'moment'
+import axios from 'axios'
 
 export default {
   name: 'ChangeReservation',
@@ -335,7 +336,9 @@ export default {
     },
     cancelReservation () {
       // Avbestille reservasjon
+      console.log(this.editedSelectedReservation)
       if (confirm('Er du sikker på at du vil avbestille reservasjonen?')) {
+        axios.post('https://us-central1-pu30-5b0f9.cloudfunctions.net/sendCancellationEmail', { 'reservationID': this.editedSelectedReservation.reservationID, 'email': this.editedSelectedReservation.user.email, 'displayName': this.editedSelectedReservation.user.firstName, 'startTime': this.editedSelectedReservation.startTime })
         this.$store.dispatch('removeReservation', this.editedSelectedReservation)
         this.close()
       }
