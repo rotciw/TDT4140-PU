@@ -230,7 +230,8 @@ export const actions = {
   createReservation ({ commit, state }, payload) {
     firebase.firestore().collection('reservations').doc(payload.reservationID + '')
       .set(payload)
-      .then(() => {
+      .then(res => {
+        console.log(res)
         commit('setReservation', payload)
       })
       .catch(error => {

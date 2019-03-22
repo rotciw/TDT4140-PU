@@ -219,38 +219,42 @@ export default {
       this.$controller.reservations.newReservationNumber()
         .then(reservationID => {
           this.reservation.reservationID = Number(reservationID.docs[0].id) + 1
-        })
-      const customerTables = this.$store.getters.customerRequestedTables
-      let availableTable
-      let mimimum = 999999
-      for (let i = 0; i < customerTables.length; i++) {
-        const table = customerTables[i]
-        if (table) {
-          if (Number(table.capacity) < mimimum && table.available === true) {
-            availableTable = table
-            mimimum = table.capacity
+        }).then(() => {
+          const customerTables = this.$store.getters.customerRequestedTables
+          let availableTable
+          let mimimum = 999999
+          for (let i = 0; i < customerTables.length; i++) {
+            const table = customerTables[i]
+            if (table) {
+              if (Number(table.capacity) < mimimum && table.available === true) {
+                availableTable = table
+                mimimum = table.capacity
+              }
+            }
           }
-        }
-      }
-      if (availableTable) {
-        this.reservation.tableID = availableTable.tableID
-        this.reservation.startTime = this.startTimeUnix
-        this.reservation.endTime = moment(this.startTimeUnix).add(4, 'hours').valueOf()
-        this.reservation.numberOfPersons = this.numberOfPersons
-        this.$store.dispatch('createReservation', this.reservation)
-        this.$store.commit('setLoading', false)
-        this.addReservation()
-      }
-      else {
-        this.$store.commit('setError', 'Prøv et annet tidspunkt eller for en mindre gruppe')
-        this.$store.commit('setLoading', false)
-      }
+          if (availableTable) {
+            this.reservation.tableID = availableTable.tableID
+            this.reservation.startTime = this.startTimeUnix
+            this.reservation.endTime = moment(this.startTimeUnix).add(4, 'hours').valueOf()
+            this.reservation.numberOfPersons = this.numberOfPersons
+            this.$store.dispatch('createReservation', this.reservation)
+            this.$store.commit('setLoading', false)
+            this.addReservation()
+          }
+          else {
+            this.$store.commit('setError', 'Prøv et annet tidspunkt eller for en mindre gruppe')
+            this.$store.commit('setLoading', false)
+          }
+        })
     },
     // Legger inn kravene fra kunden (dato, antall personer og starttid) i en spørring til storen, som finner alle bordene som matcher kravene.
     requestTables () {
-      this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
-      this.$store.dispatch('checkCustomerRequestedTable', { numberOfPersons: this.numberOfPersons, startTime: this.startTimeUnix, endTime: moment(this.startTimeUnix).add(4, 'hours').valueOf() })
-      this.checkCustomerTables()
+      if (this.numberOfPersons > 0) {
+        this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
+        this.$store.dispatch('checkCustomerRequestedTable', { numberOfPersons: this.numberOfPersons, startTime: this.startTimeUnix, endTime: moment(this.startTimeUnix).add(4, 'hours').valueOf() })
+        this.checkCustomerTables()
+      }
+      else this.$store.commit('setError', 'Velg gyldig antall personer')
     }
   }
 }
