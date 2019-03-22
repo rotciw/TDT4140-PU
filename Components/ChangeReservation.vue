@@ -329,7 +329,7 @@ export default {
         this.$store.dispatch('updateReservation', this.editedSelectedReservation)
         this.close()
       }
-      else {sta
+      else {
         // Snackbar for når man velger et bord som er opptatt, kommuniserer med Vuex Store
         this.$store.commit('setError', 'Ingen ledige bord for det valgte tidspunktet.')
       }
