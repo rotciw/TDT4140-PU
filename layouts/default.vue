@@ -161,7 +161,13 @@
           text-xs-center
           xs12
         >
-          &copy; 2019 <strong>PU-Gruppe 30</strong>
+          <div class="text-xs-center">
+            <b>Lagd med
+            <v-icon class="red--text">
+              favorite
+            </v-icon>
+              av PU-Gruppe 30</b>
+          </div>
         </v-flex>
       </v-layout>
     </v-footer>

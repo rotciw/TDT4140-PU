@@ -73,6 +73,23 @@
         <nuxt />
       </v-container>
     </v-content>
+    <v-footer>
+      <v-layout
+        row
+        wrap
+        align-center
+      >
+        <v-flex xs12>
+          <div class="text-xs-center">
+            <b>Lagd med
+            <v-icon class="red--text">
+              favorite
+            </v-icon>
+              av PU-Gruppe 30</b>
+          </div>
+        </v-flex>
+      </v-layout>
+    </v-footer>
   </v-app>
 </template>
 
