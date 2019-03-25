@@ -1,0 +1,54 @@
+<template>
+  <v-app>
+    <v-content>
+      <v-layout>
+        <v-snackbar
+          v-model="snackbar"
+          top
+        >
+          {{ error }}
+          <v-btn
+            color="green"
+            flat
+            @click="onDismissed"
+          >
+            Lukk
+          </v-btn>
+        </v-snackbar>
+      </v-layout>
+      <nuxt />
+    </v-content>
+  </v-app>
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+      snackbar: false
+    }
+  },
+  computed: {
+    error () {
+      return this.$store.getters.error
+    }
+  },
+  watch: {
+    error () {
+      this.snackbar = true
+    }
+  },
+  methods: {
+    onDismissed () {
+      this.snackbar = false
+      this.$store.dispatch('clearError')
+    }
+  }
+}
+</script>
+
+<style scoped>
+  .bgColor {
+    background-color: #D1DFD2;
+  }
+</style>
