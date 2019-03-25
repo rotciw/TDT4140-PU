@@ -219,8 +219,9 @@ export default {
       this.snackbar = false
     },
     signOut () {
+      if (this.admin || this.employee) this.$router.push('/ansatt')
+      else this.$router.push('/login')
       this.$store.dispatch('signUserOut')
-      this.$router.push('/login')
     }
   }
 }

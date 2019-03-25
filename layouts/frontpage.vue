@@ -2,6 +2,7 @@
   <v-app>
     <v-toolbar
       tabs
+      flat
     >
       <v-flex xs2>
         <nuxt-link
