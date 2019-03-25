@@ -97,22 +97,24 @@
             <v-layout
               row
               wrap
-              align-center
-              class="my-4"
+            >
+              <v-flex
+                xs12
+              >
+                <div class="headline text-xs-center">
+                  Om oss
+                </div>
+              </v-flex>
+            </v-layout>
+            <v-layout
+              row
+              wrap
+              align-start
             >
               <v-flex
                 xs6
               >
                 <v-card class="elevation-0 transparent">
-                  <v-card-text class="text-xs-center" />
-                  <v-card-title
-                    primary-title
-                    class="layout justify-center"
-                  >
-                    <div class="headline text-xs-center">
-                      Om oss
-                    </div>
-                  </v-card-title>
                   <v-card-text>
                     Cras facilisis mi vitae nunc lobortis pharetra. Nulla volutpat tincidunt ornare.
                     Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
@@ -124,15 +126,7 @@
                 xs6
               >
                 <v-card class="elevation-0 transparent">
-                  <v-card-text class="text-xs-center" />
-                  <v-card-title
-                    primary-title
-                    class="layout justify-center"
-                  >
-                    <div class="headline text-xs-center" />
-                  </v-card-title>
                   <v-card-text>
-                    <p />
                     Cras facilisis mi vitae nunc lobortis pharetra. Nulla volutpat tincidunt ornare.
                     Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
                     Nullam in aliquet odio. Aliquam eu est vitae tellus bibendum tincidunt. Suspendisse potenti.
@@ -159,7 +153,7 @@
             Utforsk vår meny
           </div>
           <v-btn
-            class="brown lighten-2 lighten-2 mt-3"
+            class="brown lighten-2 lighten-2 mt-3 roundedCorners"
             dark
             large
             href="/menu"
@@ -225,7 +219,7 @@
                       </v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                      <v-list-tile-title>777-867-5309</v-list-tile-title>
+                      <v-list-tile-title>93 48 38 98</v-list-tile-title>
                     </v-list-tile-content>
                   </v-list-tile>
                   <v-list-tile>
@@ -235,7 +229,7 @@
                       </v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                      <v-list-tile-title>Trondheim, </v-list-tile-title>
+                      <v-list-tile-title>Kongens gate 14, Trondheim </v-list-tile-title>
                     </v-list-tile-content>
                   </v-list-tile>
                   <v-list-tile>
@@ -245,7 +239,11 @@
                       </v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                      <v-list-tile-title>tacosbetrippin@gmail.com</v-list-tile-title>
+                      <v-list-tile-title>
+                        <a href="mailto:tacosbetrippin@gmail.com" target="_top">
+                          tacosbetrippin@gmail.com
+                        </a>
+                      </v-list-tile-title>
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-list>
@@ -333,4 +331,7 @@ export default {
 </script>
 
 <style scoped>
+  .roundedCorners {
+    border-radius: 0px 18px 0px 18px;
+  }
 </style>
