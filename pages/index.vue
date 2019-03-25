@@ -12,7 +12,7 @@
           tabs
         >
           <v-spacer />
-          <v-toolbar-items>
+          <!--<v-toolbar-items>
             <v-btn
               flat
               to="/"
@@ -20,11 +20,11 @@
             >
               Hjem
             </v-btn>
-          </v-toolbar-items>
+          </v-toolbar-items>-->
           <v-toolbar-items>
             <v-btn
               flat
-              to="/meny"
+              to="/menu"
               exact
             >
               Meny
