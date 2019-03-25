@@ -199,6 +199,10 @@ export default {
   },
   mounted () {
     this.$store.dispatch('mountTables')
+    if (this.date === moment().add(1, 'day').toISOString().substr(0, 10)) {
+      this.startTime = moment(this.now + 86400000).format('H:mm')
+    }
+    else this.startTime = '12:00'
   },
   methods: {
     /* Regner ut lovlige valg for timer og minutter */
@@ -216,6 +220,7 @@ export default {
     * */
     checkCustomerTables () {
       this.$store.commit('setLoading', true)
+      this.$store.commit('clearError')
       this.$controller.reservations.newReservationNumber()
         .then(reservationID => {
           this.reservation.reservationID = Number(reservationID.docs[0].id) + 1

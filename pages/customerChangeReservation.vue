@@ -84,7 +84,7 @@
       </v-btn>
     </div>
     <v-layout>
-      <v-snackbar
+      <!--<v-snackbar
         v-model="snackbar"
         top
       >
@@ -96,7 +96,7 @@
         >
           Lukk
         </v-btn>
-      </v-snackbar>
+      </v-snackbar>-->
     </v-layout>
     <change-reservation
       :dialog-visible="dialog"
@@ -140,11 +140,8 @@ export default {
       return this.$store.getters.loading
     }
   },
-  watch: {
-    error () {
-      this.snackbar = true
-      console.log(this.error)
-    }
+  mounted () {
+    this.$store.dispatch('mountTables')
   },
   methods: {
     // Hvis brukeren lukker snackbaren
