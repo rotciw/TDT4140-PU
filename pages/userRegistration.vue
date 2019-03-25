@@ -11,6 +11,11 @@
           sm10
           md11
         >
+          <h1
+          style="text-align: center"
+          >
+            Registrer ny bruker
+          </h1>
           <v-form
             ref="form"
             v-model="valid"
@@ -22,32 +27,38 @@
               :rules="nameRules"
               label="Fornavn"
               required
-            />
+            >
+            </v-text-field>
             <v-text-field
               v-model="lastName"
               :rules="nameRules"
               label="Etternavn"
               required
-            />
+            >
+            </v-text-field>
             <v-text-field
               v-model="email"
               :rules="emailRules"
               label="E-post"
               required
-            />
+              type="email"
+            >
+            </v-text-field>
             <v-text-field
               v-model="mobile"
               :rules="mobileRules"
               label="Telefon"
               required
-            />
+            >
+            </v-text-field>
             <v-text-field
               v-model="password1"
               :rules="passwordRules"
               label="Passord"
               required
               type="password"
-            />
+            >
+            </v-text-field>
             <v-text-field
               v-model="password2"
               :rules="passwordRules"
@@ -55,7 +66,8 @@
               label="Gjenta passord"
               required
               type="password"
-            />
+            >
+            </v-text-field>
             <v-checkbox
               v-model="checkbox"
               :rules="[v => !!v || 'Du må godkjenne vilkårene for å kunne opprette bruker']"
@@ -69,14 +81,16 @@
         >
           <v-btn
             :disabled="!valid"
-            color="success"
-            @click="validate"
+            color="#6BE096"
+            @click="createUser"
+            class="roundedCorners"
           >
             Opprett bruker
           </v-btn>
           <v-btn
-            color="error"
-            @click="createUser"
+            color="red darken-1"
+            @click="cancelRegistration"
+            class="roundedCorners"
           >
             Avbryt
           </v-btn>
@@ -93,7 +107,8 @@ export default {
   layout: 'frontpage',
   data: () => ({
     valid: true,
-    name: '',
+    firstName: '',
+    lastName: '',
     nameRules: [
       v => !!v || 'Du må oppgi navn',
       v => (v && isNaN(v)) || 'Ugyldig navn'
@@ -117,18 +132,22 @@ export default {
     checkbox: false
   }),
   methods: {
+    cancelRegistration () {
+      this.$router.push('login')
+    },
     passwordConfirmationError () {
       return (this.password1 === this.password2) ? '' : 'Passordene må være like'
     },
-    validate () {
+    createUser () {
       if (this.$refs.form.validate()) {
         this.snackbar = true
       }
-    },
-    createUser () {
+      else {
+        return
+      }
       let email = this.email
       let password = this.password1
-      return firebase.auth.createUserWithEmailAndPassword(email, password)
+      return firebase.auth().createUserWithEmailAndPassword(email, password)
         .catch(error => {
           var errorCode = error.code
           var errorMessage = error.message
@@ -140,12 +159,23 @@ export default {
           }
           console.log(error)
         })
-        .then(updateUser(firebase.auth().currentUser))
-    },
-    updateUser (user) {
-      if (user !== null) {
-        user.update
-      }
+        .then(() => {
+          let user = firebase.auth().currentUser
+          firebase.firestore().collection('users').doc(user.uid + '').set({
+            firstName: this.firstName,
+            lastName: this.lastName,
+            mobile: this.mobile,
+            email: this.email,
+            admin: false,
+            employee: false,
+            customer: true,
+            uid: user.uid
+          }).catch(error => {
+            console.log('klarte ikke opprette bruker')
+            console.log(error)
+          })
+        })
+        .then(this.$router.push('/dashboard'))
     }
   }
 }
@@ -153,8 +183,8 @@ export default {
 </script>
 <style scoped>
   .loginbox{
-    height:600px;
-    width: 650px;
+    height:650px;
+    width: 800px;
     padding:30px;
     background-color: #f5f5f5;
     border-radius: 0px 36px 0px 36px;
