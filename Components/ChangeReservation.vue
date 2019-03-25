@@ -159,12 +159,6 @@
       </v-card-text>
 
       <v-card-actions>
-        <h3
-          v-if="!tableAvailable"
-          style="text-align: right; color: red"
-        >
-          Bordet er ikke ledig for valgt tidspunkt
-        </h3>
         <v-btn
           color="red"
           @click="cancelReservation"
@@ -182,6 +176,7 @@
         <v-btn
           color="blue darken-1"
           flat
+          :loading="loading"
           @click="save"
         >
           Lagre
@@ -206,7 +201,7 @@ export default {
         return {
           reservationID: '',
           tableID: '',
-          userID: '',
+          uid: '',
           guestID: '',
           numberOfPersons: '',
           created: '',
@@ -235,30 +230,12 @@ export default {
       endTime: '',
       startTime: '',
       numberOfPersons: '',
+      tableAvailable: '',
       tomorrow: moment().endOf('day').format('H:mm'),
       dialog: this.dialogVisible,
       selectedReservation: this.reservation,
       editedSelectedReservation: this.reservation,
       now: moment().valueOf()
-      // For endring av entries skal det opprettes et nytt object også sendes til databasen gjennom denne
-      /* editedSelectedReservation: {
-        reservationID: '',
-        tableID: '',
-        userID: '',
-        guestID: '',
-        numberOfPersons: '',
-        created: '',
-        duration: '',
-        comments: '',
-        startTime: '',
-        endTime: '',
-        user: {
-          firstName: '',
-          lastName: '',
-          mobile: '',
-          email: ''
-        }
-      } */
     }
   },
   computed: {
@@ -270,6 +247,9 @@ export default {
     },
     minDate () {
       return moment().endOf('day').toISOString()
+    },
+    loading () {
+      return this.$store.getters.loading
     }
   },
   watch: {
@@ -283,9 +263,6 @@ export default {
       }
     }
   },
-  mounted () {
-    console.log(this.editedSelectedReservation, this.reservation)
-  },
   methods: {
     /* Regner ut lovlige valg for timer og minutter */
     allowedHours: v => (v >= 12 && v < 22),
@@ -296,7 +273,7 @@ export default {
       this.editedSelectedReservation = {
         reservationID: '',
         tableID: '',
-        userID: '',
+        uid: '',
         guestID: '',
         numberOfPersons: '',
         created: '',
@@ -321,11 +298,9 @@ export default {
     save () {
       // Lagre nye endringer til reservasjonen
       this.requestTables()
-      this.checkCustomerTables()
     },
     cancelReservation () {
       // Avbestille reservasjon
-      console.log(this.editedSelectedReservation)
       if (confirm('Er du sikker på at du vil avbestille reservasjonen?')) {
         axios.post('https://us-central1-pu30-5b0f9.cloudfunctions.net/sendCancellationEmail', { 'reservationID': this.editedSelectedReservation.reservationID, 'email': this.editedSelectedReservation.user.email, 'displayName': this.editedSelectedReservation.user.firstName, 'startTime': this.editedSelectedReservation.startTime })
         this.$store.dispatch('removeReservation', this.editedSelectedReservation)
@@ -339,18 +314,12 @@ export default {
         this.endTime = this.startTime
       }
     },
-    checkTableAvailability () {
-      this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - HH:mm').valueOf()
-      this.endTimeUnix = moment(this.startTimeUnix).add(4, 'hours').valueOf()
-      this.$store.dispatch('checkAvailabilityWithReservation', { tableID: this.editedSelectedReservation.tableID, numberOfPersons: this.editedSelectedReservation.numberOfPersons, startTime: this.startTimeUnix, endTime: this.endTimeUnix, reservationID: this.editedSelectedReservation.reservationID })
-    },
     /*
     * checkCustomerTables henter tilgjengelige bord fra storen,
     * går igjennom de ledige bordene og finner det bordet med minst, men nok, kapasitet.
     * Hvis det er et ledig bord oppretter den reservasjonen. Hvis det ikke er noe ledig kommer feilmelding.
     * */
     checkCustomerTables () {
-      this.$store.commit('setLoading', true)
       const customerTables = this.$store.getters.customerRequestedTables
       let availableTable
       let mimimum = 999999
@@ -362,27 +331,31 @@ export default {
             mimimum = table.capacity
           }
         }
-        if (availableTable) {
-          this.reservation.tableID = availableTable.tableID
-          this.reservation.startTime = this.startTimeUnix
-          this.reservation.endTime = moment(this.startTimeUnix).add(4, 'hours').valueOf()
-          this.reservation.numberOfPersons = this.editedSelectedReservation.numberOfPersons
-          this.$store.dispatch('updateReservation', this.editedSelectedReservation)
-          this.$store.commit('setLoading', false)
-          this.addReservation()
-        }
-        else {
-          this.$store.commit('setError', 'Prøv et annet tidspunkt eller for en mindre gruppe')
-          this.$store.commit('setLoading', false)
-        }
+      }
+      if (availableTable) {
+        this.tableAvailable = availableTable
+        this.editedSelectedReservation.tableID = availableTable.tableID
+        this.editedSelectedReservation.startTime = this.startTimeUnix
+        this.editedSelectedReservation.uid = ''
+        this.editedSelectedReservation.endTime = moment(this.startTimeUnix).add(4, 'hours').valueOf()
+        this.$store.commit('setLoading', false)
+        this.$controller.reservations.updateReservation(this.editedSelectedReservation)
+        this.$controller.users.updateGuestUser(this.editedSelectedReservation.user)
+        this.close()
+      }
+      else {
+        this.$store.commit('setError', 'Prøv et annet tidspunkt eller for en mindre gruppe')
+        this.$store.commit('setLoading', false)
       }
     },
     // Legger inn kravene fra kunden (dato, antall personer og starttid) i en spørring til storen, som finner alle bordene som matcher kravene.
     requestTables () {
       if (this.editedSelectedReservation.numberOfPersons > 0) {
+        this.$store.commit('setLoading', true)
+        this.$store.commit('clearError')
         this.startTimeUnix = moment(this.date + ' - ' + this.startTime, 'YYYY-MM-DD - H:mm').valueOf()
-        this.$store.dispatch('checkCustomerRequestedTable', { numberOfPersons: this.editedSelectedReservation.numberOfPersons, startTime: this.startTimeUnix, endTime: moment(this.startTimeUnix).add(4, 'hours').valueOf() })
-        this.checkCustomerTables()
+        this.$store.dispatch('checkCustomerRequestedTableWithReservation', { numberOfPersons: this.editedSelectedReservation.numberOfPersons, startTime: this.startTimeUnix, endTime: moment(this.startTimeUnix).add(4, 'hours').valueOf(), reservationID: this.editedSelectedReservation.reservationID })
+        setTimeout(() => this.checkCustomerTables(), 3000)
       }
       else this.$store.commit('setError', 'Velg gyldig antall personer')
     },

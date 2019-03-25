@@ -75,8 +75,8 @@ export default {
     }
   },
   watch: {
-    error () {
-      this.snackbar = true
+    error (val) {
+      this.snackbar = !!(val && val.length > 1)
     }
   },
   methods: {

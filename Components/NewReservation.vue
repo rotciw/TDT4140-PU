@@ -522,7 +522,6 @@ export default {
        */
     confirmReservation () {
       if (this.$refs.reservationForm.validate()) {
-        console.log('hallo')
         const reservationObject = {
           comments: this.comments,
           created: moment().valueOf(),

@@ -66,13 +66,14 @@ export const mutations = {
   },
   // Endrer tilgjengeligheten til et bord
   setCustomerRequestedTable (state, payload) {
+    payload.capacity = state.tables[payload.tableID - 1].capacity
     Vue.set(state.customerRequestedTables, payload.tableID - 1, payload)
   },
   // Legger inn alle bord som har kapasitet nok til reservasjonen
   setCustomerRequestedTables (state, payload) {
     state.tables.forEach(table => {
-      if (Number(payload) > Number(table.capacity)) Vue.set(state.customerRequestedTables, table.tableID - 1, { available: false, tableID: table.tableID, capacity: table.capacity })
-      else Vue.set(state.customerRequestedTables, table.tableID - 1, { available: true, tableID: table.tableID, capacity: table.capacity })
+      table.available = Number(payload) <= Number(table.capacity)
+      Vue.set(state.customerRequestedTables, table.tableID - 1, table)
     })
   },
   setFetchedReservation (state, payload) {
@@ -199,7 +200,6 @@ export const actions = {
   Sjekker hvilke bord som har stor nok kapasitet, og hvilke bord som ikke har overlappende reservasjonsstider
    */
   checkCustomerRequestedTable ({ commit, state }, payload) {
-    commit('setLoading', true)
     commit('clearCustomerRequestedTables')
     commit('setCustomerRequestedTables', payload.numberOfPersons)
     let now = moment().valueOf()
@@ -216,7 +216,31 @@ export const actions = {
           }
         })
       })
-    commit('setLoading', false)
+  },
+  /*
+  Brukes av customerChangeReservation til å finne ut om det er ledige bord for etterspurte tidspunkt og mengde.
+  Sjekker hvilke bord som har stor nok kapasitet, og hvilke bord som ikke har overlappende reservasjonsstider. Tar hensyn til
+  reservasjonen vi sjekker, sånn at den ikke slår ut på seg selv.
+  */
+  checkCustomerRequestedTableWithReservation ({ commit, state }, payload) {
+    commit('clearCustomerRequestedTables')
+    commit('setCustomerRequestedTables', payload.numberOfPersons)
+    let now = moment().valueOf()
+    firebase.firestore().collection('reservations')
+      .where('endTime', '>', now)
+      .get()
+      .then(reservations => {
+        reservations.forEach(reservation => {
+          reservation = reservation.data()
+          if (Number(reservation.reservationID) !== Number(payload.reservationID)) {
+            if ((reservation.startTime > payload.startTime && reservation.startTime < payload.endTime) ||
+              (reservation.endTime > payload.startTime && reservation.endTime < payload.endTime) ||
+              (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {
+              commit('setCustomerRequestedTable', { tableID: reservation.tableID, available: false })
+            }
+          }
+        })
+      })
   },
   // FJerner feilmeldingen
   clearError ({ commit }) {
@@ -234,7 +258,6 @@ export const actions = {
     firebase.firestore().collection('reservations').doc(payload.reservationID + '')
       .set(payload)
       .then(res => {
-        console.log(res)
         commit('setReservation', payload)
       })
       .catch(error => {
