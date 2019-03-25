@@ -162,7 +162,7 @@
             class="brown lighten-2 lighten-2 mt-3"
             dark
             large
-            href="/pre-made-themes"
+            href="/menu"
           >
             Meny
           </v-btn>

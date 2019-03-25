@@ -29,7 +29,7 @@
       <v-toolbar-items>
         <v-btn
           flat
-          to="/meny"
+          to="/menu"
           exact
         >
           Meny
