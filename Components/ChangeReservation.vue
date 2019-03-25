@@ -8,7 +8,7 @@
   >
     <v-card>
       <v-card-title>
-        <span class="headline">Endre reservasjonen din her:</span>
+        <span class="headline">Endre reservasjon:</span>
       </v-card-title>
       <v-card-text>
         <v-container
@@ -167,6 +167,7 @@
         </h3>
         <v-btn
           color="red"
+          flat
           @click="cancelReservation"
         >
           Avbestill bord
