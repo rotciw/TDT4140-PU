@@ -116,9 +116,10 @@
               >
                 <v-card class="elevation-0 transparent">
                   <v-card-text>
-                    Cras facilisis mi vitae nunc lobortis pharetra. Nulla volutpat tincidunt ornare.
-                    Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                    Nullam in aliquet odio. Aliquam eu est vitae tellus bibendum tincidunt. Suspendisse potenti.
+                    <b>Autentisk meksikansk mat i Trondheim</b>
+                    med kjøtt og fisk fra lokale leverandører og den sterkeste chilien fra Mexico, er maten kortreist og tradisjonstro.
+                    Hos oss er all mat laget fra grunnen. I en behagelig og upretensiøs atmosfære ønsker vi at gjestene våre blir
+                    sittende og nyte den autentiske følelsen av Mexico.
                   </v-card-text>
                 </v-card>
               </v-flex>
@@ -127,9 +128,8 @@
               >
                 <v-card class="elevation-0 transparent">
                   <v-card-text>
-                    Cras facilisis mi vitae nunc lobortis pharetra. Nulla volutpat tincidunt ornare.
-                    Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                    Nullam in aliquet odio. Aliquam eu est vitae tellus bibendum tincidunt. Suspendisse potenti.
+                    Enten du ønsker vår landsberømte pesca-pescatarianske rett, eller matchende tequila- og mezcaldrinker, er den gode stemningen hos oss et resultat av en dyktig og engasjert stab, men mer enn
+                    noe er det gjestene og latteren som sitter løst som definerer oss - akkurat slik det skal være på en skikkelig tacobar. Salud!
                   </v-card-text>
                 </v-card>
               </v-flex>
