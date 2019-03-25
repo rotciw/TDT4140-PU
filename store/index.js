@@ -10,6 +10,7 @@ export const strict = false
 export const state = () => ({
   admin: false, // Sier om brukeren er admin eller ikke
   availableTables: [], // Holder alle bordene som er ledige og etterspurt for antall gjester og tidspunkt
+  customer: false, // Sier ifra om brukeren er kunde eller ikke
   customerRequestedTables: [], // Inneholder ledige bord etterspurt av kunde
   employee: false, // SIer om brukeren er ansatt eller ikke
   error: null, // Holder feilmeldingen vår
@@ -44,6 +45,7 @@ export const mutations = {
     state.availableTables = []
     state.employee = false
     state.error = null
+    state.customer = false
     state.loading = false
     state.reservation = null
     state.reservations = []
@@ -106,6 +108,7 @@ export const mutations = {
     state.user = payload
     state.admin = payload.admin
     state.employee = payload.employee
+    state.customer = payload.customer
   },
   // Setter feilmelding
   setError (state, payload) {
@@ -598,6 +601,9 @@ export const getters = {
   },
   admin (state) {
     return state.admin
+  },
+  customer (state) {
+    return state.customer
   },
   customerRequestedTables (state) {
     return state.customerRequestedTables
