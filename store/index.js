@@ -10,7 +10,9 @@ export const strict = false
 export const state = () => ({
   admin: false, // Sier om brukeren er admin eller ikke
   availableTables: [], // Holder alle bordene som er ledige og etterspurt for antall gjester og tidspunkt
+  customer: false, // Sier ifra om brukeren er kunde eller ikke
   customerRequestedTables: [], // Inneholder ledige bord etterspurt av kunde
+  customerReservations: [],
   employee: false, // SIer om brukeren er ansatt eller ikke
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
@@ -24,6 +26,10 @@ export const state = () => ({
 
 // Mutations are functions that the store uses to set its atrributes
 export const mutations = {
+  // Brukes når en kunde logger inn for å vise statistikk
+  addCustomerReservation (state, payload) {
+    Vue.set(state.customerReservations, state.customerReservations.length, payload)
+  },
   clearAvailableTables (state) {
     state.availableTables = []
   },
@@ -48,6 +54,7 @@ export const mutations = {
     state.availableTables = []
     state.employee = false
     state.error = null
+    state.customer = false
     state.loading = false
     state.reservation = null
     state.reservations = []
@@ -111,6 +118,7 @@ export const mutations = {
     state.user = payload
     state.admin = payload.admin
     state.employee = payload.employee
+    state.customer = payload.customer
   },
   // Setter feilmelding
   setError (state, payload) {
@@ -379,6 +387,23 @@ export const actions = {
       /* .catch(error => {
       }) */
   },
+  /*
+  * mountUserReservations henter alle reservasjonene til en bruker som logger inn.
+  * Dette kan så brukes til å regne ut statistikk på brukeren.
+  * */
+  mountUsersReservations ({ commit }, user) {
+    firebase.firestore.collection('reservations')
+      .where('uid', '==', user.uid)
+      .onSnapshot(reservations => {
+        reservations.forEach(reservation => {
+          commit('addCustomerReservation', reservation)
+        })
+      })
+      .catch(error => {
+        console.log('Klarte ikke å hente reservasjoner for bruker ' + user.uid)
+        console.log(error)
+      })
+  },
   /* updateReservation oppdaterer reservasjon valgt fra allreservations. Dette gjøres ved å sette et objekt som er likt som
   *  det gamle, med de samme feltene. Deretter oppdateres brukeren utifra om det er gjest eller bruker som er tilknyttet
   *  reservasjonen i riktig collection.
@@ -626,8 +651,14 @@ export const getters = {
   admin (state) {
     return state.admin
   },
+  customer (state) {
+    return state.customer
+  },
   customerRequestedTables (state) {
     return state.customerRequestedTables
+  },
+  customerReservations (state) {
+    return state.customerReservations
   },
   employee (state) {
     return state.employee
