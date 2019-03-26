@@ -208,7 +208,8 @@ export default {
   mounted () {
     this.$store.dispatch('mountTables')
     if (this.date === moment().add(1, 'day').toISOString().substr(0, 10)) {
-      this.startTime = moment(this.now + 86400000).format('H:mm')
+      if (moment().valueOf() > moment(this.date + ' - 12:00').format('YYYY-MM-DD - HH:MM').valueOf()) this.startTime = moment(this.now + 86400000).format('H:mm')
+      else this.startTime = '12:00'
     }
     else this.startTime = '12:00'
   },
