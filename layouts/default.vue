@@ -89,6 +89,18 @@
             <v-list-tile-title v-text="'Statistikk'" />
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile
+          v-if="customer"
+          class="tile"
+          active-class="background-color: green"
+        >
+          <v-list-tile-action>
+            <v-icon>local_dining</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="'Bordbestilling'" />
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
@@ -203,6 +215,9 @@ export default {
     },
     employee () {
       return this.$store.getters.employee
+    },
+    customer () {
+      return this.$store.getters.customer
     },
     error () {
       return this.$store.getters.error
