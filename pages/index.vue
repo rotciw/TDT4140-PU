@@ -240,7 +240,10 @@
                     </v-list-tile-action>
                     <v-list-tile-content>
                       <v-list-tile-title>
-                        <a href="mailto:tacosbetrippin@gmail.com" target="_top">
+                        <a
+                          href="mailto:tacosbetrippin@gmail.com"
+                          target="_top"
+                        >
                           tacosbetrippin@gmail.com
                         </a>
                       </v-list-tile-title>
