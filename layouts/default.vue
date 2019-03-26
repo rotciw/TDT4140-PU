@@ -93,6 +93,7 @@
           v-if="customer"
           class="tile"
           active-class="background-color: green"
+          to="/reservation"
         >
           <v-list-tile-action>
             <v-icon>local_dining</v-icon>

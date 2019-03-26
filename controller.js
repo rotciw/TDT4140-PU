@@ -62,6 +62,20 @@ export const users = {
         console.log(error)
       })
   },
+  updateUser (payload) {
+    const userObject = {
+      firstName: payload.firstName || '',
+      guestID: payload.guestID || '',
+      lastName: payload.lastName || '',
+      email: payload.email || '',
+      mobile: payload.mobile || ''
+    }
+    fs.collection('user').doc(userObject.uid + '').set(userObject)
+      .catch(error => {
+        console.log('Klarte ikke å oppdatere bruker ' + payload.uid)
+        console.log(error)
+      })
+  },
   // Kan brukes til å rense i guestUsers databasen.
   removeOtherGuestUsers (payload) {
     if (payload.guestID) {
