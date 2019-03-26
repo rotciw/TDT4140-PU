@@ -59,6 +59,14 @@
                   <!-- Lagrer info om kunden -->
                   <div class="text-xs-center">
                     <v-btn
+                      color="grey"
+                      class="button"
+                      large
+                      @click="cancel"
+                    >
+                      Avbryt
+                    </v-btn>
+                    <v-btn
                       color="green"
                       class="button"
                       large
@@ -123,6 +131,14 @@
                 >
                   <!-- Lagrer info om kunden -->
                   <div class="text-xs-center">
+                    <v-btn
+                      color="grey"
+                      class="button"
+                      large
+                      @click="cancel"
+                    >
+                      Avbryt
+                    </v-btn>
                     <v-btn
                       color="green"
                       class="button"
@@ -226,6 +242,14 @@
                   <!-- Lagrer info om kunden -->
                   <div class="text-xs-center">
                     <v-btn
+                      color="grey"
+                      class="button"
+                      large
+                      @click="cancel"
+                    >
+                      Avbryt
+                    </v-btn>
+                    <v-btn
                       color="green"
                       class="button"
                       large
@@ -310,7 +334,7 @@
                     color="green"
                     class="button"
                     large
-                    @click="cancel"
+                    @click="close"
                   >
                     Avslutt
                   </v-btn>
@@ -407,9 +431,20 @@ export default {
   },
   methods: {
     /*
+    * Brukes hvis kunden avbryter bookingen før informasjon er lagt inn
+    * */
+    cancel () {
+      if (confirm('Reservasjonen din slettes hvis du avbryter nå')) {
+        this.$controller.reservations.deleteReservation(this.reservation)
+        this.$emit('dialogClosed')
+        this.dialog = false
+        this.user = false
+      }
+    },
+    /*
       cancel() lukker dialogen
        */
-    cancel () {
+    close () {
       this.$emit('dialogClosed')
       this.dialog = false
       this.user = false
@@ -487,7 +522,6 @@ export default {
        */
     confirmReservation () {
       if (this.$refs.reservationForm.validate()) {
-        console.log('hallo')
         const reservationObject = {
           comments: this.comments,
           created: moment().valueOf(),
@@ -513,6 +547,7 @@ export default {
           if (this.guestUser && this.guestUser.guestID && this.guestUser.guestID.length > 0) {
             reservationObject.guestID = this.guestUser.guestID
             reservationObject.uid = ''
+            this.$controller.users.updateGuestUser(this.guestUser)
             this.$controller.reservations.createReservation(reservationObject)
               .then(answer => {
                 console.log(answer)

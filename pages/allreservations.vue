@@ -668,7 +668,7 @@ export default {
       this.editedSelectedReservation = {
         reservationID: '',
         tableID: '',
-        userID: '',
+        uid: '',
         guestID: '',
         numberOfPersons: '',
         created: '',
@@ -691,13 +691,19 @@ export default {
     },
     save () {
       // Kaller på updateReservation fra vuex store som skal oppdatere hver reservasjon med dataen fra editedSelectedReservation
-      this.editedSelectedReservation.startTime = this.startTimeUnix
-      this.editedSelectedReservation.endTime = this.endTimeUnix
-      this.editedSelectedReservation.numberOfPersons = this.numberOfPersons
-      this.editedSelectedReservation.tableID = this.tableID
-      this.editedSelectedReservation.reservationID = this.reservationID
-      this.$store.dispatch('updateReservation', this.editedSelectedReservation)
-      this.close()
+      if (Number(this.$store.getters.tables[this.tableID - 1].capacity) >= Number(this.numberOfPersons)) {
+        console.log(this.$store.getters.tables[this.tableID - 1].capacity)
+        this.editedSelectedReservation.startTime = this.startTimeUnix
+        this.editedSelectedReservation.endTime = this.endTimeUnix
+        this.editedSelectedReservation.numberOfPersons = this.numberOfPersons
+        this.editedSelectedReservation.tableID = this.tableID
+        this.editedSelectedReservation.reservationID = this.reservationID
+        this.$store.dispatch('updateReservation', this.editedSelectedReservation)
+        this.close()
+      }
+      else {
+        this.$store.commit('setError', 'Bordet har ikke kapasitet til så mange. Prøv et annet')
+      }
     },
     updateMinEndTime () {
       this.minEndTime = this.startTime

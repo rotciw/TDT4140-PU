@@ -161,7 +161,13 @@
           text-xs-center
           xs12
         >
-          &copy; 2019 <strong>PU-Gruppe 30</strong>
+          <div class="text-xs-center">
+            <b>Lagd med
+            <v-icon class="red--text">
+              favorite
+            </v-icon>
+              av PU-Gruppe 30</b>
+          </div>
         </v-flex>
       </v-layout>
     </v-footer>
@@ -203,18 +209,19 @@ export default {
     }
   },
   watch: {
-    error () {
-      this.snackbar = true
+    error (val) {
+      this.snackbar = !!(val && val.length > 1)
     }
   },
   methods: {
     onDismissed () {
-      this.$store.dispatch('clearError')
+      this.$store.commit('clearError')
       this.snackbar = false
     },
     signOut () {
+      if (this.admin || this.employee) this.$router.push('/ansatt')
+      else this.$router.push('/login')
       this.$store.dispatch('signUserOut')
-      this.$router.push('/login')
     }
   }
 }

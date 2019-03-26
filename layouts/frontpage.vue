@@ -1,6 +1,9 @@
 <template>
   <v-app>
-    <v-toolbar>
+    <v-toolbar
+      tabs
+      flat
+    >
       <v-flex xs2>
         <nuxt-link
           to="/"
@@ -17,7 +20,26 @@
       <v-toolbar-items>
         <v-btn
           flat
-          @click="$router.push('/customer-reservation')"
+          to="/"
+          exact
+        >
+          Hjem
+        </v-btn>
+      </v-toolbar-items>
+      <v-toolbar-items>
+        <v-btn
+          flat
+          to="/menu"
+          exact
+        >
+          Meny
+        </v-btn>
+      </v-toolbar-items>
+      <v-toolbar-items>
+        <v-btn
+          flat
+          to="/customer-reservation"
+          exact
         >
           Bordbestilling
         </v-btn>
@@ -25,15 +47,8 @@
       <v-toolbar-items>
         <v-btn
           flat
-          @click="$router.push('/customerChangeReservation')"
-        >
-          Endre reservasjon
-        </v-btn>
-      </v-toolbar-items>
-      <v-toolbar-items>
-        <v-btn
-          flat
-          @click="$router.push('/login')"
+          to="/login"
+          exact
         >
           Logg inn
         </v-btn>
@@ -59,6 +74,23 @@
         <nuxt />
       </v-container>
     </v-content>
+    <v-footer>
+      <v-layout
+        row
+        wrap
+        align-center
+      >
+        <v-flex xs12>
+          <div class="text-xs-center">
+            <b>Lagd med
+            <v-icon class="red--text">
+              favorite
+            </v-icon>
+              av PU-Gruppe 30</b>
+          </div>
+        </v-flex>
+      </v-layout>
+    </v-footer>
   </v-app>
 </template>
 
@@ -75,8 +107,8 @@ export default {
     }
   },
   watch: {
-    error () {
-      this.snackbar = true
+    error (val) {
+      this.snackbar = !!(val && val.length > 1)
     }
   },
   methods: {
