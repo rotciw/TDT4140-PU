@@ -55,6 +55,15 @@
               </v-btn>
             </div>
           </form>
+          <div class="text-xs-center">
+            <v-btn
+              color="grey"
+              class="roundedCorners"
+              @click="$router.push('/forgot-password')"
+            >
+              Glemt passord
+            </v-btn>
+          </div>
         </div>
       </v-flex>
     </v-layout>
@@ -102,7 +111,7 @@ export default {
   watch: {
     user (val) {
       if (val !== null && val !== undefined) {
-        if (this.user.customer === true) this.$store.dispatch('mountCustomerReservations', this.user)
+        if (this.user.customer === true) this.$store.dispatch('mountCustomersReservations', this.user)
         this.$router.push('/dashboard')
       }
     },
