@@ -218,7 +218,8 @@ export default {
           }
         }
       }
-    }
+    },
+    user: Boolean
   },
   data () {
     return {
@@ -255,10 +256,15 @@ export default {
   },
   watch: {
     // Hvis verdien ikke er null så kommer dialog
+    dialogVisible (val) {
+      console.log(val)
+      this.dialog = this.dialogVisible
+    },
     reservation (val) {
       if (val !== null) {
         this.dialog = true
         this.editedSelectedReservation = this.reservation
+        console.log(this.editedSelectedReservation)
         this.startTime = moment(this.reservation.startTime).format('H:mm')
         this.date = moment(this.editedSelectedReservation.startTime).toISOString().substr(0, 10)
       }
@@ -337,11 +343,24 @@ export default {
         this.tableAvailable = availableTable
         this.editedSelectedReservation.tableID = availableTable.tableID
         this.editedSelectedReservation.startTime = this.startTimeUnix
-        this.editedSelectedReservation.uid = ''
+        if (this.user) {
+          this.editedSelectedReservation.uid = this.reservation.uid
+          this.editedSelectedReservation.guestID = ''
+          this.$controller.users.updateUser(this.editedSelectedReservation.user)
+        }
+        else if (this.editedSelectedReservation.uid.length > 0) {
+          this.editedSelectedReservation.uid = this.reservation.uid
+          this.editedSelectedReservation.guestID = ''
+        }
+        else {
+          this.editedSelectedReservation.uid = ''
+          this.editedSelectedReservation.guestID = this.reservation.guestID
+          this.$controller.users.updateGuestUser(this.editedSelectedReservation.user)
+        }
         this.editedSelectedReservation.endTime = moment(this.startTimeUnix).add(4, 'hours').valueOf()
         this.$store.commit('setLoading', false)
         this.$controller.reservations.updateReservation(this.editedSelectedReservation)
-        this.$controller.users.updateGuestUser(this.editedSelectedReservation.user)
+        if (this.user) this.$store.dispatch('mountUsersReservations', this.$store.getters.user)
         this.close()
       }
       else {

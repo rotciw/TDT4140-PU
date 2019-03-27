@@ -13,6 +13,7 @@ export const state = () => ({
   customer: false, // Sier ifra om brukeren er kunde eller ikke
   customerRequestedTables: [], // Inneholder ledige bord etterspurt av kunde
   customerReservations: [],
+  customersComingReservations: [],
   employee: false, // SIer om brukeren er ansatt eller ikke
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
@@ -30,6 +31,11 @@ export const mutations = {
   addCustomerReservation (state, payload) {
     Vue.set(state.customerReservations, state.customerReservations.length, payload)
   },
+  addCustomersComingReservations (state, payload) {
+    if (!state.customersComingReservations[payload.reservationID]) {
+      Vue.set(state.customersComingReservations, payload.reservationID, payload)
+    }
+  },
   clearAvailableTables (state) {
     state.availableTables = []
   },
@@ -39,6 +45,10 @@ export const mutations = {
   // Fjerner bordene som ligger fra forrige etterspørsel.
   clearCustomerRequestedTable (state) {
     state.customerRequestedTable = []
+  },
+  clearCustomerReservation (state) {
+    state.customerReservations = []
+    state.customersComingReservations = []
   },
   // Fjerner bordene som ligger fra forrige etterspørsel.
   clearCustomerRequestedTables (state) {
@@ -391,17 +401,19 @@ export const actions = {
   * mountUserReservations henter alle reservasjonene til en bruker som logger inn.
   * Dette kan så brukes til å regne ut statistikk på brukeren.
   * */
-  mountUsersReservations ({ commit }, user) {
-    firebase.firestore.collection('reservations')
+  mountUsersReservations ({ commit, state }, user) {
+    commit('clearCustomerReservation')
+    firebase.firestore().collection('reservations')
       .where('uid', '==', user.uid)
       .onSnapshot(reservations => {
         reservations.forEach(reservation => {
+          reservation = reservation.data()
+          reservation.user = state.user
           commit('addCustomerReservation', reservation)
+          if (reservation.startTime > moment().startOf('day').valueOf()) {
+            commit('addCustomersComingReservations', reservation)
+          }
         })
-      })
-      .catch(error => {
-        console.log('Klarte ikke å hente reservasjoner for bruker ' + user.uid)
-        console.log(error)
       })
   },
   /* updateReservation oppdaterer reservasjon valgt fra allreservations. Dette gjøres ved å sette et objekt som er likt som
@@ -659,6 +671,9 @@ export const getters = {
   },
   customerReservations (state) {
     return state.customerReservations
+  },
+  customersComingReservations (state) {
+    return state.customersComingReservations
   },
   employee (state) {
     return state.employee
