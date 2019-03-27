@@ -134,16 +134,6 @@
         </div>
       </div>
       <br>
-      <h3> Har du en reservasjon?</h3>
-      <h4></h4>
-      <!-- TODO: Implementere endre reservasjon for kunder som er logget inn -->
-      <v-btn
-        large
-        class="roundedCorners"
-        @click="$router.push('/customerChangeReservation')"
-      >
-        Endre/avbestill reservasjon
-      </v-btn>
     </v-layout>
     <!-- Komponent for å legge til ny reservasjon -->
     <new-reservation
