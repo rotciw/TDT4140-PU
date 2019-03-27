@@ -89,6 +89,17 @@ export const users = {
         .doc(payload.guestID + '')
         .set(payload)
     }
+  },
+  sendResetEmail (payload) {
+    return firebase.auth().sendPasswordResetEmail(payload)
+      .then(() => {
+        return true
+      })
+      .catch(error => {
+        console.log('Klarte ikke å sende nytt passord til ' + payload)
+        console.log(error)
+        return false
+      })
   }
 }
 // Reservations inneholder alle reservasjonsrelaterte kall.
