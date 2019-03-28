@@ -19,6 +19,7 @@
           <div class="text-xs-center">
             <a
               href="/termsAndConditions"
+              target="_blank"
             >
               Vilkår og betingelser
             </a>
