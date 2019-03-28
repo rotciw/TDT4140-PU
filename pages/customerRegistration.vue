@@ -12,10 +12,17 @@
           md11
         >
           <h1
-            style="text-align: center"
+            class="text-xs-center"
           >
             Registrer ny bruker
           </h1>
+          <div class="text-xs-center">
+            <a
+              href="/termsAndConditions"
+            >
+              Vilkår og betingelser
+            </a>
+          </div>
           <v-form
             ref="form"
             v-model="valid"
@@ -64,8 +71,8 @@
             />
             <v-checkbox
               v-model="checkbox"
-              :rules="[v => !!v || 'Du må godkjenne vilkårene for å kunne opprette bruker']"
-              label="Jeg har lest og aksepterer vilkårene"
+              :rules="[v => !!v || 'Du må godkjenne vilkåre og betingelser for å kunne opprette bruker']"
+              label="Jeg har lest og aksepterer vilkårene og betingelsene"
               required
             />
           </v-form>
@@ -82,7 +89,7 @@
             Opprett bruker
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red lighten-1"
             class="roundedCorners"
             @click="cancelRegistration"
           >

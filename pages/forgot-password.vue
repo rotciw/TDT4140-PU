@@ -5,8 +5,14 @@
     justify-center
   >
     <v-flex
-      xs6
+      xs5
     >
+      <h1
+        class="text-xs-center"
+      >
+        Glemt Passord?
+      </h1>
+      <br>
       <div class="loginbox">
         <form @submit.prevent="resetPassword">
           <v-card-text>
@@ -33,6 +39,10 @@
             </v-btn>
           </div>
         </form>
+        <br>
+        <div class="text-xs-center">
+          Husker du det allikevel?
+        </div>
         <div class="text-xs-center">
           <v-btn
             color="grey"
