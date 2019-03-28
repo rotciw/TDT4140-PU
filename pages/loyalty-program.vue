@@ -123,5 +123,7 @@ export default {
   .margin {
     margin: 15px
   }
-
+  td {
+    width: 50px;
+  }
 </style>
