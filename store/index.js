@@ -391,17 +391,13 @@ export const actions = {
   * mountUserReservations henter alle reservasjonene til en bruker som logger inn.
   * Dette kan så brukes til å regne ut statistikk på brukeren.
   * */
-  mountUsersReservations ({ commit }, user) {
-    firebase.firestore.collection('reservations')
+  mountCustomersReservations ({ commit }, user) {
+    firebase.firestore().collection('reservations')
       .where('uid', '==', user.uid)
       .onSnapshot(reservations => {
         reservations.forEach(reservation => {
           commit('addCustomerReservation', reservation)
         })
-      })
-      .catch(error => {
-        console.log('Klarte ikke å hente reservasjoner for bruker ' + user.uid)
-        console.log(error)
       })
   },
   /* updateReservation oppdaterer reservasjon valgt fra allreservations. Dette gjøres ved å sette et objekt som er likt som

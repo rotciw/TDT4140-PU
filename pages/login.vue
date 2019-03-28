@@ -102,7 +102,7 @@ export default {
   watch: {
     user (val) {
       if (val !== null && val !== undefined) {
-        if (this.user.customer === true) this.$store.dispatch('mountCustomerReservations', this.user)
+        if (this.user.customer === true) this.$store.dispatch('mountCustomersReservations', this.user)
         this.$router.push('/dashboard')
       }
     },

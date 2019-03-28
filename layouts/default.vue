@@ -51,7 +51,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
-          v-if="admin || employee"
+          v-if="admin || employee || customer"
           class="tile"
           active-class="background-color: green"
           to="/booking"
@@ -99,6 +99,19 @@
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title v-text="'Bordbestilling'" />
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile
+          v-if="customer"
+          class="tile"
+          active-class="background-color: green"
+          to="/loyalty-program"
+        >
+          <v-list-tile-action>
+            <v-icon>favorite_border</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="'Lojalitetsprogram'" />
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
