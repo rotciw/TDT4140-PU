@@ -81,6 +81,7 @@
                 label="Kommentarer"
               />
             </v-flex>
+            <!-- Starttid -->
             <v-flex
               xs12
               sm6
@@ -110,6 +111,8 @@
                 <v-time-picker
                   v-if="menu2"
                   v-model="startTime"
+                  :allowed-hours="allowedHours"
+                  :allowed-minutes="allowedMinutes"
                   color="green"
                   format="24hr"
                   full-width
@@ -191,6 +194,7 @@
 
 <script>
 import moment from 'moment'
+import axios from 'axios'
 
 export default {
   name: 'ChangeReservation',
@@ -285,6 +289,9 @@ export default {
     console.log(this.editedSelectedReservation, this.reservation)
   },
   methods: {
+    /* Regner ut lovlige valg for timer og minutter */
+    allowedHours: v => (v >= 12 && v < 22),
+    allowedMinutes: v => (v % 15 === 0),
     close () {
       this.dialog = false
       // Nytt reservasjonsobjekt for å ikke overskride elementet vi henter inn
@@ -329,7 +336,9 @@ export default {
     },
     cancelReservation () {
       // Avbestille reservasjon
+      console.log(this.editedSelectedReservation)
       if (confirm('Er du sikker på at du vil avbestille reservasjonen?')) {
+        axios.post('https://us-central1-pu30-5b0f9.cloudfunctions.net/sendCancellationEmail', { 'reservationID': this.editedSelectedReservation.reservationID, 'email': this.editedSelectedReservation.user.email, 'displayName': this.editedSelectedReservation.user.firstName, 'startTime': this.editedSelectedReservation.startTime })
         this.$store.dispatch('removeReservation', this.editedSelectedReservation)
         this.close()
       }
