@@ -95,7 +95,7 @@ export default {
   methods: {
     calculateStamps () {
       this.$store.getters.customerReservations.forEach(reservation => {
-        if (reservation.endTime() < moment().valueOf()) {
+        if (reservation.endTime < moment().valueOf()) {
           if (!this.reservationsArray.includes(reservation.reservationID)) {
             this.reservationsArray.push(reservation.reservationID)
           }
