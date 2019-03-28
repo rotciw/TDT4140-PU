@@ -16,7 +16,7 @@
             Her hos Trippin Tacos verdsetter vi kundene våre. Du får derfor hvert 8 måltid helt gratis!
           </h4>
           <h4>
-            Du mangler bare {{ stampsLeftBeforeDiscount }} stempel for å få et gratis måltid
+            Du mangler bare {{ stampsLeftBeforeDiscount }} stempel for å få et gratis måltid.
           </h4>
         </div>
         <v-divider></v-divider>
@@ -103,11 +103,12 @@ export default {
     border-collapse: collapse;
     align-content: center;
     overflow: auto;
-    background-color: #484f4f;
+    background-color: whitesmoke;
+    margin: 70px;
   }
   #loyaltytable td{
     padding: 10px;
-    border: 4px solid black;
+    border: 2px solid black;
     text-align: center;
     font-size: 30px;
   }

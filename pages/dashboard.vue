@@ -89,15 +89,34 @@
           </v-layout>
         </v-flex>
       </v-layout>
+      <v-layout
+        v-if="user && user.customer"
+        row
+        wrap
+      >
+        <v-flex
+          xs12
+        >
+          <customers-reservations />
+        </v-flex>
+      </v-layout>
     </v-container>
   </div>
 </template>
 
 <script>
+import CustomersReservations from '../Components/CustomersReservations'
+
 export default {
+  components: { CustomersReservations },
   middleware: ['router-check'],
   data () {
     return {
+    }
+  },
+  computed: {
+    user () {
+      return this.$store.getters.user
     }
   }
 }

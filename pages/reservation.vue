@@ -134,22 +134,14 @@
         </div>
       </div>
       <br>
-      <h3> Har du en reservasjon?</h3>
-      <v-btn
-        large
-        class="roundedCorners"
-        @click="$router.push('/customerChangeReservation')"
-      >
-        Endre/avbestill reservasjon
-      </v-btn>
     </v-layout>
     <!-- Komponent for å legge til ny reservasjon -->
     <new-reservation
       :key="reservationKey"
       :dialog-visible="newReservationVisible"
       :reservation="reservation"
-      :global-step="1"
-      @dialogCLosed="newReservationVisibled = false; disabled = false"
+      :global-step="3"
+      @dialogCLosed="newReservationVisible = false; disabled = false"
     />
   </v-container>
 </template>
@@ -161,7 +153,7 @@ import NewReservation from '../Components/NewReservation'
 export default {
   name: 'CustomerReservation',
   components: { NewReservation },
-  layout: 'frontpage',
+  layout: 'default',
   data () {
     return {
       date: moment().add(1, 'day').toISOString().substr(0, 10), // Dagens dato
@@ -226,10 +218,10 @@ export default {
       this.reservationKey++
     },
     /*
-    * checkCustomerTables henter tilgjengelige bord fra storen, henter et nytt reservasjonssnummer fra kontrolleren,
-    * går igjennom de ledige bordene og finner det bordet med minst, men nok, kapasitet.
-    * Hvis det er et ledig bord oppretter den reservasjonen. Hvis det ikke er noe ledig kommer feilmelding.
-    * */
+      * checkCustomerTables henter tilgjengelige bord fra storen, henter et nytt reservasjonssnummer fra kontrolleren,
+      * går igjennom de ledige bordene og finner det bordet med minst, men nok, kapasitet.
+      * Hvis det er et ledig bord oppretter den reservasjonen. Hvis det ikke er noe ledig kommer feilmelding.
+      * */
     checkCustomerTables () {
       this.$store.commit('setLoading', true)
       this.$store.commit('clearError')
