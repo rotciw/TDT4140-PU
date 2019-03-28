@@ -187,7 +187,7 @@ export default {
               labels: ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'],
               datasets: [
                 {
-                  label: 'Gjennomsnittlig antall kunder pr mnd',
+                  label: 'Gjennomsnittlig antall kunder per mnd',
                   backgroundColor: '#6BE096',
                   data: this.datacollection
                 }
@@ -203,7 +203,7 @@ export default {
               labels: ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'],
               datasets: [
                 {
-                  label: 'Gjennomsnittlig antall reservasjoner pr mnd',
+                  label: 'Gjennomsnittlig antall reservasjoner per mnd',
                   backgroundColor: '#6BE096',
                   data: this.datacollection
                 }
@@ -219,7 +219,7 @@ export default {
               labels: ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'],
               datasets: [
                 {
-                  label: 'Gjennomsnittlig antall kunder pr dag',
+                  label: 'Gjennomsnittlig antall kunder per dag',
                   backgroundColor: '#6BE096',
                   data: this.datacollection
                 }
@@ -235,7 +235,7 @@ export default {
               labels: ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'],
               datasets: [
                 {
-                  label: 'Gjennomsnittlig antall reservasjoner pr dag',
+                  label: 'Gjennomsnittlig antall reservasjoner per dag',
                   backgroundColor: '#6BE096',
                   data: this.datacollection
                 }
@@ -251,7 +251,7 @@ export default {
               labels: ['12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
               datasets: [
                 {
-                  label: 'Gjennomsnittlig antall kunder pr klokkeslett',
+                  label: 'Gjennomsnittlig antall kunder per klokkeslett',
                   backgroundColor: '#6BE096',
                   data: this.datacollection // TODO: Splice array
                 }
@@ -267,7 +267,7 @@ export default {
               labels: ['12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
               datasets: [
                 {
-                  label: 'Gjennomsnittlig antall reservasjoner pr klokkeslett',
+                  label: 'Gjennomsnittlig antall reservasjoner per klokkeslett',
                   backgroundColor: '#6BE096',
                   data: this.datacollection
                 }
