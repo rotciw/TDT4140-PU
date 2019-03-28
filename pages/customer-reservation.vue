@@ -282,7 +282,7 @@ export default {
     border-radius: 0px 18px 0px 18px;
   }
   .loginbox{
-    height:300px;
+    max-height:320px;
     width: 450px;
     padding:30px;
     background-color: #f5f5f5;

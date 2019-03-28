@@ -280,7 +280,10 @@
       </v-flex>
     </section>
 
-    <v-footer class="brown lighten-2">
+    <v-footer
+      class="brown lighten-2"
+      height="60"
+    >
       <v-layout
         row
         wrap

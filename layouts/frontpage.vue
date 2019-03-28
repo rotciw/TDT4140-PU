@@ -74,7 +74,9 @@
         <nuxt />
       </v-container>
     </v-content>
-    <v-footer>
+    <v-footer
+      height="60"
+    >
       <v-layout
         row
         wrap

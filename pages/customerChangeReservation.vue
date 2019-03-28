@@ -159,7 +159,7 @@ export default {
 
 <style scoped>
   .loginbox{
-    height:300px;
+    max-height:300px;
     width: 450px;
     padding:30px;
     background-color: #f5f5f5;
