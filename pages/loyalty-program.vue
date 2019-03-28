@@ -27,10 +27,13 @@
         <table class="margin" id="loyaltytable">
           <tr>
             <td>
-              <img v-if="numOfStamps >= 1" src="logo-clean.png" class="logo">
-              <h4 v-else>1</h4>
+              <v-flex xs2>
+                <img v-if="numOfStamps >= 1" src="logo-clean.png" class="logo">
+                <h4 v-else>1</h4>
+              </v-flex>
             </td>
-            <td><img v-if="numOfStamps >= 2" src="logo-clean.png" class="logo">
+            <td class="td">
+              <img v-if="numOfStamps >= 2" src="logo-clean.png" class="logo">
               <h4 v-else>2</h4>
             </td>
             <td><img v-if="numOfStamps >= 3" src="logo-clean.png" class="logo">
@@ -89,7 +92,11 @@ export default {
   },
   methods: {
     calculateStamps () {
-      this.reservationsArray = this.$store.getters.customerReservations
+      this.$store.getters.customerReservations.forEach(reservation => {
+        if (!this.reservationsArray.includes(reservation.reservationID)) {
+          this.reservationsArray.push(reservation.reservationID)
+        }
+      })
       this.customerStamps = (this.reservationsArray.length % 8)
     }
   }
@@ -111,6 +118,7 @@ export default {
     border: 2px solid black;
     text-align: center;
     font-size: 30px;
+    width: 150px;
   }
   .logo{
     display: block;
@@ -123,8 +131,5 @@ export default {
   }
   .margin {
     margin: 15px
-  }
-  td {
-    width: 50px;
   }
 </style>
