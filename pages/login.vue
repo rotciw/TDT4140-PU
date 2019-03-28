@@ -59,6 +59,13 @@
             <v-btn
               color="grey lighten-1"
               class="roundedCorners forgotPW"
+              @click="$router.push('/customerRegistration')"
+            >
+              Opprett bruker
+            </v-btn>
+            <v-btn
+              color="grey lighten-1"
+              class="roundedCorners forgotPW"
               @click="$router.push('/forgot-password')"
             >
               Glemt passord
