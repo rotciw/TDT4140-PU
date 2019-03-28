@@ -6,10 +6,11 @@
       align-center
     >
       <img
-        src="logo-long.png"
+        src="logo-clean.png"
         height="150px"
         contain
         style="margin-bottom:50px"
+        @click="$router.push('/')"
       >
       <v-flex
         xs12
@@ -18,6 +19,11 @@
       >
         <!-- Kommentar -->
         <div class="loginbox">
+          <h2
+            class="text-xs-center"
+          >
+            Ansattlogin
+          </h2>
           <form @submit.prevent="onSignin">
             <v-card-text>
               <v-text-field
@@ -127,7 +133,7 @@ export default {
 
 <style scoped>
   .loginbox{
-    height:300px;
+    height:320px;
     width: 450px;
     padding:30px;
     background-color: #f5f5f5;

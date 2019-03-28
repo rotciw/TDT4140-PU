@@ -3,7 +3,7 @@
     class="white roundedCorners"
   >
     <div
-      class="mx-3"
+      class="mx-5"
     >
       <v-layout
         column
@@ -12,7 +12,7 @@
       >
         <img
           src="logo-long.png"
-          height="150px"
+          height="130px"
           contain
           style="margin-bottom:10px"
         >
@@ -391,6 +391,7 @@
           >
             Frisk is laget av fersk frukt. Velg mellom de ulike smakene: pitahaya (dragefrukt), sapodilla og mango.
           </h3>
+          <br>
         </v-flex>
       </v-layout>
     </div>

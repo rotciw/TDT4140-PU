@@ -7,9 +7,9 @@
     >
       <img
         src="logo-long.png"
-        height="150px"
+        height="120px"
         contain
-        style="margin-bottom:50px"
+        style="margin-bottom:30px"
       >
       <v-flex
         xs12
@@ -57,8 +57,8 @@
           </form>
           <div class="text-xs-center">
             <v-btn
-              color="grey"
-              class="roundedCorners"
+              color="grey lighten-1"
+              class="roundedCorners forgotPW"
               @click="$router.push('/forgot-password')"
             >
               Glemt passord
@@ -137,14 +137,17 @@ export default {
 
 <style scoped>
   .loginbox{
-    height:300px;
+    max-height:350px;
     width: 450px;
-    padding:30px;
+    padding:25px;
     background-color: #f5f5f5;
     border-radius: 0px 36px 0px 36px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
   .roundedCorners {
     border-radius: 0px 18px 0px 18px;
+  }
+  .forgotPW {
+    font-size: smaller;
   }
 </style>
