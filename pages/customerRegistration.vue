@@ -12,7 +12,7 @@
           md11
         >
           <h1
-          style="text-align: center"
+            style="text-align: center"
           >
             Registrer ny bruker
           </h1>
@@ -27,38 +27,33 @@
               :rules="nameRules"
               label="Fornavn"
               required
-            >
-            </v-text-field>
+            />
             <v-text-field
               v-model="lastName"
               :rules="nameRules"
               label="Etternavn"
               required
-            >
-            </v-text-field>
+            />
+            <v-text-field
+              v-model="mobile"
+              :rules="mobileRules"
+              label="Telefon"
+              required
+            />
             <v-text-field
               v-model="email"
               :rules="emailRules"
               label="E-post"
               required
               type="email"
-            >
-            </v-text-field>
-            <v-text-field
-              v-model="mobile"
-              :rules="mobileRules"
-              label="Telefon"
-              required
-            >
-            </v-text-field>
+            />
             <v-text-field
               v-model="password1"
               :rules="passwordRules"
               label="Passord"
               required
               type="password"
-            >
-            </v-text-field>
+            />
             <v-text-field
               v-model="password2"
               :rules="passwordRules"
@@ -66,8 +61,7 @@
               label="Gjenta passord"
               required
               type="password"
-            >
-            </v-text-field>
+            />
             <v-checkbox
               v-model="checkbox"
               :rules="[v => !!v || 'Du må godkjenne vilkårene for å kunne opprette bruker']"
@@ -82,15 +76,15 @@
           <v-btn
             :disabled="!valid"
             color="#6BE096"
-            @click="createUser"
             class="roundedCorners"
+            @click="createUser"
           >
             Opprett bruker
           </v-btn>
           <v-btn
             color="red darken-1"
-            @click="cancelRegistration"
             class="roundedCorners"
+            @click="cancelRegistration"
           >
             Avbryt
           </v-btn>
@@ -127,7 +121,8 @@ export default {
     password1: '',
     password2: '',
     passwordRules: [
-      v => !!v || 'Du må oppgi et passord'
+      v => !!v || 'Du må oppgi et passord',
+      v => (v && v.length >= 6) || 'Passordet må bestå av minimum seks tegn'
     ],
     checkbox: false
   }),
