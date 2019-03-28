@@ -64,6 +64,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'loyaltyprogram',
   middleware: ['router-check', 'customer'],
@@ -93,8 +95,10 @@ export default {
   methods: {
     calculateStamps () {
       this.$store.getters.customerReservations.forEach(reservation => {
-        if (!this.reservationsArray.includes(reservation.reservationID)) {
-          this.reservationsArray.push(reservation.reservationID)
+        if (reservation.endTime() < moment().valueOf()) {
+          if (!this.reservationsArray.includes(reservation.reservationID)) {
+            this.reservationsArray.push(reservation.reservationID)
+          }
         }
       })
       this.customerStamps = (this.reservationsArray.length % 8)
