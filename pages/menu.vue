@@ -1,6 +1,6 @@
 <template>
   <v-container
-    class="white"
+    class="white roundedCorners"
   >
     <div
       class="mx-3"
@@ -106,6 +106,12 @@
             style="text-align: left"
           >
             MOLE POBLANO kr 80
+            <v-icon class="red--text">
+              favorite
+            </v-icon>
+            <v-icon class="green--text">
+              thumb_up
+            </v-icon>
           </h2>
           <h3
             style="text-align: left"
@@ -260,7 +266,13 @@
           <h2
             style="text-align: left"
           >
-            PESCA PESCATARIAN kr 210
+            PESCA PESCATARIANO kr 210
+            <v-icon class="red--text">
+              favorite
+            </v-icon>
+            <v-icon class="green--text">
+              thumb_up
+            </v-icon>
           </h2>
           <h3
             style="text-align: left"
@@ -281,7 +293,7 @@
             style="text-align: left"
             class="grey--text"
           >
-            Bønner, paprika,jalapeños, mais, søtpotet og salsa verde.
+            Bønner, paprika, jalapeños, mais, søtpotet og salsa verde.
           </h3>
         </v-flex>
       </v-layout>
@@ -366,6 +378,12 @@
             style="text-align: left"
           >
             NIEVE DE GARRAFA kr 85
+            <v-icon class="red--text">
+              favorite
+            </v-icon>
+            <v-icon class="green--text">
+              thumb_up
+            </v-icon>
           </h2>
           <h3
             style="text-align: left"
@@ -386,5 +404,7 @@ export default {
 </script>
 
 <style scoped>
-
+  .roundedCorners {
+    border-radius: 5px 36px 5px 36px;
+  }
 </style>

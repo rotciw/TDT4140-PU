@@ -83,9 +83,9 @@
         <v-flex xs12>
           <div class="text-xs-center">
             <b>Lagd med
-            <v-icon class="red--text">
-              favorite
-            </v-icon>
+              <v-icon class="red--text">
+                favorite
+              </v-icon>
               av PU-Gruppe 30</b>
           </div>
         </v-flex>

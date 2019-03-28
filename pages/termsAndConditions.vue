@@ -14,7 +14,10 @@
         xs6
       >
         <div class="box">
-          <div class="content" id="style-1">
+          <div
+            id="style-1"
+            class="content"
+          >
             <h1 style="text-align: center">
               Vilkår & Betingelser
             </h1>

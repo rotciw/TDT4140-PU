@@ -16,8 +16,16 @@
           sm12
           md12
         >
-          <h1 style="text-align: center">Bordbestilling</h1>
-          Ved å trykke bekreft, aksepterer du våre <a target="_blank" href="/termsAndConditions">vilkår og betingelser.</a>
+          <h1 style="text-align: center">
+            Bordbestilling
+          </h1>
+          Ved å trykke bekreft, aksepterer du våre
+          <a
+            target="_blank"
+            href="/termsAndConditions"
+          >
+            vilkår og betingelser.
+          </a>
           <br>
           <br>
         </v-flex>
@@ -128,9 +136,9 @@
       <br>
       <h3> Har du en reservasjon?</h3>
       <v-btn
-      large
-      class="roundedCorners"
-      @click="$router.push('/customerChangeReservation')"
+        large
+        class="roundedCorners"
+        @click="$router.push('/customerChangeReservation')"
       >
         Endre/avbestill reservasjon
       </v-btn>
@@ -200,7 +208,8 @@ export default {
   mounted () {
     this.$store.dispatch('mountTables')
     if (this.date === moment().add(1, 'day').toISOString().substr(0, 10)) {
-      this.startTime = moment(this.now + 86400000).format('H:mm')
+      if (moment().valueOf() > moment(this.date + ' - 12:00').format('YYYY-MM-DD - HH:MM').valueOf()) this.startTime = moment(this.now + 86400000).format('H:mm')
+      else this.startTime = '12:00'
     }
     else this.startTime = '12:00'
   },
