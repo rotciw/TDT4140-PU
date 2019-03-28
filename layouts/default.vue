@@ -89,6 +89,32 @@
             <v-list-tile-title v-text="'Statistikk'" />
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile
+          v-if="customer"
+          class="tile"
+          active-class="background-color: green"
+          to="/reservation"
+        >
+          <v-list-tile-action>
+            <v-icon>local_dining</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="'Bordbestilling'" />
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile
+          v-if="customer"
+          class="tile"
+          active-class="background-color: green"
+          to="/loyalty-program"
+        >
+          <v-list-tile-action>
+            <v-icon>favorite_border</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="'Lojalitetsprogram'" />
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
@@ -161,7 +187,13 @@
           text-xs-center
           xs12
         >
-          &copy; 2019 <strong>PU-Gruppe 30</strong>
+          <div class="text-xs-center">
+            <b>Lagd med
+              <v-icon class="red--text">
+                favorite
+              </v-icon>
+              av PU-Gruppe 30</b>
+          </div>
         </v-flex>
       </v-layout>
     </v-footer>
@@ -198,18 +230,21 @@ export default {
     employee () {
       return this.$store.getters.employee
     },
+    customer () {
+      return this.$store.getters.customer
+    },
     error () {
       return this.$store.getters.error
     }
   },
   watch: {
-    error () {
-      this.snackbar = true
+    error (val) {
+      this.snackbar = !!(val && val.length > 1)
     }
   },
   methods: {
     onDismissed () {
-      this.$store.dispatch('clearError')
+      this.$store.commit('clearError')
       this.snackbar = false
     },
     signOut () {

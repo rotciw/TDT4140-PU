@@ -62,6 +62,20 @@ export const users = {
         console.log(error)
       })
   },
+  updateUser (payload) {
+    const userObject = {
+      firstName: payload.firstName || '',
+      guestID: payload.guestID || '',
+      lastName: payload.lastName || '',
+      email: payload.email || '',
+      mobile: payload.mobile || ''
+    }
+    fs.collection('user').doc(userObject.uid + '').set(userObject)
+      .catch(error => {
+        console.log('Klarte ikke å oppdatere bruker ' + payload.uid)
+        console.log(error)
+      })
+  },
   // Kan brukes til å rense i guestUsers databasen.
   removeOtherGuestUsers (payload) {
     if (payload.guestID) {
@@ -75,10 +89,22 @@ export const users = {
         .doc(payload.guestID + '')
         .set(payload)
     }
+  },
+  sendResetEmail (payload) {
+    return firebase.auth().sendPasswordResetEmail(payload)
+      .then(() => {
+        return true
+      })
+      .catch(error => {
+        console.log('Klarte ikke å sende nytt passord til ' + payload)
+        console.log(error)
+        return false
+      })
   }
 }
 // Reservations inneholder alle reservasjonsrelaterte kall.
 export const reservations = {
+  // Oppretter ny reservasjon
   createReservation (reservationObject) {
     console.log(reservationObject)
     return fs.collection('reservations').doc(reservationObject.reservationID + '').set(reservationObject)
@@ -91,6 +117,7 @@ export const reservations = {
         return false
       })
   },
+  // Sletter gamle reservasjoner
   deleteReservation (reservationObject) {
     fs.collection('reservations').doc(reservationObject.reservationID + '').delete()
       .catch(error => {
@@ -104,5 +131,29 @@ export const reservations = {
       .orderBy('reservationID', 'desc')
       .limit(1)
       .get()
+  },
+  // Oppdaterer valgt reservasjon
+  updateReservation (reservation) {
+    const updateObject = {
+      reservationID: reservation.reservationID || '',
+      tableID: reservation.tableID || '',
+      uid: reservation.uid || '',
+      guestID: reservation.guestID || '',
+      numberOfPersons: reservation.numberOfPersons || '',
+      created: reservation.created || '',
+      duration: reservation.duration || '',
+      comments: reservation.comments || '',
+      startTime: reservation.startTime || '',
+      endTime: reservation.endTime || ''
+    }
+    fs.collection('reservations').doc(updateObject.reservationID + '').set(updateObject)
+      .then(() => {
+        return true
+      })
+      .catch(error => {
+        console.log('Klarte ikke å oppdatere reservasjonsnummer ' + updateObject.reservationID)
+        console.log(error)
+        return false
+      })
   }
 }

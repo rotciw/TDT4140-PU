@@ -1,6 +1,40 @@
 # Changelog
 Alle store endringer på prosjektet vil bli dokumentert her,
 
+# Versjon 1.3.0
+
+Inneholder brukerhistorier 14, 15, 16, 17, 18 og 19. (#6, #8, #11, #14, #114, #117)
+
+* 14: Brukervennlig side for kunde (#6)
+  * 14 - 01 Front end forside (#107)
+  * 14 - 02 Front end menyside (#108)
+  * 14 - 03 Flytte ansatt logge inn på egen side (#111)
+
+* 15 - Kunde opprette bruker (#8)
+  * 15 - 01 Kunde opprette bruker(#109)
+
+* 16 - Kunde logg inn (#11)
+  * 16 - 01 Kunde logget inn (#110)
+
+* 17 - Kunde logge ut (#14)
+
+* 18 - Kunde glemt passord (#114)
+
+* 19 - Kunde lojalitetsprogram (#117)
+
+## Hotfixes
+* Bug: Lojalitetsprogram (#122)
+* Bug: Statistikk for reservasjoner etter klokken 22 dukker ikke opp (#121)
+* Kundereservasjon - Avbryt knapp ved bordbestilling (#113)
+* Opprette/endre reservasjon: Sjekk på om bordet er ledig fungerer ikke (#104)
+* Statistikk: Aksene begynner på 1 istedet for 0 (#104)
+* Mail - endre starttid i mail (#97)
+* Endre reservasjon - kan kun velge minutter 00, 15, 30, 45 (#95)
+* Endre reservasjon - Burde ikke være mulig å reservere etter kl.22 (#94)
+* Statistikk - Tidspunkt reservasjoner skal ha tidsintervall 12-24 (#93)
+* Statistikk - Endre pr til pr. eller per i statistikk (#92)
+* Kundereservasjon - Må velge gyldig antall personer ved bestilling fra kundens side
+
 # v1.1.9 28.02.2019
 Denne versjonen inneholder den ferdige brukerhistorien #7 (Issue #18):
 07: Ansatte endre reservasjon

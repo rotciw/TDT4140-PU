@@ -160,7 +160,7 @@ exports.hourlyNumberOfReservations = functions.https.onRequest((request, respons
       let returnStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       for (let i = 0; i < hourlyStatistics.length; i++) {
         if (i > 11 && i < 24) {
-          returnStatistics[i - 12] = hourlyStatistics[i] / days
+          returnStatistics[i - 12] = Number((hourlyStatistics[i - 1] / days).toFixed(5))
         }
       }
       return response.status(200).send(returnStatistics)
@@ -198,8 +198,8 @@ exports.hourlyNumberOfPersons = functions.https.onRequest((request, response) =>
     .then(() => {
       let returnStatistics = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       for (let i = 0; i < hourlyStatistics.length; i++) {
-        if (i > 11 && i < 25) {
-          returnStatistics[i - 12] = hourlyStatistics[i] / days
+        if (i > 10 && i < 25) {
+          returnStatistics[i - 11] = Number((hourlyStatistics[i -1] / days).toFixed(5))
         }
       }
       return response.status(200).send(returnStatistics)

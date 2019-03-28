@@ -13,9 +13,9 @@
         <h1 style="text-align: center">
           Endre/avbestille reservasjon
         </h1>
-        <h3 style="text-align: center">
-          Skriv inn din email og reservasjonsnummer for reservasjonen du vil endre/avbestille.
-        </h3>
+        <div style="text-align: center">
+          Her kan du se reservasjonen din, endre eller avbestille.
+        </div>
         <br>
       </v-flex>
     </v-layout>
@@ -68,10 +68,23 @@
             </div>
           </form>
         </div>
+        <br>
       </v-flex>
     </v-layout>
+    <div class="text-xs-center">
+      <h3 style="text-align: center">
+        Ingen reservasjon?
+      </h3>
+      <v-btn
+        large
+        class="roundedCorners"
+        @click="$router.push('/customer-reservation')"
+      >
+        Bordbestilling
+      </v-btn>
+    </div>
     <v-layout>
-      <v-snackbar
+      <!--<v-snackbar
         v-model="snackbar"
         top
       >
@@ -83,7 +96,7 @@
         >
           Lukk
         </v-btn>
-      </v-snackbar>
+      </v-snackbar>-->
     </v-layout>
     <change-reservation
       :dialog-visible="dialog"
@@ -127,11 +140,8 @@ export default {
       return this.$store.getters.loading
     }
   },
-  watch: {
-    error () {
-      this.snackbar = true
-      console.log(this.error)
-    }
+  mounted () {
+    this.$store.dispatch('mountTables')
   },
   methods: {
     // Hvis brukeren lukker snackbaren
@@ -149,7 +159,7 @@ export default {
 
 <style scoped>
   .loginbox{
-    height:300px;
+    max-height:300px;
     width: 450px;
     padding:30px;
     background-color: #f5f5f5;

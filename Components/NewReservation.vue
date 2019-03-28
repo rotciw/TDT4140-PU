@@ -376,6 +376,10 @@ export default {
           uid: ''
         }
       }
+    },
+    globalStep: {
+      type: Number,
+      default: 0
     }
   },
   data () {
@@ -404,7 +408,7 @@ export default {
       nameRules: [
         v => !!v || 'Name is required'
       ],
-      step: 1, // Styrer hvilket steg i komponenten som skal vises
+      step: this.globalStep, // Styrer hvilket steg i komponenten som skal vises
       user: false, // Om det er bruker eller gjest vi henter
       /*
       * De neste tre brukes av formene til å sjekke om det er gyldig input
@@ -427,6 +431,19 @@ export default {
     // loading
     loading () {
       return this.$store.getters.loading
+    },
+    userLoggedIn () {
+      return this.$store.getters.user
+    }
+  },
+  mounted () {
+    if (this.userLoggedIn) {
+      this.guestUser.firstName = this.userLoggedIn.firstName
+      this.guestUser.lastName = this.userLoggedIn.lastName
+      this.guestUser.mobile = this.userLoggedIn.mobile
+      this.guestUser.email = this.userLoggedIn.email
+      this.guestUser.uid = this.userLoggedIn.uid
+      this.user = true
     }
   },
   methods: {
@@ -522,7 +539,6 @@ export default {
        */
     confirmReservation () {
       if (this.$refs.reservationForm.validate()) {
-        console.log('hallo')
         const reservationObject = {
           comments: this.comments,
           created: moment().valueOf(),
@@ -535,9 +551,19 @@ export default {
           tableID: this.reservation.tableID
         }
         // SJekker om vi oppretter for kunde eller bruker, kaller så på kontrolleren
-        if (this.user) {
+        if (this.user && !this.userLoggedIn) {
           reservationObject.guestID = ''
           reservationObject.uid = this.guestUser.uid
+          this.$controller.reservations.createReservation(reservationObject)
+            .then(answer => {
+              console.log(answer)
+              if (answer === true) axios.post('https://us-central1-pu30-5b0f9.cloudfunctions.net/sendWelcomeEmail', { 'reservationID': this.reservation.reservationID, 'email': this.guestUser.email, 'displayName': this.guestUser.firstName, 'startTime': reservationObject.startTime })
+            })
+        }
+        else if (this.user && this.userLoggedIn) {
+          reservationObject.guestID = ''
+          reservationObject.uid = this.userLoggedIn.uid
+          this.$controller.users.updateUser(this.userLoggedIn)
           this.$controller.reservations.createReservation(reservationObject)
             .then(answer => {
               console.log(answer)
@@ -548,6 +574,7 @@ export default {
           if (this.guestUser && this.guestUser.guestID && this.guestUser.guestID.length > 0) {
             reservationObject.guestID = this.guestUser.guestID
             reservationObject.uid = ''
+            this.$controller.users.updateGuestUser(this.guestUser)
             this.$controller.reservations.createReservation(reservationObject)
               .then(answer => {
                 console.log(answer)

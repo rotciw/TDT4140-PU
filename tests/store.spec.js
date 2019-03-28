@@ -62,7 +62,10 @@ test('Clear states when user is logged out', () => {
   const emptyState = {
     admin: false,
     availableTables: [],
+    customer: false,
     customerRequestedTables: [],
+    customerReservations: [],
+    customersComingReservations: [],
     employee: false,
     error: null,
     loading: false,

@@ -10,7 +10,10 @@ export const strict = false
 export const state = () => ({
   admin: false, // Sier om brukeren er admin eller ikke
   availableTables: [], // Holder alle bordene som er ledige og etterspurt for antall gjester og tidspunkt
+  customer: false, // Sier ifra om brukeren er kunde eller ikke
   customerRequestedTables: [], // Inneholder ledige bord etterspurt av kunde
+  customerReservations: [],
+  customersComingReservations: [],
   employee: false, // SIer om brukeren er ansatt eller ikke
   error: null, // Holder feilmeldingen vår
   loading: false, // Brukes ved logg inn i det vi begynner autentiseringen
@@ -24,6 +27,15 @@ export const state = () => ({
 
 // Mutations are functions that the store uses to set its atrributes
 export const mutations = {
+  // Brukes når en kunde logger inn for å vise statistikk
+  addCustomerReservation (state, payload) {
+    Vue.set(state.customerReservations, state.customerReservations.length, payload)
+  },
+  addCustomersComingReservations (state, payload) {
+    if (!state.customersComingReservations[payload.reservationID]) {
+      Vue.set(state.customersComingReservations, payload.reservationID, payload)
+    }
+  },
   clearAvailableTables (state) {
     state.availableTables = []
   },
@@ -33,6 +45,14 @@ export const mutations = {
   // Fjerner bordene som ligger fra forrige etterspørsel.
   clearCustomerRequestedTable (state) {
     state.customerRequestedTable = []
+  },
+  clearCustomerReservation (state) {
+    state.customerReservations = []
+    state.customersComingReservations = []
+  },
+  // Fjerner bordene som ligger fra forrige etterspørsel.
+  clearCustomerRequestedTables (state) {
+    state.customerRequestedTables = []
   },
   // Fjerner error melding
   clearError (state) {
@@ -44,6 +64,7 @@ export const mutations = {
     state.availableTables = []
     state.employee = false
     state.error = null
+    state.customer = false
     state.loading = false
     state.reservation = null
     state.reservations = []
@@ -62,13 +83,14 @@ export const mutations = {
   },
   // Endrer tilgjengeligheten til et bord
   setCustomerRequestedTable (state, payload) {
-    Vue.set(state.customerRequestedTables, state.customerRequestedTables.length, payload)
+    payload.capacity = state.tables[payload.tableID - 1].capacity
+    Vue.set(state.customerRequestedTables, payload.tableID - 1, payload)
   },
   // Legger inn alle bord som har kapasitet nok til reservasjonen
   setCustomerRequestedTables (state, payload) {
     state.tables.forEach(table => {
-      if (Number(payload) > Number(table.capacity)) Vue.set(state.customerRequestedTables, table.tableID - 1, { available: false, tableID: table.tableID, capacity: table.capacity })
-      else Vue.set(state.customerRequestedTables, table.tableID - 1, { available: true, tableID: table.tableID, capacity: table.capacity })
+      table.available = Number(payload) <= Number(table.capacity)
+      Vue.set(state.customerRequestedTables, table.tableID - 1, table)
     })
   },
   setFetchedReservation (state, payload) {
@@ -106,6 +128,7 @@ export const mutations = {
     state.user = payload
     state.admin = payload.admin
     state.employee = payload.employee
+    state.customer = payload.customer
   },
   // Setter feilmelding
   setError (state, payload) {
@@ -195,8 +218,7 @@ export const actions = {
   Sjekker hvilke bord som har stor nok kapasitet, og hvilke bord som ikke har overlappende reservasjonsstider
    */
   checkCustomerRequestedTable ({ commit, state }, payload) {
-    commit('setLoading', true)
-    commit('clearCustomerRequestedTable')
+    commit('clearCustomerRequestedTables')
     commit('setCustomerRequestedTables', payload.numberOfPersons)
     let now = moment().valueOf()
     firebase.firestore().collection('reservations')
@@ -209,11 +231,34 @@ export const actions = {
             (reservation.endTime > payload.startTime && reservation.endTime < payload.endTime) ||
             (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {
             commit('setCustomerRequestedTable', { tableID: reservation.tableID, available: false })
-            commit('setLoading', false)
           }
         })
       })
-    commit('setLoading', false)
+  },
+  /*
+  Brukes av customerChangeReservation til å finne ut om det er ledige bord for etterspurte tidspunkt og mengde.
+  Sjekker hvilke bord som har stor nok kapasitet, og hvilke bord som ikke har overlappende reservasjonsstider. Tar hensyn til
+  reservasjonen vi sjekker, sånn at den ikke slår ut på seg selv.
+  */
+  checkCustomerRequestedTableWithReservation ({ commit, state }, payload) {
+    commit('clearCustomerRequestedTables')
+    commit('setCustomerRequestedTables', payload.numberOfPersons)
+    let now = moment().valueOf()
+    firebase.firestore().collection('reservations')
+      .where('endTime', '>', now)
+      .get()
+      .then(reservations => {
+        reservations.forEach(reservation => {
+          reservation = reservation.data()
+          if (Number(reservation.reservationID) !== Number(payload.reservationID)) {
+            if ((reservation.startTime > payload.startTime && reservation.startTime < payload.endTime) ||
+              (reservation.endTime > payload.startTime && reservation.endTime < payload.endTime) ||
+              (reservation.startTime <= payload.startTime && reservation.endTime >= payload.endTime)) {
+              commit('setCustomerRequestedTable', { tableID: reservation.tableID, available: false })
+            }
+          }
+        })
+      })
   },
   // FJerner feilmeldingen
   clearError ({ commit }) {
@@ -231,7 +276,6 @@ export const actions = {
     firebase.firestore().collection('reservations').doc(payload.reservationID + '')
       .set(payload)
       .then(res => {
-        console.log(res)
         commit('setReservation', payload)
       })
       .catch(error => {
@@ -352,6 +396,25 @@ export const actions = {
       })
       /* .catch(error => {
       }) */
+  },
+  /*
+  * mountUserReservations henter alle reservasjonene til en bruker som logger inn.
+  * Dette kan så brukes til å regne ut statistikk på brukeren.
+  * */
+  mountUsersReservations ({ commit, state }, user) {
+    commit('clearCustomerReservation')
+    firebase.firestore().collection('reservations')
+      .where('uid', '==', user.uid)
+      .onSnapshot(reservations => {
+        reservations.forEach(reservation => {
+          reservation = reservation.data()
+          reservation.user = state.user
+          commit('addCustomerReservation', reservation)
+          if (reservation.startTime > moment().startOf('day').valueOf()) {
+            commit('addCustomersComingReservations', reservation)
+          }
+        })
+      })
   },
   /* updateReservation oppdaterer reservasjon valgt fra allreservations. Dette gjøres ved å sette et objekt som er likt som
   *  det gamle, med de samme feltene. Deretter oppdateres brukeren utifra om det er gjest eller bruker som er tilknyttet
@@ -600,8 +663,17 @@ export const getters = {
   admin (state) {
     return state.admin
   },
+  customer (state) {
+    return state.customer
+  },
   customerRequestedTables (state) {
     return state.customerRequestedTables
+  },
+  customerReservations (state) {
+    return state.customerReservations
+  },
+  customersComingReservations (state) {
+    return state.customersComingReservations
   },
   employee (state) {
     return state.employee

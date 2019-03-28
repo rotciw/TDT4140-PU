@@ -7,9 +7,9 @@
     >
       <img
         src="logo-long.png"
-        height="150px"
+        height="120px"
         contain
-        style="margin-bottom:50px"
+        style="margin-bottom:30px"
       >
       <v-flex
         xs12
@@ -55,11 +55,27 @@
               </v-btn>
             </div>
           </form>
+          <div class="text-xs-center">
+            <v-btn
+              color="grey lighten-1"
+              class="roundedCorners forgotPW"
+              @click="$router.push('/customerRegistration')"
+            >
+              Opprett bruker
+            </v-btn>
+            <v-btn
+              color="grey lighten-1"
+              class="roundedCorners forgotPW"
+              @click="$router.push('/forgot-password')"
+            >
+              Glemt passord
+            </v-btn>
+          </div>
         </div>
       </v-flex>
     </v-layout>
     <v-layout>
-      <!--<v-snackbar
+      <v-snackbar
         v-model="snackbar"
         top
       >
@@ -71,7 +87,7 @@
         >
           Lukk
         </v-btn>
-      </v-snackbar>-->
+      </v-snackbar>
     </v-layout>
   </v-container>
 </template>
@@ -102,6 +118,7 @@ export default {
   watch: {
     user (val) {
       if (val !== null && val !== undefined) {
+        if (this.user.customer === true) this.$store.dispatch('mountUsersReservations', this.user)
         this.$router.push('/dashboard')
       }
     },
@@ -127,14 +144,17 @@ export default {
 
 <style scoped>
   .loginbox{
-    height:300px;
+    max-height:350px;
     width: 450px;
-    padding:30px;
+    padding:25px;
     background-color: #f5f5f5;
     border-radius: 0px 36px 0px 36px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
   .roundedCorners {
     border-radius: 0px 18px 0px 18px;
+  }
+  .forgotPW {
+    font-size: smaller;
   }
 </style>

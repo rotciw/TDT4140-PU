@@ -668,7 +668,7 @@ export default {
       this.editedSelectedReservation = {
         reservationID: '',
         tableID: '',
-        userID: '',
+        uid: '',
         guestID: '',
         numberOfPersons: '',
         created: '',
