@@ -6,14 +6,16 @@
 
 
 #### Et restaurantsystem for Trippin Tacos
-Trippin Tacos prosjektet er en [nettside](https://pu30-5b0f9.firebaseapp.com) for et system der man effektivt kan reservere bord, holde oversikt og se statistikk.
+Trippin Tacos prosjektet er en nettside for et system der man effektivt kan reservere bord, holde oversikt og se statistikk.
 
 Prosjektet er laget etter etterspørsel fra produkteier av Trippin Tacos.
+Link til prosjektet: https://pu30-5b0f9.firebaseapp.com
 
 
-## Kommandoer
+## Installasjon/Kommandoer
 "Clone" eller "Fork" prosjektet. Deretter i terminalen kan du navigere til prosjektet.
-For å installere avhengigheter kjør: 
+
+Installer avhengigheter: 
 > `npm install`
 
 For å utvikle med hot reload: 
@@ -28,10 +30,13 @@ For å deploye hosting og functions til nettsiden:
    * Kun cloud functions: `firebase deploy --only functions`
    * Teste cloud functions med f.eks Postman: `firebase serve --only functions`
     
-  
+
+## Testing
+
 ## Tech/Rammeverk brukt:
 ### Bygd med:
 * Vuetify
+* Firestore
 
 ## Versjoner:
 Les mer om versjonene [her](CHANGELOG.md)
