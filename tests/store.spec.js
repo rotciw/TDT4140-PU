@@ -145,3 +145,129 @@ test('Sets reservation when setReservation is called without guestID', () => {
   store.commit('removeReservation', testReservation)
   expect(store.getters.reservations[testReservation.reservationID - 1]).toBe(null)
 })
+
+test('addCustomersComingReservations when a reservation is given to the mutation', () => {
+  const store = new Vuex.Store(cloneDeep(Store))
+  const testReservation1 = {
+    reservationID: 1,
+    tableID: 1,
+    numberOfPersons: 2,
+    uid: 1,
+    guestID: null,
+    created: moment().valueOf(),
+    duration: 2,
+    comments: 'Hello',
+    startTime: moment().valueOf(),
+    endTime: moment().valueOf() + 3000000
+  }
+  const testReservation2 = {
+    reservationID: 2,
+    tableID: 1,
+    numberOfPersons: 2,
+    uid: 1,
+    guestID: null,
+    created: moment().valueOf(),
+    duration: 2,
+    comments: 'Hei',
+    startTime: moment().valueOf(),
+    endTime: moment().valueOf() + 3000000
+  }
+  const reservations = [undefined, testReservation1, testReservation2]
+  store.commit('addCustomersComingReservations', testReservation1)
+  store.commit('addCustomersComingReservations', testReservation2)
+  expect(store.getters.customersComingReservations).toEqual(reservations)
+})
+
+test('addCustomersReservation when a reservation is given to the mutation', () => {
+  const store = new Vuex.Store(cloneDeep(Store))
+  const testReservation1 = {
+    reservationID: 1,
+    tableID: 1,
+    numberOfPersons: 2,
+    uid: 1,
+    guestID: null,
+    created: moment().valueOf(),
+    duration: 2,
+    comments: 'Hello',
+    startTime: moment().valueOf(),
+    endTime: moment().valueOf() + 3000000
+  }
+  const testReservation2 = {
+    reservationID: 2,
+    tableID: 1,
+    numberOfPersons: 2,
+    uid: 1,
+    guestID: null,
+    created: moment().valueOf(),
+    duration: 2,
+    comments: 'Hei',
+    startTime: moment().valueOf(),
+    endTime: moment().valueOf() + 3000000
+  }
+  const reservations = [undefined, testReservation1, testReservation2]
+  store.commit('addCustomersReservation', testReservation1)
+  store.commit('addCustomersReservation', testReservation2)
+  expect(store.getters.customersReservations).toEqual(reservations)
+})
+
+test('clearAvailableTebles and setAvailableTables', () => {
+  const store = new Vuex.Store(cloneDeep(Store))
+  expect(store.getters.tables.length).toBe(0)
+  let testTable1 = {
+    tableID: 1,
+    capacity: 2,
+    currently: 3,
+    occupied: true
+  }
+  let testTable2 = {
+    tableID: 2,
+    capacity: 3,
+    currently: 4,
+    occupied: false
+  }
+  let testTable3 = {
+    tableID: 3,
+    capacity: 4,
+    currently: 5,
+    occupied: false
+  }
+  store.commit('setTable', testTable1)
+  store.commit('setTable', testTable2)
+  store.commit('setTable', testTable3)
+  expect(store.getters.tables.length).toBe(3)
+  store.commit('setAvailableTables', '3')
+  expect(store.getters.availableTables).toEqual([{ available: false, tableID: 1, capacity: 2 }, { available: true, tableID: 2, capacity: 3 }, { available: true, tableID: 3, capacity: 4 }])
+})
+
+test('set and clear tableAvailable', () => {
+  const store = new Vuex.Store(cloneDeep(Store))
+  store.commit('setTableAvailability', true)
+  expect(store.getters.tableAvailable.includes(false)).toBe(false)
+  store.commit('clearAvailability')
+  expect(store.getters.tableAvailable).toEqual([])
+})
+
+test('set and clear customer resersevations', () => {
+  const store = new Vuex.Store(cloneDeep(Store))
+  expect(store.getters.customerReservations).toEqual([])
+  expect(store.getters.customersComingReservations).toEqual([])
+  const testReservation = {
+    reservationID: 1,
+    tableID: '',
+    userID: '',
+    guestID: '',
+    numberOfPersons: '',
+    created: '',
+    duration: '',
+    comments: '',
+    startTime: '',
+    endTime: ''
+  }
+  store.commit('addCustomerReservation', testReservation)
+  store.commit('addCustomersComingReservations', testReservation)
+  expect(store.getters.customersComingReservations[testReservation.reservationID]).toEqual(testReservation)
+  expect(store.getters.customerReservations[0]).toEqual(testReservation)
+  store.commit('clearCustomerReservation')
+  expect(store.getters.customerReservations).toEqual([])
+  expect(store.getters.customersComingReservations).toEqual([])
+})
