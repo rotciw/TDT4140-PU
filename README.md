@@ -8,28 +8,38 @@
 #### Et restaurantsystem for Trippin Tacos
 Trippin Tacos prosjektet er en nettside for et system der man effektivt kan reservere bord, holde oversikt og se statistikk.
 
-Prosjektet er laget etter etterspørsel fra produkteier av Trippin Tacos.
 Link til prosjektet: https://pu30-5b0f9.firebaseapp.com
 
 
 ## Installasjon/Kommandoer
-"Clone" eller "Fork" prosjektet. Deretter i terminalen kan du navigere til prosjektet.
+I terminalen på et vilkårlig operativsystem, "clone" prosjektet lokalt. 
+> `$ git clone https://gitlab.stud.idi.ntnu.no/programvareutvikling-v19/gruppe-30.git`
+
+> `$ cd gruppe-30`
 
 Installer avhengigheter: 
-> `npm install`
+> `$ npm install`
 
-For å utvikle med hot reload: 
-> `npm run dev`
+Starte med utvikling inkludert hot reload: 
+> `$ npm run dev`
 
-For å generere statisk prosjekt: 
-> `npm generate`
+Naviger til localhost:<port> i nettleseren din for å se nettsiden. Standardport er 3000.
+
+**Man trenger kun disse stegene for å kunne utvikle prosjektet lokalt.
+Videre har man flere kommandoer:**
+
+
+For å generere statisk prosjekt (for statisk utvikling): 
+> `$ npm generate`
 
 For å deploye hosting og functions til nettsiden: 
- * `firebase deploy`
-   * Kun hosting: `firebase deploy --only hosting`
-   * Kun cloud functions: `firebase deploy --only functions`
-   * Teste cloud functions med f.eks Postman: `firebase serve --only functions`
+ * `$ firebase deploy`
+   * Kun hosting: `$ firebase deploy --only hosting`
+   * Kun cloud functions: `$ firebase deploy --only functions`
+   * Teste cloud functions med f.eks Postman: `$ firebase serve --only functions`
     
+
+## Database
 
 ## Testing
 
@@ -37,6 +47,8 @@ For å deploye hosting og functions til nettsiden:
 ### Bygd med:
 * Vuetify
 * Firestore
+* Node
+* Nuxt
 
 ## Versjoner:
 Les mer om versjonene [her](CHANGELOG.md)
