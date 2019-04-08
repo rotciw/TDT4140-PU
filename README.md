@@ -12,6 +12,7 @@ Prosjektet er laget etter etterspørsel fra produkteier av Trippin Tacos.
 
 
 ## Kommandoer
+"Clone" eller "Fork" prosjektet. Deretter i terminalen kan du navigere til prosjektet.
 For å installere avhengigheter kjør: 
 > `npm install`
 
