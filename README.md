@@ -23,7 +23,7 @@ Installer avhengigheter:
 Starte med utvikling inkludert hot reload: 
 > `$ npm run dev`
 
-Naviger til localhost:<port> i nettleseren din for å se nettsiden. Standardport er 3000.
+Naviger til localhost:'portnr her' i nettleseren din for å se nettsiden. Standardport er 3000.
 
 **Man trenger kun disse stegene for å kunne utvikle prosjektet lokalt.
 Videre har man flere kommandoer:**
