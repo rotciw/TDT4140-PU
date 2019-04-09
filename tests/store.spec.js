@@ -204,13 +204,13 @@ test('addCustomersReservation when a reservation is given to the mutation', () =
     startTime: moment().valueOf(),
     endTime: moment().valueOf() + 3000000
   }
-  const reservations = [undefined, testReservation1, testReservation2]
-  store.commit('addCustomersReservation', testReservation1)
-  store.commit('addCustomersReservation', testReservation2)
-  expect(store.getters.customersReservations).toEqual(reservations)
+  const reservations = [testReservation1, testReservation2]
+  store.commit('addCustomerReservation', testReservation1)
+  store.commit('addCustomerReservation', testReservation2)
+  expect(store.getters.customerReservations).toEqual(reservations)
 })
 
-test('clearAvailableTebles and setAvailableTables', () => {
+test('clearAvailableTables and setAvailableTables', () => {
   const store = new Vuex.Store(cloneDeep(Store))
   expect(store.getters.tables.length).toBe(0)
   let testTable1 = {
