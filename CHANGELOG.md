@@ -1,7 +1,7 @@
 # Changelog
 Alle store endringer på prosjektet vil bli dokumentert her,
 
-# Versjon 1.3.0
+# Versjon 1.3.0 28.03.2019
 
 Inneholder brukerhistorier 14, 15, 16, 17, 18 og 19. (#6, #8, #11, #14, #114, #117)
 
