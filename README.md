@@ -74,7 +74,7 @@ createGuestUser (payload) {
   },
 ```
 #### Bruke storen
-Dette eksempelet hviser de ulike delene som går med på å bruke storen til å logge inn en bruker.
+Dette eksempelet viser de ulike delene som går med på å bruke storen til å logge inn en bruker.
 
 **pages/login.vue:**
 ```JavaScript
