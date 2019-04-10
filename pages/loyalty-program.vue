@@ -19,42 +19,95 @@
             Du mangler bare {{ stampsLeftBeforeDiscount }} stempel for å få et gratis måltid.
           </h4>
         </div>
-        <v-divider></v-divider>
+        <v-divider />
       </v-flex>
       <v-flex
         xs12
       >
-        <table class="margin" id="loyaltytable">
+        <table
+          id="loyaltytable"
+          class="margin"
+        >
           <tr>
             <td>
               <v-flex xs2>
-                <img v-if="numOfStamps >= 1" src="logo-clean.png" class="logo">
-                <h4 v-else>1</h4>
+                <img
+                  v-if="numOfStamps >= 1"
+                  src="logo-clean.png"
+                  class="logo"
+                >
+                <h4 v-else>
+                  1
+                </h4>
               </v-flex>
             </td>
             <td class="td">
-              <img v-if="numOfStamps >= 2" src="logo-clean.png" class="logo">
-              <h4 v-else>2</h4>
+              <img
+                v-if="numOfStamps >= 2"
+                src="logo-clean.png"
+                class="logo"
+              >
+              <h4 v-else>
+                2
+              </h4>
             </td>
-            <td><img v-if="numOfStamps >= 3" src="logo-clean.png" class="logo">
-              <h4 v-else>3</h4>
+            <td class="td">
+              <img
+                v-if="numOfStamps >= 3"
+                src="logo-clean.png"
+                class="logo"
+              >
+              <h4 v-else>
+                3
+              </h4>
             </td>
-            <td><img v-if="numOfStamps >= 4" src="logo-clean.png" class="logo">
-              <h4 v-else>4</h4>
+            <td class="td">
+              <img
+                v-if="numOfStamps >= 4"
+                src="logo-clean.png"
+                class="logo"
+              >
+              <h4 v-else>
+                4
+              </h4>
             </td>
           </tr>
           <tr>
-            <td>
-              <img v-if="numOfStamps >= 5" src="logo-clean.png" class="logo">
-              <h4 v-else>5</h4>
+            <td class="td">
+              <img
+                v-if="numOfStamps >= 5"
+                src="logo-clean.png"
+                class="logo"
+              >
+              <h4 v-else>
+                5
+              </h4>
             </td>
-            <td><img v-if="numOfStamps >= 6" src="logo-clean.png" class="logo">
-              <h4 v-else>6</h4>
+            <td class="td">
+              <img
+                v-if="numOfStamps >= 6"
+                src="logo-clean.png"
+                class="logo"
+              >
+              <h4 v-else>
+                6
+              </h4>
             </td>
-            <td><img v-if="numOfStamps >= 7" src="logo-clean.png" class="logo">
-              <h4 v-else>7</h4>
+            <td class="td">
+              <img
+                v-if="numOfStamps >= 7"
+                src="logo-clean.png"
+                class="logo"
+              >
+              <h4 v-else>
+                7
+              </h4>
             </td>
-            <td><img src="free-st.png" class="logo">
+            <td class="td">
+              <img
+                src="free-st.png"
+                class="logo"
+              >
             </td>
           </tr>
         </table>
@@ -67,7 +120,6 @@
 import moment from 'moment'
 
 export default {
-  name: 'loyaltyprogram',
   middleware: ['router-check', 'customer'],
   data () {
     return {
