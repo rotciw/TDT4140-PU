@@ -17,7 +17,7 @@ I terminalen på et vilkårlig operativsystem, "clone" prosjektet lokalt.
 
 > `$ cd gruppe-30`
 
-Hvis du ikke har node installert må du installere dette. Det kan du gjøre [her]https://nodejs.org/en/)
+Hvis du ikke har node installert må du installere dette. Det kan du gjøre [her](https://nodejs.org/en/)
 
 Installer avhengigheter: 
 > `$ npm install`
