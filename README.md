@@ -191,7 +191,7 @@ UI kan så aksesseres via https://console.firebase.google.com/u/0/project/pu30-5
 
 ## Tester:
 Vi benytter oss av Jest for rammeverk av testing.
-For å kjøre testene kreves følgende (Hopp til steg 3 hvis du har kjørt npm install):
+For å kjøre testene kreves følgende (Hopp til steg 3 hvis du har jest):
 1. `$ npm install -g jest`
 2. `$ npm install -g vue-jest`
 3. `$ npm test -- 'tests'`
