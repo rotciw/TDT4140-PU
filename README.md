@@ -170,6 +170,7 @@ UI kan så aksesseres via https://console.firebase.google.com/u/0/project/pu30-5
 
 ### Bygd med:
 * [JavaScript ES6](http://ecma-international.org/publications/standards/Ecma-006.htm)
+* [Vue](https://vuejs.org)
 * [Vuetify](https://vuetifyjs.com/en/getting-started/why-vuetify)
 * [NPM](https://www.npmjs.com/)
 * [Firestore](https://firebase.google.com/docs/firestore/)
