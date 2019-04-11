@@ -229,8 +229,6 @@ og develop.
 Les mer om versjonene [her](CHANGELOG.md)
 
 ## Mappestruktur:
-## Oversikt over kode
-Mappestruktur:
 * Components (Inneholder komponenter som brukes flere steder eller har mulighet til å brukes flere steder)
   * AddReservation.vue (Brukes av booking.vue for å opprette en ny reservasjon av ansatte)
   * AddTable.vue (Brukes av tableEditor.vue for å legge til/slette eller endre bord i restauranten)
