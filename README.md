@@ -228,4 +228,56 @@ og develop.
 ## Versjoner:
 Les mer om versjonene [her](CHANGELOG.md)
 
+## Mappestruktur:
+## Oversikt over kode
+Mappestruktur:
+* Components (Inneholder komponenter som brukes flere steder eller har mulighet til å brukes flere steder)
+  * AddReservation.vue (Brukes av booking.vue for å opprette en ny reservasjon av ansatte)
+  * AddTable.vue (Brukes av tableEditor.vue for å legge til/slette eller endre bord i restauranten)
+  * BarChart.js (Brukes av statistikksiden for å rendere stolpe diagrammet)
+  * ChangeReservation.vue (Brukes av siden CustomerChangeReservation for å slette/endre en reservasjon)
+  * CustomersReservations.vue (Brukes av dashboard.vue når kunder logger inn for å vise kundens reservasjoner)
+  * NewReservation.vue (Brukes av customer-reservation.vue for å lage ny reservasjon)
+  * TodaysTimelineForTable.vue (Brukes av ViewTable.vue for å vise kommende reservasjoner)
+  * ViewTable.vue (Brukes av booking.vue for å opprette/vise informasjon om reservasjoner på valgt bord).
+* Functions (Back-end funksjoner)
+  * index.js (Inneholder alle cloud-funksjonene)
+* Layouts (Inneholder de ulike layoutsene som brukes)
+  * ansattLoggInn.vue (Brukes på ansatt.vue)
+  * default.vue (Brukes når man har logget inn)
+  * frontpage.vue (Brukes når man ikke er logget inn)
+  * index.vue (Brukes av forsiden)
+* middleware (Inneholder ulike routing regler for å sjekke at man er logget inn og har nødvendige rettigheter for å besøke siden.)
+  * admin.js (Sjekker om man er admin)
+  * customer.js (Sjekker om man er kunde)
+  * employee.js (sjekker om man er ansatt)
+  * router-check.js (Sjekker at man er logget inn) 
+* Pages (Inneholder alle sidene til prosjektet): 
+  * allreservations.vue (Alle kommende reservasjoner)
+  * ansatt.vue (Innloggingside for ansatte)
+  * booking.vue (Restaurantoversikt)
+  * customer-reservation.vue
+  * customerChangeRegistration.vue
+  * customerRegistration.vue
+  * dashboard.vue (Den første siden man møter etter innlogging)
+  * forgot-password.vue
+  * index.vue 
+  * login.vue 
+  * loyalty-program.vue 
+  * menu.vue
+  * statistics.vue
+  * tableEditor.vue (Endre oppsett av restauranten)
+  * termsAndConditions.vue
+* plugis (Tillegg som settes opp i starten)
+  * fireinit.js (Setter opp tilgang til databasen)
+  * logincheck.js (Sjekker autoinnlogging)
+  * vue-inject.js (Lager globale variabler som kan brukes)
+  * vuetify.js (Setter opp vuetify)
+* static
+* store
+  * index.js (Tilstandskontrolløren)
+* tests
+  * store.spec.js
+
+
 Laget med :heart: av Jesper Paulsen, Maria Brenna, Mathilde Tillman Hegdal, Olav Falck-Pedersen, Una Førde Schjetne og Wictor Zhao
