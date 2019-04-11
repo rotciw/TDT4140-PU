@@ -42,7 +42,7 @@ For å deploye hosting og functions til nettsiden:
   * Teste cloud functions lokalt med f.eks Postman: `$ firebase serve --only functions`
   
   
-## Kode stil
+## Kodestil
 Vi bruker streng ESLint for å sørge for at all kode følger den samme konvensjonen. Konvensjonen som blir benyttet er
 Vue sine anbefalte konvensjoner (A, B, C og ukategorisert) https://eslint.vuejs.org/rules/.
 
@@ -88,7 +88,7 @@ Dette eksempelet viser de ulike delene som går med på å bruke storen til å l
 
 **store/index.js:**
 ```JavaScript
-// Kaller på sotren for å logge oss inn
+// Kaller på storen for å logge oss inn
     /* signUserIn brukes av login for å logge inn brukeren. Først autentiserers den hos google, før vi henter dataene
   * vi har lagret på brukeren */
   signUserIn ({ commit }, payload) {
@@ -123,7 +123,7 @@ Etter at denne metoden har kjørt, ser vi at den har kalt på commit flere gange
   },
 
 ```
-Denne oppdaterer staten som blir initalisert når storen bygges:
+Denne oppdaterer staten som blir initialisert når storen bygges:
 **store/index.js:**
 ```JavaScript
 export const state = () => ({
@@ -160,8 +160,8 @@ Disse attributtene kan vi så bruke ved hjelp av getters.
 
 
 ## Database
-Databasen som blir brukt er Googles Firestore. Dette er en rask NoSQL database. Les mer om databasen vår [her](https://gitlab.stud.idi.ntnu.no/programvareutvikling-v19/gruppe-30/wikis/about/firestore)
-Spørringer mot databasen krever ikke inlogging hvis man kjører programmet lokalt, da access tokens settes opp når prosjektet initaliseres.
+Databasen som blir brukt er Googles Firestore. Dette er en rask NoSQL database. Les mer om databasen vår [her](https://gitlab.stud.idi.ntnu.no/programvareutvikling-v19/gruppe-30/wikis/about/firestore).
+Spørringer mot databasen krever ikke innlogging hvis man kjører programmet lokalt, da access tokens settes opp når prosjektet initialiseres.
 Ønsker man å administrere databasen via UI kreves en google bruker. Send mail til jespergp@stud.ntnu.no, så fikses tilgang :rocket:
 UI kan så aksesseres via https://console.firebase.google.com/u/0/project/pu30-5b0f9/overview
 
@@ -182,11 +182,11 @@ UI kan så aksesseres via https://console.firebase.google.com/u/0/project/pu30-5
 * [Jest](https://jestjs.io/)
 
 ## Features:
-* Moderne nettside
+* Moderne nettside :rocket:
 * Kunde kan legge inn, endre og slette reservasjoner
 * Kunder kan opprette brukere
 * Admin kan administrere oppsettet for restauranten
-* Ansatte kan enkelt opprette, endre, slette og se reservasjoner, samt statusen til restauranten til enhver tid
+* Ansatte kan enkelt opprette, endre, slette og se reservasjoner, samt se statusen til restauranten til enhver tid
 * Sjef kan se statistikk over besøkende for å se hvilke måneder, dager og tidspunkt som er mest attraktive og tilpasse driften etter dette
 
 ## Tester:
